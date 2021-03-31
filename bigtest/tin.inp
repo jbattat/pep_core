@@ -1,0 +1,171 @@
+TIN -  INPUT LINK: * COMMANDS, INPUT FEATURES, A PRIORIS, MULTI-RUN.            
+*DICTCLE                                                                        
+*DICTION                                                                        
+ONE       2 1,                                                                  
+ZERO      2 0,                                                                  
+IOUT      1 6                                                                   
+IPERT     2 21                                                                  
+RANDOM    7 .,.,.,.                                                             
+*DICTEND                                                                        
+ &NMLST1                                                                        
+$ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -         
+$  ITEMS ON PAGE 3 * * * * *                                                    
+ IMAT2=50,      $ SAVE NORMAL EQUATIONS                                         
+ IPERT=/IPERT/                                                                  
+ ICT(1)=/ONE/   $ 1 ITER                                                        
+ ICT(5)=0,      $ RESTORE AND FORM NORMAL EQUATIONS                             
+ ICT(44)=/ONE/  $ A PRIORI INPUT                                                
+ ICT(48)=-2,-1,  $ NO PRINTOUT OF COVARIANCE OR ERROR MATRICES                  
+ ICT(80)=/ONE/   $TURN OFF COMPAR LINK                                          
+ EPS(1)=0.0,5.E1   $ .5HZ                                                       
+ EPS(2)=5.0D4      $ 500HZ MAX                                                  
+ EPS(9)=70.,5.           $ PARTIAL/FULL CONVERGENCE CRITERION FACTOR            
+ NUMMT0=1, IMAT0=47,     $  INPUT PPRSNE                                        
+$ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -         
+$  ITEMS ON PAGE 4 * * * * *                                                    
+ REPEAT=1,       $ 2ND INPUT STREAM FOLLOWS                                     
+ IBUF1=97,      $ PARAMETER NAMES NEXT TO CORRELATIONS                          
+ IBUF2=96,      $ A PRIORI MATRICES                                             
+ IBUF5=85,      $  MULTI-RUN BUFFER                                             
+ MOUT=/ZERO/ LOUT=/IOUT/                                                        
+ EXTPRC=/ZERO/                                                                  
+ EXTPRC=/ONE/   $ USE SOFTWARE                                                  
+ EXTPRC=-1,     $ USE DOUBLE PRECISION  (USED IN ANALIZ)                        
+ JCT(27)=/ONE/  $ USE * COMMANDS FOR INPUT  --  TEST &END  --                   
+ JCT(51)=1,     $ MULTI-SET                                                     
+ JCT(52)=1,IBUF6=86, $ GET SUMMARY PRINTOUT FOR MULTI-SET SOLUTIONS             
+ IOBS0=11,      $ INPUT OBS LIB TAPE                                            
+ IOBS1=12,IOBS2=0,      $OUTPUT/INPUT OBS LIB TAPES FOR ITERATION               
+ NBODY=9, IBODY=/IPERT/                                                         
+$ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -         
+$  ITEMS ON PAGE 9 * * * * *                                                    
+*INCLUDE LOCK(MARS)                                                             
+ CON(7)=1.025956655D0  $ G.DE VAUCOULEURS ET AL, JGR 10 JULY 73 "P3=P0"         
+ CON(8)=5.26857097666507D01,CON(9)=3.17326525849543D02,$VC1A004C                
+ L(7)=7,8,  $    ADJUST PHASE                                                   
+*INCLUDE RBGTST(HARMARS)                                                        
+$ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -         
+$  ITEMS ON PAGE 10 * * * * *                                                   
+*OBJECT JUPITER                                                                 
+*OBJECT  17                                                                     
+ NAME='IO', NCENTR=5, RADIUS=1820,                                              
+ COND= 1.1,2.2,3.3,4.4,5.5,6.6,    L=3*1,3*0,23,24,                             
+$ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -         
+$  ITEMS ON PAGE 11 * * * * *                                                   
+*OBJECT  18                                                                     
+ NAME='EUROPA', NCENTR=5, RADIUS=1533,                                          
+*OBJECT MERCURY                                                                 
+*OBJECT END                                                                     
+$ THIS LAST COMMAND ISN'T NEEDED, JUST GENERATES &NMLST2 WITH NPLNT=0           
+$ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -         
+$  ITEMS ON PAGE 13 * * * * *                                                   
+*SPOTS                                                                          
+VKL1  4   3389.500000000   -48.351400343    22.262627361        0 0 0 $VC1A004D 
+VKL2  4   3382.3           -225.8           47.9                0 1 1           
+$ THIS IS A TEST OF THE 0 COLUMN FEATURE                                        
+VKL2  4   3382.3           -226.1183263     47.6712896           1 0 0$VG1A001C 
+*BIASES                                                                         
+43DS 43DS VIKA  4           47.765E-6                                           
+43DS 43DS VIKB  4            50.00E-6                                           
+$ * * * * * * * THE FOLLOWING INCLUSION CONTAINS A SCATTERING * * *             
+*INCLUDE LOCK(INTINC1)                                                          
+ &NMLST4  N=4,  APEST=T, DIAGON=F                                               
+  B= 1D16,-2D12,2D10, 2*0,1D21, -7D12,0,1D16,1D21,                              
+  X= 52.68571, 3382.3001, 2*1.0D-11,                                            
+ &END                                                                           
+MARS CON(8)                                                                     
+VKL2 RAD                                                                        
+MCDOSER1 PL17PHC3                                                               
+MCDOSER1 PL17PHC5                                                               
+                                                                                
+*INCLUDE LOCK(INTINC2)                                                          
+$  ITEMS ON PAGE 16 * * * * *                                                   
+*MULTPAR                                                                        
+...  TESTING - ERROR CARD  ...                                                  
+#SNE                                                                            
+#EQUATE                                                                         
+  MCDOSER1 ALL                                                                  
+#REF                                                                            
+#NAME MRUN1                                                                     
+#DELETE                                                                         
+  IO A                                                                          
+#EQUATE                                                                         
+  MCDOSER1 ALL                                                                  
+#EQUATE EACH                                                                    
+  IO                                                                            
+  MARS                                                                          
+#EQUATE                                                                         
+  MARS CON(8)                                                                   
+  MARS CON(7)                                                                   
+#REF                                                                            
+#NAME MRUN2                                                                     
+#DELETE ALL                                                                     
+#INSERT                                                                         
+  IO A                                                                          
+  MCDOSER1 PL17PHC1                                                             
+#REF MRUN2                                                                      
+#NAME MRUN3                                                                     
+#INSERT                                                                         
+  MARS ALL                                                                      
+  ALL RAD                                                                       
+**END                                                                           
+TIN -  TEST REPEAT INPUT STREAM WITH PARTIAL PREREDUCTION                       
+ &NMLST1                                                                        
+ NOPRNT=1, REPEAT=1,                                                            
+ ICT(1)=1,     $ 1 ITERATION                                                    
+ ICT(5)=1,ICT(80)=1,  $ JUST RESTORE SNE                                        
+ JCT(27)=1,    $ * COMMANDS                                                     
+ JCT(53)=2, IMAT0=50,NUMMT0=1,  $ FORM PPRSNE FROM LAST SNE                     
+ JCT(57)=1,    $ PRINT SNE HEADER INFORMATION                                   
+ IBUF1=97,     $ PARAMETER NAMES                                                
+ IBUF5=85, IBUF6=86, IBUF7=87, IBUF8=88, IBUF9=89,  $ TEMP. FOR PPR             
+ IMAT3=96,     $ PPR OUTPUT                                                     
+*INCLUDE LOCK(MARS)                                                             
+ CON(7)=1.025956655D0  $ G.DE VAUCOULEURS ET AL, JGR 10 JULY 73 "P3=P0"         
+ CON(8)=5.26857097666507D01,CON(9)=3.17326525849543D02,$VC1A004C                
+ L(7)=7,8,  $    ADJUST PERIOD AND DEC                                          
+*OBJECT JUPITER                                                                 
+*OBJECT 17                                                                      
+ NAME='IO', NCENTR=5, RADIUS=1820,                                              
+  L=3*1,3*0,23,24,                                                              
+*BIASES                                                                         
+43DS 43DS SER2 17     0 1                                                       
+*SITES                                                                          
+43DSCAN2  5205.243164621  -148.981020840 -3674.78000000               -1        
+*SPOTS                                                                          
+VKL2  4   3382.3           -226.1183263     47.6712896           1 0 0          
+*PHASES                                                                         
+MCDO SER1 17  5 1 0 1 0 1                1.3E-11                                
+  0.2                                                                           
+*MULTPAR                                                                        
+ #INCLUDE ALL           $ SET OF PARAMETERS TO REDUCE OUT                       
+ #DELETE                                                                        
+  IO ALL                                                                        
+  VKL2 RAD                                                                      
+  MARS CON(7)                                                                   
+ #INCLUDE                                                                       
+  IO INC                                                                        
+ #EQUATE                                                                        
+  MCDOSER1 ALL          $ APPLY BEFORE SAVING                                   
+**END                                                                           
+TIN -  TEST RESTORATION OF PARTIALLY PREREDUCED NORMAL EQUATIONS                
+ &NMLST1                                                                        
+ NOPRNT=1,                                                                      
+ ICT(1)=1,     $ 1 ITERATION                                                    
+ ICT(5)=1,ICT(80)=1,  $ JUST RESTORE SNE                                        
+ ICT(48)=-2,-1,                   $ NO EXTRA PRINTOUT                           
+ JCT(27)=1,    $ * COMMANDS                                                     
+ IMAT0=96,NUMMT0=1,  $ RESTORE TEMPORARY PPRSNE                                 
+ IMAT2=85      $ REUSE IBUF5 AS IMAT2                                           
+ IBUF1=97,     $ PARAMETER NAMES                                                
+*INCLUDE LOCK(MARS)                                                             
+ CON(7)=1.025956655D0  $ G.DE VAUCOULEURS ET AL, JGR 10 JULY 73 "P3=P0"         
+ CON(8)=5.26857097666507D01,CON(9)=3.17326525849543D02,$VC1A004C                
+ L(7)=7,  $    ADJUST PERIOD                                                    
+*OBJECT JUPITER                                                                 
+*OBJECT 17                                                                      
+ NAME='IO', NCENTR=5, RADIUS=1820,                                              
+ L=2*1,4*0, 23,24,                                                              
+*SPOTS                                                                          
+VKL2  4   3382.3           -226.1183263     47.6712896           1 0 0          
+**END                                                                           

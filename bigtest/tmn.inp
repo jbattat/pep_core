@@ -1,0 +1,84 @@
+TMN - TEST MOON LASER AND ALSEP DATA                                            
+ &NMLST1                                                                        
+ EXTPRC=-1     $ USE DOUBLE PRECISON AT DRAPER                                  
+ ICT(1)=1                                                                       
+ ICT(3)=1,                                                                      
+ ICT(4)=1,     $RECALCULATE ALL PARTIALS                                        
+ ICT(15)=-1,   $CANCEL ANALIZ IMMEDIATELY                                       
+ ICT(20)=50,   $PRINTOUT 50 PARTIAL DERIVATIVES                                 
+ ICT(24)=-1    $PRINT OUT ALL ZENITH ANGLES                                     
+ ICT(27)=-1,   $USE S.S.B.C                                                     
+ ICT(28)=1,    $ CALC. NUT-PRC AT BOTH SEND AND RECEIVE                         
+ ICT(34)=2,    $INCLUDE ANNUAL AND SEMI-ANNUAL TERMS IN A1-UT1                  
+ ICT(37)=-1,   $DO NOT SKIP DUMOBS BELOW HORIZON                                
+ ICT(39)=1,    $USE WHATEVER TAPES ARE THERE                                    
+ ICT(43)=1,    $ USE NEW CODE                                                   
+ JCT(2)=11,JCAL(3)=33  $ACTIVE ATM ON FOR NEW CODE                              
+ JCT(3)=63,    $PRINT ALL                                                       
+ JCT(10)=63,63 $ TURN ON EARTH, MOON TIDES                                      
+ JCT(27)=1,    $ USE * COMMANDS                                                 
+ JCT(28)=7,    $INCLUDE AD HOC CORR. TO NUT'N, BIHUT1, & DIURN. WOB             
+ IOBS=0,IOBS0=41,24,42, NUMOBT=3,  $ INPUT OBSERVATIONS                         
+ IOBS1=50,51,52,                   $ OUTPUT OBSLIB                              
+ IBODY=90,NBODY=1,                                                              
+$ 384F4 MASSES   FROM RUN 375A VENUS O-T BACK TO 1750                           
+ MASS(1)= 6.031916D6,  MASS(2)= 4.085220D5,    MASS(3)=3.289001D5,              
+ MASS(4)= 3.09870D6,   MASS(5)= 1.0474D3,      MASS(6)= 3.499D3,                
+ MASS(7)= 2.29D4,      MASS(8)=1.94D4,         MASS(9)= 4.00D6,                 
+ PRMTER(31)=1, PRMTER(32)=1D-35,   $ RELFCT AND GMVARY                          
+ MASS(10)=0.01215056494051691D00  $JPL LURE-2  (M+E)/M=82.3007                  
+ AULTSC=4.990047827430D2     $TO AGREE WITH EMBARY TAPE 464-10                  
+ PRMTER(99)=0.0D0,                                                              
+ LPRM(1)=3,10,31,32,51,  $ADJUST ALL MOON PARAMETERS                            
+*OBJECT EMBARY                                                                  
+ ITAPE=0,                                                                       
+ L(1)=1,5*0, 3,4,5,        $ADJUST ONE EMBARY I.C. + LOVE NUMBERS               
+*OBJECT EARTH-ROT                                                               
+ CON1(1)=2442048.0D0   $EPOCH FOR DRIFT IN A1-UT1 IS 0 JAN 1974                 
+ CON(22)=5026.75D0    $NOMINAL PRECESSION CONSTANT                              
+$CON(23)=84404.84D0   $NOMINAL OBLIQUITY AT 1950.0                              
+ CON(24)=9.21D0       $NOMINAL NUTATION CONSTANT                                
+ L(7)=14,22,24,   $ADJUST ONE ANN. TERM, PRECESS., AND NUTATION ROT. PARMS      
+*OBJECT MOON                                                                    
+ CON(1)=1738.09D0  $MEAN RADIUS FOR MOON HARMONICS (JPL LLB-5)                  
+ CON(3)=0.5,0.2, 1D5,  $ MOON LOVE NUMBERS + TIDAL LAG                          
+  L=6*1, 16,     $ ADJUST I.C.'S AND TIDAL FRICTION                             
+  COND(1)=2.57151311850255D-03,  COND(2)=5.56158750683268D-02,                  
+  COND(3)=2.83969307341410D+01,  COND(4)=3.31294819473006D+00,                  
+  COND(5)=2.26271289743460D+02,  COND(6)=1.54885661722988D+02,                  
+  CON(16)=6.72995814991758D-02,                                                 
+ NZONE=3,   NTESS=3,                                                            
+   LJ2=0,   LJ3=1,                                                              
+     J2 = 2.03822000000000D-04,     J3 = 3.81025241783744D-06,                  
+  LC2(1)=0,  LC2(2)=0,  LC3(1)=0,  LC3(2)=1,  LC3(3)=0,                         
+  C2(1)= 0.0                 ,  C2(2)= 5.54400000000000D-05,                    
+  C3(1)= 2.45142857142857D-05,  C3(2)= 4.03165418206389D-05,                    
+  C3(3)= 1.38857142857143D-04,                                                  
+  LS2(1)=0,  LS2(2)=0,  LS3(1)=1,  LS3(2)=0,  LS3(3)=0,                         
+  S2(1)= 0.0                 ,  S2(2)= 0.0                 ,                    
+  S3(1)= 7.54285714285714D-06,  S3(2)= 1.34279713089294D-05,                    
+  S3(3)=-8.53636188797509D-05,                                                  
+*OBJECT MOON-ROT                                                                
+ NAME=' MROTAT ', ITAPE=21,                                                     
+ L(1)=0,1,4*0   $ADJUST ONLY 1 LIBRATION I.C. FOR TEST                          
+  L(7)= 3,4,                                                                    
+  CON(3)=6.31330907780243D-04,  CON(4)=2.27390020396663D-04,                    
+ CON(5)=2.6920298D-2                                                            
+*SITES                                                                          
+ACN3            527.0       -345.672942     -7.954794                 -2        
+MIL3            -54.0       -279.306531      28.508272                -2        
+GDS8            921.0       -243.126403      35.341594                -2        
+TEXL      5492.413478151  -255.978145077  3235.696581550         1 0 0-1 U36    
+*EECORR                                                                         
+ACN3 280M       1 1                  .1           .01                           
+ACN3 287N       1                                                               
+*SPOTS                                                                          
+AP15 10      1735.5087       3.56822         26.15404                           
+AL12 10   1736.012         -23.48504        -2.99051             0 1 1          
+AL15 10   1735.5087        3.56965          26.15478                            
+AP15 10   1735.483824868     3.539983425    26.152781648         1 1 1    U36   
+*BIASES                                                                         
+TEXL TEXL 1973 10     1     120.6E-09                                           
+*DLTREAD                                                                        
+ 1 10 TEXL 1973 TEXL AP15  1.E0  1.E01.E-07 3    0.0       4.31780D+14 0  1  350
+**END                                                                           

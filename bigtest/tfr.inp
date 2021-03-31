@@ -1,0 +1,152 @@
+1TFR - TEST VLBI OF VIKING+QSO, VIKING DOPPLER, RNE, PVM DLBI+NCOUNT            
+ &NMLST1                                                                        
+ IBUF1=97, $ PARAMETER NAMES NEXT TO CORRELATIONS                               
+ EPS(7)=1.0D7        $ MAX OF (O-C)/ERROR  VLBI .3 MILLISEC?                    
+ EPS(2)=10.0D2,      $ MAX OF (O-C/ERROR)   DOPPLER 10 HZ                       
+ NUMDT=2,JDDT0=0,JDDT=2443470,2443800 $ 2 UT1 POINTS                            
+$  FIXED POINT AT "INFINITY" MUST PRECEDE PVM EPOCH                             
+ LDT(1)=1,LDT(201)=1,  $ ONE UT1 AND X-WOB FREE. OTHER AT INF.                  
+ DT(1)=-0.1, DT(401)=1E-5,  $ INITIALIZE ONE FREE + ONE FIXED PARAMETER         
+ NBODY=9, IBODY=90,  $ USE DEFAULT IN COMPAR LINK                               
+ ICTAT=9                                                                        
+ EXTPRC=-1                                                                      
+ NUMOBT=3, IOBS0= 40,41,42, IOBS1= 50,51,52,                                    
+ LOUT = 6,   $ PRINTOUT A.P. COV.                                               
+ ICT(1)=1,         $ 1 ITER                                                     
+ ICT(2)=0                                                                       
+ ICT(3)=1          $ WRITE DUMMY OBS RESULTS ON TAPE                            
+ ICT(10)=-1        $ PREDICT O-T  RADAR                                         
+ ICT(11)=-1        $;P PRINT ONLY IN PREDICT                                    
+ ICT(12)=-2,       $ NO HARMONIC ANALYSIS                                       
+ ICT(14)=1,IMAT=94,$ UNCERTAINTY OF PREDICT                                     
+ ICT(20)=-5,       $ PRINT SOME PARTIALS EACH SERIES                            
+ ICT(21)=-1,       $ USE   PHASE DELAY  FOR DOPPLER                             
+ ICT(24)=20        $ PRINT ELEV. ANGLES <20 DEG                                 
+ ICT(27)=+1,       $ USE CTAT AND SS BARY C.                                    
+ ICT(43)=1         $ USE RADSB AND RADCTL                                       
+ ICT(44)=1,IBUF2=96 $ PUT A.P. COV MATRIX ON FT96                               
+ ICT(47)=1,        $ PRINT OUT UNSCALED AND SCALED N.E.                         
+ ICT(48)=-1        $ NO ITERATIONS AND NO P/O OF SOLUTION CLEANUP               
+ ICT(49)=-1        $ MAX NUMBER OF ITERATIONS OF MATRIX INVERSION               
+ ICT(77)=1, IPUNCH=6, $ PUNCH TO PRINTER                                        
+ JCT(2)=11,JCAL=33,33 $ TURN ON ATM. ONLY                                       
+ JCT(10)=63,       $ EARTH TIDES                                                
+ JCT(25)=-2,       $ (PVM) SUPPRESS XMTR FREQ. DRIFT CORRECTIONS                
+ JCT(27)=1,        $ USE * COMMANDS                                             
+ JCT(28)=7,        $ DIURNAL POLAR MOTION, CORR. TO UT1, NUT'N                  
+ JCT(67)=1,        $ LIGHT-TIME CORRECTION                                      
+ IMAT0(1)=70,NUMMT0=1,ICT(5)=0  $;N USE SAVED NORMAL EQUATIONS                  
+ PRMTER(99)=0,     $ BE SAFE ON MOON UNIT                                       
+ LPRM=51,81        $ AULTSC, CTAT                                               
+*OBJECT EARTH-ROT                                                               
+ CON(22)=5027.8780,     $NEW GODDARD PRECESSION CON                             
+*OBJECT MOON-ROT                                                                
+*OBJECT EARTH                                                                   
+ CON(3)=0.5, 0.2,  $ LOVE NUMBERS                                               
+         3600,     $ TIDAL LAG (SEC)                                            
+ L=1, L(7)=3,4,5,                                                               
+*OBJECT VENUS                                                                   
+ CON1(1)=2438566.5D0,                                                           
+ CON(6)=-54.3869, -243.0, 66.0, 273.0,  $ 1970 IAU POLE                         
+*OBJECT MARS                                                                    
+*OBJECT 45                                                                      
+  NCENTR=4, NAME='VKNG1'                                                        
+$  INT11B. INCLUDE FROM 18(12) PAR SOL'N DOP10F... COV3OA WITH AP W=D2          
+  COND(1)=  1.34124296557705D-04,  COND(2)=  8.17153126991914D-01,              
+  COND(3)=  4.52390098267336D+01,  COND(4)=  3.47099031635285D+02,              
+  COND(5)=  1.06472973441211D+02,  COND(6)=  1.80000061176490D+02,              
+ L=1,1,1,1,1,1      $ ADJUST ALL I.C.'S IN ANALIZ LINK                          
+*OBJECT 52                                                                      
+ NCENTR=2, NAME='PN09DAY '                                                      
+  CON(16)=2292.437390D6  $ F0 FROM DLBI SERIES USING NOMINAL COORDS.            
+ CON(17)=3.13D-3  $ F1 FROM DLBI SERIES USING NOMINAL COORDS.                   
+ CON(1)=6050.D0, CON(2)=-8.415D-3, CON(3)=4.8512D-6   $MODEL FOR RAD            
+ CON(6)=315.4D0, CON(9)=-1.14D-10   $COLIN FEB 23 LONG - 3 DEG; R3              
+ CON(6)=316.145D0, CON(11)=-31.334D0  $FROM 14 APR SOLN, IAU POLE               
+ L(7)=1,6,11  $TURN ON RAD., LONG., LAT. TO GET PARTIALS                        
+ CON1(1)=2443852.78721, 2443852.82535, 2443852.82535,  $ FRQ EPOCH              
+*OBJECT 55                                                                      
+ NCENTR=2, NAME='PN13BUS',                                                      
+ CON(16)=0,  $ GET BUS FREQ FROM DOPPLER                                        
+*OBJECT                                                                         
+  NAME='1937', PULSAR=T, JD0=2443450,                                           
+  CON(1)=1D-3      $ PARALLAX IN ARCSEC                                         
+  CON(4)=7.1044D13 $ DISPERSION                                                 
+  CON(5)=0.2       $ PHASE OFFSET                                               
+  CON(6)=1.5578D-3 $ PERIOD                                                     
+  L=1,2,3,5,6,7,                                                                
+*SITES                                                                          
+14DSMARS  5203.994438778  -243.110278267  3677.052000000         0 0 0-1        
+$ FROM JUNE 79 GODDARD BLOKQ SKELETON DATA BASE CONVERTED TO CYL.               
+HAYSTACK   4700.479739       71.48814111    4296.882102               -1        
+OVRO       5085.448108      118.28270029    3838.604140          0 0 0-1        
+$  FOR PVM TESTS                                                                
+DS43CAN2 5205.251036        -148.981295      -3674.755                -1        
+*SPOTS                                                                          
+$ FROM JUNE 79 GODDARD BLOKQ SKELETON DATA BASE CONVERTED TO DECIMAL.           
+J287 -4                    132.9884542      20.2996089           0 1 1          
+1937 -4                  294.369773     21.46707194                1 1          
+*BIASES                                                                         
+AREC      XSPU$-4     1                                                         
+*EECORR                                                                         
+HAYS V310       1 1 1                  -19.6D-06   $HAYS CLOCK 1,OVRO 1         
+HAYS J310       1 1 1                  -19.6D-06   $HAYS CLOCK 1,OVRO 1         
+DS43 DLBA       1          $  PVM CORRECTIONS                                   
+DS43 NCTA       1                                                               
+*PHASES                                                                         
+HAYS J310 -4  2 1 1                       1.15E0      1.00E0 $FREE ATMS.        
+HAYS V310 45  2 1 1                       1.15E0      1.00E0 $FREE ATMS.        
+*DLTREAD                                                                        
+#72                                                                             
+18 -4 AREC MSPU      1937 1.    1.          1     1.4041200D+09 0    800        
+2443500 17 30 00.0      2443820                  .001           19 84960        
+                                                                                
+18 -4 AREC XSPU      1937 1.    1.          1     1.4041200D+09 0    810        
+2443500 17 30 01.0      2443500 17 30  5.0       .001                  1        
+2443500 17 30 01.0001   2443500 17 30  2.0       .001                  1        
+                                                                                
+#80                                                                             
+$  TEST "BLANK" DLTRED CARD                                                     
+     .                                                                   11 1200
+                                                                                
+$  EXTRA SERIES TO TEST SKIP FEATURE                                            
+ 1 10 HAYS **** HAYS      1.    1.          1                            12  123
+                                                                                
+$  TEST ERROR WEIGHT ALTERATION                                                 
+12 52 DS43 NCTA           1.    1.   1.E-10 1       2.292437317   D+09 0 90  100
+2443852 18 56 17.       2443852 18 56 18.        1.2                            
+                                                                                
+      DS43                                                             0220  100
+*APRIORI                                                                        
+ A P INPUT FOR OJ,VO1 CLOCKS, H,OVRO ATMS                                       
+                                                                                
+        TIE TOGETHER CLOCK RATES FOR OJ AND VO1                                 
+ &NMLST4 N=2, B=1.,-1.,1.,   W=1.D34, &END                                      
+ HAYSV310 DEQUAT                                                                
+ HAYSJ310 DEQUAT                                                                
+                                                                                
+       TIE TOGETHER CLOCK ACCELERATION FOR OJ AND VO1                           
+ &NMLST4 N=2, B=1.,-1.,1.,   W=1.D42, &END                                      
+ HAYSV310 DLAT                                                                  
+ HAYSJ310 DLAT                                                                  
+                                                                                
+         TIE TOGETHER HAYSTACK ATM FOR VO1 & OJ SERIES                          
+ &NMLST4 N=2, B=1.,-1.,1.,   W=1.D10, &END                                      
+ HAYSV310 PL45PHC1                                                              
+ HAYSJ310 PL-4PHC1                                                              
+                                                                                
+         TIE TOGETHER OVRO ATM FOR VO1 & OJ SERIES                              
+ &NMLST4 N=2, B=1.,-1.,1.,   W=1.D10, &END                                      
+ HAYSV310 PL45PHC2                                                              
+ HAYSJ310 PL-4PHC2                                                              
+                                                                                
+TIE DOWN PULSAR RIGHT ASCENSION, PARALLAX, AND PROPER MOTION; AULTSC            
+ &NMLST4 N=5, B=1D-7, 3*2D-3, 1D-5, DIAGON=T,SQRTB=T,COVAR=T &END               
+ 1937 LONG                                                                      
+ PLSR1937 CON(1)                                                                
+ PLSR1937 CON(2)                                                                
+ PLSR1937 CON(3)                                                                
+ AULTSC                                                                         
+                                                                                
+ &NMLST4 N=0,&END                                                               
+**END                                                                           

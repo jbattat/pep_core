@@ -1,0 +1,115 @@
+./ ADD NAME=EUROPA
+*OBJECT  18
+ NPLNT=18, NCENTR=5, RADIUS=1521, NAME='EUROPA',
+  ICND=0, INT= -4,
+ CON(7)= 3.551181,     64.504084, 267.997782,  $  PERIOD, DELTA,ALPHA
+ CON(23)= 1521.,  $  RADIUS FOR TRANSIT/OCCULT
+ K(31)=4*-1,  K(37)=3*-1,  $  TURN OFF OTHER PLANETS BUT JUP & SAT
+    K(47)=4*2,  $ USE JPERT  $
+ K(86)=206, K(87)=-6, K(93)=17,19,20,
+  K(91)=-15,-20,  $ START AND MIN STEP SIZE
+  K(98)=-64,  $ PRINTOUT EVERY 4 DAYS
+   K(99)=0,  $ PRINTOUT + TAPE
+  K(100)=-1,  $  USUAL EQNS OF MOTION
+ KK(2)=-1, KK(3)= 12, KK(10)= 3,
+./ ADD NAME=INTINC1
+$  - - - ONE MORE RADAR BIAS CARD FROM INCLUDE - - - $
+43DS 43DS SER2 17     0 1
+*PHASES
+MCDO SER1 17  5 1 0 1 0 1                1.3E-11
+  0.2
+*APRIORI
+SIMPLE TEST OF A PRIORI INPUT FOR 'INTEST'
+ &NMLST4  N=3, DIAGON=T, APEST=T,
+ B=3*1D11,  X= 1.3D-11, 1.2, 0D0,  &END
+ 'MCDOSER1' PL17PHC1
+  IO A
+IO  CON(24)
+ 
+ &NMLST4 N=3, DIAGON=F,
+ B=1D12, 0,2D12, 1.9,27.,5D9,  &END  $ TRY COVARIANCE FOR THESE
+MARS CON(7)
+IO CON(23)
+43DS43DS SER217DS
+ 
+./ ADD NAME=INTINC2
+ &NMLST4  N=0  &END
+$  ITEMS ON PAGE 13 * * * * *
+*DLTREAD
+ 1 17 AREC 1975 AREC      1E 0  1E 0  1E-09 1                            60 1234
+$  JUST A TITLE CARD FOR EDITING
+ 
+ 1 17 AREC 1976 AREC      1E 0  1E 0  1E-12 1                            60 1235
+*EECORR
+MCDO SER3
+$  ITEMS ON PAGE 12 * * * * *
+*SITES
+43DSCAN2  5205.243164621  -148.981020840 -3674.78000000               -1
+TABLE MT  $ JUST FOR EXAMPLE
+62DSCEBR                                                              -1
+./ ADD NAME=IO
+*OBJECT  17
+ NPLNT=17, NCENTR=5, RADIUS=1820, NAME='IO',
+  ICND=0, INT= -5,
+ CON(7)= 1.769138,     64.504084, 267.997782,  $  PERIOD, DELTA, ALPHA
+ CON(23)= 1820,   $  RADIUS FOR TRANSIT/OCCULT
+  K=1,  $
+ K(31)=4*-1,  K(37)=3*-1,  $  TURN OFF OTHER PLANETS BUT JUP & SAT
+    K(47)=4*2,  $ USE JPERT  $
+ K(86)=106, K(87)=-7, K(93)=18,19,20, $  TARGETS
+  K(91)=-15,-20,  $ START AND MIN STEP SIZE
+  K(98)=-128,  $ PRINTOUT EVERY 4 DAYS
+  K(99)=0,  $ PRINTOUT + TAPE
+  K(100)=-1,  $  USUAL EQNS OF MOTION
+ KK(10)=3,  $ PRINT EXPONENT
+./ ADD NAME=MARS
+*OBJECT MARS
+ CON(6)=94.1753D0                      $ PSI0              2/3
+ CON1(1)=2441174.3940772D0             $                   3/3
+ CON(7)= 1.025956815972D0
+ CON(8)=52.773D0, 317.280D0  $ PAL(8X8) FROM H.R. 3/22/72
+ CON(23)= 3394.,  $ RADIUS FOR TRANSITS
+./ ADD NAME=PRMRED
+ &NMLST1
+ NBODY=9, IBODY=90, $ USE SAME AS IPERT IN COMPAR LINK * * * * *
+ ICT(1)=1, ICT(20)=-99,
+ ICT(3)=1   $ WRITE DUMMY OBS RESULTS ON TAPE    $
+ JCT(68)=1,  $  ALWAYS ASSUME FORWARD OBSERVATION SERIES                       $
+ EXTPRC= -1,  $ USE REAL*8
+ JCT(27)=1,  $ USE * COMMANDS  $
+./ ADD NAME=SITES
+*SITES
+$  PHOTOGRAPHIC SERIES SITES
+TABLE MT  2287.            117.68088        34.38167                  -2
+KIEV       186.            -30.500090       50.36542                  -2
+$ MUTUAL EVENT SITES
+AGHRVARD   500.             71.560          42.3                      -2
+CANARYIS  1600.             16.000          28.01                     -2
+CATANIA    100.            -15.09           37.3                      -2
+C.TOLOLO  2399.             70.80585       -30.16894                  -2
+FERNBANK   300.             84.3195         33.6                      -2
+JHNSONSC    60.             93.75           30.0                      -2
+JOHBURG   1806.            -28.075000      -26.18203                  -2
+LEUSCHNR    94.            122.26212        37.87319                  -2
+LOWELL    2210.            111.66333        35.202                    -2
+MAUNAKEA  4205.            155.472210       19.82611                  -2
+MCDONALD  2081.            104.022255       30.67158                  -2
+MITAKA      59.           -139.542090       35.67261                  -2
+MTDODAIR   879.            220.805625       36.0062                   -2
+NARA JPN   600.            220.455          35.4                      -2
+NWMEXICO  2000.            106.6995         32.0                      -2
+PALOMAR   1706.            116.863995       33.35622                  -2
+PERTH      391.           -116.135040      -32.00894                  -2
+SIDINGSP  1165.           -149.066085      -31.27704                  -2
+SUTHRLND  1000.             -4.62          -33.8                      -2
+VANDRBLT   300.             86.800          35.9                      -2
+WISE       900.            -34.7625         30.59583                  -2
+./ ADD NAME=VKNG2
+*OBJECT  54
+ NAME='VKNG2', NCENTR=4, RADIUS=.001,
+ K(81)=1, 0, 0,  $ RAD.PRESS. ON - NO DRAG - NO LEAKS
+ K(86)=606, K(88)=0, K(100)=-1,
+ CON1= 95.71, -52.6675,  $ RA, DEC OF CANOPUS
+ CON(11)= 1.32  $ Z COMPONENT OF RAD.PRESS.
+ CON(23)=.001,  $ RADIUS FOR TRANSITS
+./ ENDUP

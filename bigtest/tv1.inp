@@ -1,0 +1,78 @@
+TV1 -  STANDARD VIKING DOPPLER TESTS..SPOT,ORBITER,CM,SUBRADAR PT               
+                                                                                
+ &NMLST1                                                                        
+ NBODY=9, IBODY=10,IPERT=10,                                                    
+ EXTPRC=-1,                                                                     
+ ICT(1)=1,                                                                      
+ ICT(3)=1, IOBS1=31,     $ WRITE DUMMY OBS ON OBSLIB                            
+ ICT(15)=-1    $SHUT OFF ANALYZ                                                 
+ ICT(20)=-99,  $ PRINT SOME PARTIALS EACH SERIES                                
+ ICT(21)=1,    $USE INSTANTANEOUS DOPPLER                                       
+ ICT(43)=1,    $ USE RAD ROUTINES                                               
+ ICT(66)=1,    $ USE NEW MARS ROTATION MODEL                                    
+ ICT(80)=0       $TURN ON COMPAR LINK                                           
+ JCT(2)=11                                                                      
+ &END                                                                           
+                                                                                
+ &NMLST2                                                                        
+*INCLUDE RBGTST(MARS)                                                           
+ CON(12)=1D-5,CON(6)=141.5, CON1(7)=3.34,24.69,    $ NEW ROTATION               
+*INCLUDE RBGTST(HARMARS)                                                        
+ &END                                                                           
+                                                                                
+ &NMLST2                                                                        
+*INCLUDE RBGTST(VKNG2)                                                          
+ INT=-7,                                                                        
+ EPS(3)=1.0E-7,                                                                 
+ JD0=2443007, IHR=1, IMIN=18, SEC=30.7772                                       
+ JD1=2443006, JD2=2443008,  EPS= 0.9, 0.1,                                      
+ L=0,1,0,0,0,0                                                                  
+ K=1, -1,1,-1,-1,-1,-1                                                          
+ K(31)=-1,-1,-1, 1, 0,-1,-1,-1,-1      $ ONLY SUN INCLUDED IN PARTIALS          
+ K(33)=0           $ INCLUDE EARTH IN E. OF M.TO GET VECTOR TO S/C              
+ K(81)=1,               $TURN ON RADIATION PRESSURE                             
+ K(82)=0,                    $TURN OFF DRAG                                     
+ K(83)=0                $TURN OFF GAS LEAKS                                     
+ K(86)=606         $ NUMBER OF CENTRAL BODY HARMONICS IN PARTIALS               
+ K(88)=0,                    $ NORDSIECK V T P                                  
+ K(90)=6,                    $NUMBER OF CONT. EQU                               
+ K(91)=-14,K(92)=-16,        $ INTEGRATION STEPS   START AND MIN                
+ K(92)=-17                   $ MIN STEP SIZE                                    
+ K(98)=20                 $ PRINT EVERY 20TH STEP                               
+ K(99)=0,                   $PRINT AND TAPE FOR INTEGRATION                     
+ K(100)=-1,                                                                     
+ KK(3)=15,10                                                                    
+ KK(3)=13                                                                       
+ KK(10)=4,  $ PRINTOUT EXPONENT                                                 
+ &END                                                                           
+                                                                                
+ &NMLST2                                                                        
+ NPLNT=0,                                                                       
+ &END                                                                           
+*INCLUDE RBGTST(SITES)                                                          
+                                                                                
+VKL1  4  3397.5          226.            19.5                                   
+CMMR  4  .000001         .000001         .000001                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+ 1  4 62DS MARS 62DS      1.0   1.0  1.E-08 1                  2.29D09      1000
+2443007                 2443008                    1.E-5  .01      44000        
+                                                                                
+ 1  4 62DS VKL1 62DS VKL1 1.0   1.0  1.E-08 1                  2.29D09      2000
+2443007                 2443008                   .00     .01      44000        
+                                                                                
+ 1  4 62DS VKL1 62DS VKL1 1.0   1.0  1.E-08 1                  2.29D09      2001
+2443007                 2443008                    1.E-5  .00       7200        
+                                                                                
+ 1  4 01CM VKL1 01CM VKL1 1.0   1.0  1.E-08 1                  2.29D09      2050
+2443007                 2443008                    1.E-5  .01      44000        
+                                                                                
+ 1  4 62DS CMMR 62DS CMMR 1.0   1.0  1.E-08 1                  2.29D09      2100
+2443007                 2443008                   .00     .01      44000        
+                                                                                
+ 1  4 62DS CMMR 62DS CMMR 1.0   1.0  1.E-08 1                  2.29D09      2101
+2443007                 2443008                    1.E-5  .00      44000        
+                                                                                
+*INCLUDE RBGTST(DOPOBVKM)                                                       

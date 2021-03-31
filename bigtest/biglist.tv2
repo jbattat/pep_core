@@ -1,0 +1,830 @@
+1INPUT STREAM TO THE PLANETARY EPHEMERIS PROGRAM (PEP)                                                                   PAGE    1
+0PEP VERSION= 20170713 PEP.PEPLOAD.PEP790                          
+0TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT                    TITLE CARD
+                                                                                  SOLAR SYSTEM PARAMETERS &NMLST1 
+  &NMLST1                                                                        
+  NBODY=9, IBODY=10,IPERT=10,                                                    
+  EXTPRC=-1,                                                                     
+  ICT(1)=1,                                                                      
+  ICT(3)=1, IOBS1=31,     $ WRITE DUMMY OBS ON OBSLIB                            
+  ICT(15)=-1    $SHUT OFF ANALYZ                                                 
+  ICT(20)=-99,  $ PRINT SOME PARTIALS EACH SERIES                                
+  ICT(21)=-1,       $ USE   PHASE DELAY       FOR DOPPLER                        
+   ICT(43)=1        $USE RAD ROUTINES IN COMPAR                                  
+  ICT(80)=0       $TURN ON COMPAR LINK                                           
+  JCT(2)=11                                                                      
+  NOPRNT=1,  $ SUPPRESS PRINTOUT (SAME AS TEST2)                                 
+  &END                                                                           
+  &NMLST2                                                                         INDIVIDUAL BODY PARAMETERS &NMLST2  
+ *INCLUDE RBGTST(MARS)                                                            START OF INCLUSION
+  NPLNT=4,                                                                       
+  CON(6)=94.1753D0                      $ PSI0              2/3                  
+  CON1(1)=2441174.3940772D0             $                   3/3                  
+  CON(7)= 1.025956815972D0                                                       
+  CON(8)=52.773D0, 317.280D0  $ PAL(8X8) FROM H.R. 3/22/72                       
+                                                                                  END OF INCLUSION AFTER   5 CARDS
+  &END                                                                           
+                                                                                  INDIVIDUAL BODY PARAMETERS &NMLST2  
+  &NMLST2                                                                        
+ *INCLUDE RBGTST(VKNG2)                                                           START OF INCLUSION
+  NPLNT=54, NCENTR=4, NAME='VKNG2'                                               
+  ICND=0   $VF1C001C                                                             
+  COND(1)=1.466859830292265D-04                                                  
+  COND(2)=7.769176888076287D-01                                                  
+  COND(3)=5.663227313673618D+01                                                  
+  COND(4)=3.323858306208646D+02                                                  
+  COND(5)=2.449143981820879D+01                                                  
+  COND(6)=1.800000133126536D+02                                                  
+  CON1(1)=95.71, CON1(2)=-52.6675,      $R.A. & DEC. OF CANOPUS                  
+  CON(11)=1.32      $ LOCKFILE VALUE  FOR Z COMPONENT OF RAD. PRESSURE           
+                                                                                  END OF INCLUSION AFTER  10 CARDS
+  L= 0,1,4*0,                                                                    
+  &END                                                                           
+                                                                                  INDIVIDUAL BODY PARAMETERS &NMLST2  
+  &NMLST2   &END                                                                 
+ *INCLUDE RBGTST(SITES)                                                           START OF INCLUSION
+ 11DSPION 5206.340       -243.1505774    3673.763                 0 0 0-1         SITE CARDS  
+ 12DSECHO  5212.050488184  -243.194333564  3665.628000000         0 0 0-1        
+ 14DSMARS  5203.994438778  -243.110278267  3677.052000000         0 0 0-1        
+ 41DSWOOM  5450.201618530  -136.887307502 -3302.243000000         0 0 0-1        
+ 42DSCANB  5205.355650351  -148.981090881 -3674.646000000         0 0 0-1        
+ 43DSCAN2  5205.243164621  -148.981020840 -3674.788000000         0 0 0-1        
+ 62DSCEBR  4860.816595481  -355.631998038  4116.908000000         0 0 0-1        
+ 63DSMAD2  4862.454637288  -355.751852878  4115.064200000         0 0 0-1        
+ 01CMERTH  .000001           .000001       .000001                               
+                                                                                  END OF INCLUSION AFTER   9 CARDS
+                                                                                 
+ VKL1  4  3397.5          226.            19.5                                    SPOT OR STAR CARDS  
+ CMMR  4  .000001         .000001         .000001                                
+                                                                                 
+                                                                                  RADAR BIAS CARDS
+                                                                                  EQ-EQ-DECL OR INTERFEROMETER BIAS CARDS 
+                                                                                  PHASE CORRECTION CARDS  
+ *INCLUDE RBGTST(DOPOBVKM)                                                        START OF INCLUSION
+  2  4 62DS VKL1 62DS VKL1 1.0   1.0  1.E-08 1                  2.29D09      4000 OVERRIDE ERRORS AND DUMMY OBS. CARDS
+ 2443007                 2443008                   .00     .01       7200        
+                                                                                 
+  2  4 01CM VKL1 01CM VKL1 1.0   1.0  1.E-08 1                  2.29D09      4050
+ 2443007                 2443008                   .00     .01      44000        
+                                                                                 
+  2  4 62DS CMMR 62DS CMMR 1.0   1.0  1.E-08 1                  2.29D09      4100
+ 2443007                 2443008                   .00     .01      44000        
+                                                                                 
+  2  4 01CM CMMR 01CM CMMR 1.0   1.0  1.E-08 1                  2.29D09      4150
+ 2443007                 2443008                   .00     .01      44000        
+                                                                                 
+  2 54 14DS VO2  14DS      1.0   1.0  1.E-08 1                  2.29D09      4200
+ 2443007                 2443008                   .00     .01       7200        
+                                                                                 
+                                                                                  END OF INCLUSION AFTER  15 CARDS
+  2  4 62DS VKL1 62DS VKL1 1.0   1.0  1.E-08 1                  2.29D09      5000
+ 2443007                 2443008                    1.E-5  .00       7200        
+                                                                                 
+  2  4 01CM VKL1 01CM VKL1 1.0   1.0  1.E-08 1                  2.29D09      5050
+ 2443007                 2443008                    1.E-5  .00      44000        
+                                                                                 
+  2  4 62DS CMMR 62DS CMMR 1.0   1.0  1.E-08 1                  2.29D09      5100
+ 2443007                 2443008                    1.E-5  .00      44000        
+                                                                                 
+  2  4 01CM CMMR 01CM CMMR 1.0   1.0  1.E-08 1                  2.29D09      5150
+ 2443007                 2443008                    1.E-5  .00      44000        
+                                                                                 
+  2 54 14DS VO2  14DS      1.0   1.0  1.E-08 1                  2.29D09      5200
+ 2443007                 2443008                   .01     .00       7200        
+ -------------------------------------------------------------------------------- END OF INPUT STREAM
+1PLANETARY EPHEMERIS PROGRAM INPUT DATA   TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT             7/13/17 PAGE    2
+0DAY OF YEAR= 194    CLOCK TIME AT EXECUTION= 21H 51M 26.00S
+-
+-
+-
+
+0  SETTING UP, READING IN AND WRITING OUT INPUT DATA REQUIRED
+           0H  0M  0.04S REAL TIME
+           0H  0M  0.03S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.75000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT             7/13/17 PAGE    3
+-
+-
+-
+-
+
+                        **********    *********    **            **   **********     *********    ********** 
+                       ***********   ***********   ***          ***   ***********   ***********   ***********
+                       **            **       **   ****        ****   **       **   **       **   **       **
+                       **            **       **   ** **      ** **   **       **   **       **   **       **
+                       **            **       **   **  **    **  **   **       **   **       **   **       **
+                       **            **       **   **   **  **   **   **       **   **       **   **       **
+                       **            **       **   **    ****    **   ***********   ***********   ***********
+                       **            **       **   **     **     **   **********    ***********   ********** 
+                       **            **       **   **            **   **            **       **   **  **     
+                       **            **       **   **            **   **            **       **   **   **    
+                       **            **       **   **            **   **            **       **   **    **   
+                       **            **       **   **            **   **            **       **   **     **  
+                       ***********   ***********   **            **   **            **       **   **      ** 
+                        **********    *********    **            **   **            **       **   **       **
+-
+-
+                                          **           **    **           **   **       **
+                                          **           **    ***          **   **      ** 
+                                          **           **    ****         **   **     **  
+                                          **           **    ** **        **   **    **   
+                                          **           **    **  **       **   **   **    
+                                          **           **    **   **      **   *** **     
+                                          **           **    **    **     **   *****      
+                                          **           **    **     **    **   ** **      
+                                          **           **    **      **   **   **  **     
+                                          **           **    **       **  **   **   **    
+                                          **           **    **        ** **   **    **   
+                                          **           **    **         ****   **     **  
+                                          ***********  **    **          ***   **      ** 
+                                          ***********  **    **           **   **       **
+- PEP VERSION= 20170713 PEP.PEPLOAD.PEP790                          
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT             7/13/17 PAGE    4
+0INFORMATION FROM FIRST TWO RECORDS OF 10-BODY DATA SET 10 PRODUCED ON ITERATION  1 PAGE   16 OF RUN WITH TITLE
+  N-BODY RUN 452-0 9-BODY INTEGRATION  445A1' INNER,  384F4 OUTER  I.C.  A BELT   3/12/75 PERTURBING PLNT TAPE FROM N-BODY INTEG.
+ JDBD1=2442981  JDBD2=2443040  NMOON= 0 NBDY1= 9   INTBD= 2  JVLBD=   0  EPSBD= 1.00000E-16
+  1. MERCURY RUN 452- 3/12/75   NPL= 1   NCP= 0   INT= 2   JD0=2440001      A = 3.870988248236740D-01      E = 2.056143424000730D-01
+             INC= 2.860343776155580D+01     ASC= 1.085941468070860D+01     PER= 6.693261659023820D+01    ANOM= 9.083965371174890D+01
+  2.  VENUS  RUN 452- 3/12/75   NPL= 2   NCP= 0   INT= 4   JD0=2440001      A = 7.233280764298250D-01      E = 6.757538502303500D-03
+             INC= 2.446691431631040D+01     ASC= 7.978123944478660D+00     PER= 1.237851094105900D+02    ANOM= 2.744064782028580D+02
+  3.  EMBARY RUN 452- 3/12/75   NPL= 3   NCP= 0   INT= 4   JD0=2440001      A = 9.999827655658610D-01      E = 1.675271186503700D-02
+             INC= 2.344335783108840D+01     ASC= 6.659250140529500D-04     PER= 1.020340653224570D+02    ANOM= 1.393658184374730D+02
+  4.   MARS  RUN 452- 3/12/75   NPL= 4   NCP= 0   INT= 4   JD0=2440001      A = 1.523604535467000D+00      E = 9.345778681537760D-02
+             INC= 2.469301667815660D+01     ASC= 3.346655671292910D+00     PER= 3.321011362766060D+02    ANOM= 8.989975267473780D+01
+  5. JUPITER RUN 452- 3/12/75   NPL= 5   NCP= 0   INT= 4   JD0=2440001      A = 5.202945763492938D+00      E = 4.819170272812072D-02
+             INC= 2.325294770783580D+01     ASC= 3.260973418885743D+00     PER= 1.037368517264243D+01    ANOM= 1.411862792912663D+02
+  6.  SATURN RUN 452- 3/12/75   NPL= 6   NCP= 0   INT= 4   JD0=2440001      A = 9.526046906657452D+00      E = 5.461675879632917D-02
+             INC= 2.257317229472866D+01     ASC= 5.968803885438610D+00     PER= 8.759383073069418D+01    ANOM= 2.897400131333619D+02
+  7.  URANUS RUN 452- 3/12/75   NPL= 7   NCP= 0   INT= 4   JD0=2440001      A = 1.927444509382394D+01      E = 5.124129563816779D-02
+             INC= 2.367141284461455D+01     ASC= 1.847313091106734D+00     PER= 1.683442519992587D+02    ANOM= 6.990616953255084D+00
+  8. NEPTUNE RUN 452- 3/12/75   NPL= 8   NCP= 0   INT= 4   JD0=2440001      A = 3.011376218577972D+01      E = 6.984825839994812D-03
+             INC= 2.231473025943044D+01     ASC= 3.519876825815029D+00     PER= 5.409519590571555D+01    ANOM= 1.775740588052142D+02
+  9.  PLUTO  RUN 452- 3/12/75   NPL= 9   NCP= 0   INT= 4   JD0=2440001      A = 3.974605251930743D+01      E = 2.522316558278021D-01
+             INC= 2.365507811729088D+01     ASC= 4.377229536665620D+01     PER= 1.819638797966959D+02    ANOM= 3.298440994501460D+02
+ 10.   MOON  (ECKERT-BROWN)     NPL=10   NCP= 3   INT=-1   JD0=2440001      A = 0.000000000000000D+00      E = 0.000000000000000D+00
+             INC= 0.000000000000000D+00     ASC= 0.000000000000000D+00     PER= 0.000000000000000D+00    ANOM= 0.000000000000000D+00
+   K( 1)=  -1   K( 2)=  -1   K( 3)=   0   K( 4)=  -1   K( 5)=  -1   K( 6)=  -1   K( 7)=  -1   K( 8)=  -1   K( 9)=  -1   K(10)=  -1
+   K(11)=  -1   K(12)=  -1   K(13)=  -1   K(14)=  -1   K(15)=  -1   K(16)=  -1   K(17)=  -1   K(18)=  -1   K(19)=   0   K(20)=  -1
+   K(21)=   0   K(22)=  -1   K(23)=  -1   K(24)=  -1   K(25)=  -1   K(26)=  -1   K(27)=  -1   K(28)=   3   K(29)=  11   K(30)=  54
+   K(31)= -12   K(32)= -14   K(33)=  -1   K(34)=  -1   K(35)=  -1   K(36)=  -1   K(37)=  -1   K(38)=  -1   K(39)=   0   K(40)=  -1
+ MASS1( 1)= 1.660760804280414D-07 MASS1( 2)= 2.447848585877872D-06 MASS1( 3)= 3.040436898620584D-06 MASS1( 4)= 3.227159776680543D-07
+ MASS1( 5)= 9.547450830628222D-04 MASS1( 6)= 2.857959416976278D-04 MASS1( 7)= 4.366812227074235D-05 MASS1( 8)= 5.154639175257732D-05
+ MASS1( 9)= 2.500000000000000D-07 MASS1(10)= 0.000000000000000D+00
+ RELFT( 1)= 1.000000000000000D+00 RELFT( 2)= 1.000000000000000D+00 RELFT( 3)= 1.000000000000000D+00 RELFT( 4)= 1.000000000000000D+00
+ RELFT( 5)= 1.000000000000000D+00 RELFT( 6)= 1.000000000000000D+00 RELFT( 7)= 1.000000000000000D+00 RELFT( 8)= 1.000000000000000D+00
+ RELFT( 9)= 1.000000000000000D+00 RELFT(10)= 0.000000000000000D+00
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT             7/13/17 PAGE    5
+
+ NPLNT0= 4  NCODF=NCODA(1)= 2  NTAPA(1)=  0  NSEQA(1)= 4000  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 0  IOBCON= 2  NREWND= 0
+0 RADIO TRACKING  OBSERVATIONS OF   MARS   MADE FROM 62DSCEBR,62DSCEBR  SERIES=VKL1  (SPOT=VKL1)  FREQUENCY= 2.2900000000000D+09
+0                 NAME  NSITE LSITE     RADIUS       LONGITUDE      LATITUDE  KSITE
+   RECEIVE SITE=62DSCEBR  16  0 0 0 4860.816595481 -355.63199804  4116.90800000 -1
+      SEND SITE=62DSCEBR  16  0 0 0 4860.816595481 -355.63199804  4116.90800000 -1
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-08  ACCTIM= 1.000E-08  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0  NSPOT = 15   NPREC =  1   NDPREC=  1   NTMDLY=  1   NDOP  = -1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF=  0   NLIBPR=  0  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  1
+0  SETUP FOR  RADIO TRACKING  OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0 GRNWCH  JULIAN  REC UTC (WWV)  UT1-UTC AT-UTC  CT-AT             TIME DELAY (SEC)               DOPPLER SHIFT (CYCLES/SECOND) 
+   DATE   DAY NUM HR MIN  SEC     SEC     SEC     SEC       OBSERVED     ERROR     OBS-TH         OBSERVED     ERROR     OBS-TH 
+  8/16/76 2443007 10  0  0.0000  0.0777 15.0344 32.1489                                       -9.621525987D+04 1.0E-02  0.00000E+00 
+ ILDT=   0   0   0   0   0   0 -9.62152598653118D+04     DERIV(2)=  9.99999977648258D-03  0.00000000000000D+00
+  8/16/76 2443007 12  0  0.0000  0.0775 15.0344 32.1489                                       -9.810774345D+04 1.0E-02  0.00000E+00 
+ ILDT=   0   0   0   0   0   0 -9.81077434468449D+04     DERIV(2)=  9.99999977648258D-03  0.00000000000000D+00
+  8/16/76 2443007 14  0  0.0000  0.0773 15.0344 32.1489                                       -1.001414097D+05 1.0E-02  0.00000E+00 
+ ILDT=   0   0   0   0   0   0 -1.00141409743831D+05     DERIV(2)=  9.99999977648258D-03  0.00000000000000D+00
+  8/16/76 2443007 16  0  0.0000  0.0771 15.0344 32.1489                                       -1.017313525D+05 1.0E-02  0.00000E+00 
+ ILDT=   0   0   0   0   0   0 -1.01731352475711D+05     DERIV(2)=  9.99999977648258D-03  0.00000000000000D+00
+  8/16/76 2443007 18  0  0.0000  0.0769 15.0344 32.1489                                       -1.024015581D+05 1.0E-02  0.00000E+00 
+ ILDT=   0   0   0   0   0   0 -1.02401558149225D+05     DERIV(2)=  9.99999977648258D-03  0.00000000000000D+00
+  8/16/76 2443007 20  0  0.0000  0.0768 15.0344 32.1489                                       -1.019166922D+05 1.0E-02  0.00000E+00 
+ ILDT=   0   0   0   0   0   0 -1.01916692155251D+05     DERIV(2)=  9.99999977648258D-03  0.00000000000000D+00
+0ERROR ANALYSIS FOR  RADIO TRACKING  OBSERVATION SERIES EXTENDING FOR   1 PAGES STARTING ON PAGE    5
+ AVERAGE NUMBER OF ITERATIONS FOR     6 OBSERVATIONS WAS (  9.66667,  9.50000)
+                                   TIME DELAY      DOPPLER SHIFT      
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         0             6
+                AVERAGE (OBS-TH)   0.00000E+00   0.00000E+00
+             AVERAGE ABS(OBS-TH)   0.00000E+00   0.00000E+00
+       ROOT MEAN SQUARE (OBS-TH)   0.00000E+00   0.00000E+00
+                   AVERAGE ERROR   0.00000E+00   1.00000E-02
+          ROOT MEAN SQUARE ERROR   0.00000E+00   1.00000E-02
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 2, IOBS= 0, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     6 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  0)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT             7/13/17 PAGE    6
+
+ NPLNT0= 4  NCODF=NCODA(1)= 2  NTAPA(1)=  0  NSEQA(1)= 4050  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 0  IOBCON= 2  NREWND= 0
+0 RADIO TRACKING  OBSERVATIONS OF   MARS   MADE FROM 01CMERTH,01CMERTH  SERIES=VKL1  (SPOT=VKL1)  FREQUENCY= 2.2900000000000D+09
+0                 NAME  NSITE LSITE     RADIUS       LONGITUDE      LATITUDE  KSITE
+   RECEIVE SITE=01CMERTH  39  0 0 0    0.000001000    0.00000100     0.00000100  0
+      SEND SITE=01CMERTH  39  0 0 0    0.000001000    0.00000100     0.00000100  0
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-08  ACCTIM= 1.000E-08  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0  NSPOT = 15   NPREC =  1   NDPREC=  1   NTMDLY=  1   NDOP  = -1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF=  0   NLIBPR=  0  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  1
+0  SETUP FOR  RADIO TRACKING  OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0 GRNWCH  JULIAN  REC UTC (WWV)  UT1-UTC AT-UTC  CT-AT             TIME DELAY (SEC)               DOPPLER SHIFT (CYCLES/SECOND) 
+   DATE   DAY NUM HR MIN  SEC     SEC     SEC     SEC       OBSERVED     ERROR     OBS-TH         OBSERVED     ERROR     OBS-TH 
+  8/16/76 2443007 12 13 20.0000  0.0775 15.0344 32.1489                                       -1.015571092D+05 1.0E-02  0.00000E+00 
+ ILDT=   0   0   0   0   0   0 -1.01557109230397D+05     DERIV(2)=  9.99999977648258D-03  0.00000000000000D+00
+0ERROR ANALYSIS FOR  RADIO TRACKING  OBSERVATION SERIES EXTENDING FOR   1 PAGES STARTING ON PAGE    6
+ AVERAGE NUMBER OF ITERATIONS FOR     1 OBSERVATIONS WAS ( 10.00000,  9.00000)
+                                   TIME DELAY      DOPPLER SHIFT      
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         0             1
+                AVERAGE (OBS-TH)   0.00000E+00   0.00000E+00
+             AVERAGE ABS(OBS-TH)   0.00000E+00   0.00000E+00
+       ROOT MEAN SQUARE (OBS-TH)   0.00000E+00   0.00000E+00
+                   AVERAGE ERROR   0.00000E+00   1.00000E-02
+          ROOT MEAN SQUARE ERROR   0.00000E+00   1.00000E-02
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 2, IOBS= 0, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     1 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  0)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT             7/13/17 PAGE    7
+
+ NPLNT0= 4  NCODF=NCODA(1)= 2  NTAPA(1)=  0  NSEQA(1)= 4100  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 0  IOBCON= 2  NREWND= 0
+0 RADIO TRACKING  OBSERVATIONS OF   MARS   MADE FROM 62DSCEBR,62DSCEBR  SERIES=CMMR  (SPOT=CMMR)  FREQUENCY= 2.2900000000000D+09
+0                 NAME  NSITE LSITE     RADIUS       LONGITUDE      LATITUDE  KSITE
+   RECEIVE SITE=62DSCEBR  16  0 0 0 4860.816595481 -355.63199804  4116.90800000 -1
+      SEND SITE=62DSCEBR  16  0 0 0 4860.816595481 -355.63199804  4116.90800000 -1
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-08  ACCTIM= 1.000E-08  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0  NSPOT = 16   NPREC =  1   NDPREC=  1   NTMDLY=  1   NDOP  = -1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF=  0   NLIBPR=  0  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  1
+0  SETUP FOR  RADIO TRACKING  OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0 GRNWCH  JULIAN  REC UTC (WWV)  UT1-UTC AT-UTC  CT-AT             TIME DELAY (SEC)               DOPPLER SHIFT (CYCLES/SECOND) 
+   DATE   DAY NUM HR MIN  SEC     SEC     SEC     SEC       OBSERVED     ERROR     OBS-TH         OBSERVED     ERROR     OBS-TH 
+  8/16/76 2443007 12 13 20.0000  0.0775 15.0344 32.1489                                       -9.522644393D+04 1.0E-02  0.00000E+00 
+ ILDT=   0   0   0   0   0   0 -9.52264439344322D+04     DERIV(2)=  9.99999977648258D-03  0.00000000000000D+00
+0ERROR ANALYSIS FOR  RADIO TRACKING  OBSERVATION SERIES EXTENDING FOR   1 PAGES STARTING ON PAGE    7
+ AVERAGE NUMBER OF ITERATIONS FOR     1 OBSERVATIONS WAS ( 10.00000,  9.00000)
+                                   TIME DELAY      DOPPLER SHIFT      
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         0             1
+                AVERAGE (OBS-TH)   0.00000E+00   0.00000E+00
+             AVERAGE ABS(OBS-TH)   0.00000E+00   0.00000E+00
+       ROOT MEAN SQUARE (OBS-TH)   0.00000E+00   0.00000E+00
+                   AVERAGE ERROR   0.00000E+00   1.00000E-02
+          ROOT MEAN SQUARE ERROR   0.00000E+00   1.00000E-02
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 2, IOBS= 0, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     1 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  0)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT             7/13/17 PAGE    8
+
+ NPLNT0= 4  NCODF=NCODA(1)= 2  NTAPA(1)=  0  NSEQA(1)= 4150  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 0  IOBCON= 2  NREWND= 0
+0 RADIO TRACKING  OBSERVATIONS OF   MARS   MADE FROM 01CMERTH,01CMERTH  SERIES=CMMR  (SPOT=CMMR)  FREQUENCY= 2.2900000000000D+09
+0                 NAME  NSITE LSITE     RADIUS       LONGITUDE      LATITUDE  KSITE
+   RECEIVE SITE=01CMERTH  39  0 0 0    0.000001000    0.00000100     0.00000100  0
+      SEND SITE=01CMERTH  39  0 0 0    0.000001000    0.00000100     0.00000100  0
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-08  ACCTIM= 1.000E-08  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0  NSPOT = 16   NPREC =  1   NDPREC=  1   NTMDLY=  1   NDOP  = -1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF=  0   NLIBPR=  0  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  1
+0  SETUP FOR  RADIO TRACKING  OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0 GRNWCH  JULIAN  REC UTC (WWV)  UT1-UTC AT-UTC  CT-AT             TIME DELAY (SEC)               DOPPLER SHIFT (CYCLES/SECOND) 
+   DATE   DAY NUM HR MIN  SEC     SEC     SEC     SEC       OBSERVED     ERROR     OBS-TH         OBSERVED     ERROR     OBS-TH 
+  8/16/76 2443007 12 13 20.0000  0.0775 15.0344 32.1489                                       -9.844599267D+04 1.0E-02  0.00000E+00 
+ ILDT=   0   0   0   0   0   0 -9.84459926717838D+04     DERIV(2)=  9.99999977648258D-03  0.00000000000000D+00
+0ERROR ANALYSIS FOR  RADIO TRACKING  OBSERVATION SERIES EXTENDING FOR   1 PAGES STARTING ON PAGE    8
+ AVERAGE NUMBER OF ITERATIONS FOR     1 OBSERVATIONS WAS ( 10.00000,  9.00000)
+                                   TIME DELAY      DOPPLER SHIFT      
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         0             1
+                AVERAGE (OBS-TH)   0.00000E+00   0.00000E+00
+             AVERAGE ABS(OBS-TH)   0.00000E+00   0.00000E+00
+       ROOT MEAN SQUARE (OBS-TH)   0.00000E+00   0.00000E+00
+                   AVERAGE ERROR   0.00000E+00   1.00000E-02
+          ROOT MEAN SQUARE ERROR   0.00000E+00   1.00000E-02
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 2, IOBS= 0, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     1 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  0)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT             7/13/17 PAGE    9
+-ERROR ANALYSIS FOR  RADIO TRACKING  OBSERVATIONS OF   MARS   PROCESSED DURING THE LAST    7 PAGES STARTING ON PAGE    3
+                                   TIME DELAY      DOPPLER SHIFT      
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         0             9
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON,IOBS,IABS1) = (    0,    0,    0)
+
+       9 +    0 OBSERVATION RECORDS PROCESSED (NPARAM=   1)
+0   PROCESSING OBSERVATIONS  REQUIRED
+           0H  0M  0.09S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT             7/13/17 PAGE   10
+0DATA ON FIRST TWO RECORDS OF DATA SET 64   BODY= VKNG2      NPLNT( 2)= 54    NCENTR=  4     IPAR=  2     IFILTR= 0
+ TITLE=TV1 -  STANDARD VIKING DOPPLER TESTS..SPOT,ORBITER,CM,SUBRADAR PT         4/11/11 PAGE=   14 ITERAT= 1 LEVEL= 790
+     JD1=2443006          JD0=2443007          JD2=2443008          INT= -7     ICND=  0
+   COND(1)= 1.466859830292265D-04   COND(2)= 7.769176888076287D-01   COND(3)= 5.663227313673618D+01   COND(4)= 3.323858306208646D+02
+   COND(5)= 2.449143981820879D+01   COND(6)= 1.800000133126536D+02   CON( 1)= 0.000000000000000D+00   CON( 2)= 0.000000000000000D+00
+   CON( 3)= 0.000000000000000D+00   CON( 4)= 0.000000000000000D+00   CON( 5)= 0.000000000000000D+00   CON( 6)= 0.000000000000000D+00
+   CON( 7)= 0.000000000000000D+00   CON( 8)= 0.000000000000000D+00   CON( 9)= 0.000000000000000D+00   CON(10)= 0.000000000000000D+00
+   CON(11)= 1.320000000000000D+00   CON(12)= 0.000000000000000D+00   CON(13)= 0.000000000000000D+00   CON(14)= 0.000000000000000D+00
+   CON(15)= 0.000000000000000D+00   CON(16)= 0.000000000000000D+00   CON(17)= 0.000000000000000D+00   CON(18)= 0.000000000000000D+00
+   CON(19)= 0.000000000000000D+00   CON(20)= 0.000000000000000D+00   CON(21)= 0.000000000000000D+00   CON(22)= 0.000000000000000D+00
+   CON(23)= 0.000000000000000D+00   CON(24)= 0.000000000000000D+00   CON(25)= 9.571000000000000D+01   CON(26)=-5.266750000000000D+01
+   CON(27)= 0.000000000000000D+00   CON(28)= 0.000000000000000D+00   CON(29)= 0.000000000000000D+00   CON(30)= 0.000000000000000D+00
+   CON(31)= 0.000000000000000D+00   CON(32)= 0.000000000000000D+00   CON(33)= 0.000000000000000D+00   CON(34)= 0.000000000000000D+00
+   CON(35)= 0.000000000000000D+00   CON(36)= 3.000000000000000D-02   CON(
+  PRM(  1)= 1.657848020429993D-07  PRM(  2)= 2.447848585877872D-06  PRM(  3)= 3.040436898620584D-06  PRM(  4)= 3.227159776680543D-07
+  PRM(  5)= 9.547534692876814D-04  PRM(  6)= 2.857796067672611D-04  PRM(  7)= 4.361098996947231D-05  PRM(  8)= 5.192107995846314D-05
+  PRM(  9)= 2.500000000000000D-07  PRM( 10)= 1.215052064980984D-02  PRM( 11)= 0.000000000000000D+00  PRM( 12)= 0.000000000000000D+00
+  PRM( 13)= 0.000000000000000D+00  PRM( 14)= 0.000000000000000D+00  PRM( 15)= 0.000000000000000D+00  PRM( 16)= 0.000000000000000D+00
+  PRM( 17)= 0.000000000000000D+00  PRM( 18)= 0.000000000000000D+00  PRM( 19)= 0.000000000000000D+00  PRM( 20)= 0.000000000000000D+00
+  PRM( 21)= 0.000000000000000D+00  PRM( 22)= 0.000000000000000D+00  PRM( 23)= 0.000000000000000D+00  PRM( 24)= 0.000000000000000D+00
+  PRM( 25)= 0.000000000000000D+00  PRM( 26)= 0.000000000000000D+00  PRM( 27)= 0.000000000000000D+00  PRM( 28)= 0.000000000000000D+00
+  PRM( 29)= 0.000000000000000D+00  PRM( 30)= 0.000000000000000D+00  PRM( 31)= 1.000000000000000D+00  PRM( 32)= 0.000000000000000D+00
+  PRM( 33)= 0.000000000000000D+00  PRM( 34)= 0.000000000000000D+00  PRM( 35)= 0.000000000000000D+00  PRM( 36)= 0.000000000000000D+00
+  PRM( 37)= 0.000000000000000D+00  PRM( 38)= 0.000000000000000D+00  PRM( 39)=-7.800000000000000D-04  PRM( 40)= 0.000000000000000D+00
+  PRM( 41)= 1.000000000000000D+00  PRM( 42)= 1.000000000000000D+00  PRM( 43)= 1.000000000000000D+00  PRM( 44)= 1.000000000000000D+00
+  PRM( 45)= 0.000000000000000D+00  PRM( 46)= 0.000000000000000D+00  PRM( 47)= 0.000000000000000D+00  PRM( 48)= 0.000000000000000D+00
+  PRM( 49)= 0.000000000000000D+00  PRM( 50)= 0.000000000000000D+00  PRM( 51)= 4.990047800000000D+02  PRM( 52)= 0.000000000000000D+00
+  PRM( 53)= 1.000000000000000D+00  PRM( 54)= 0.000000000000000D+00  PRM( 55)= 0.000000000000000D+00  PRM( 56)= 0.000000000000000D+00
+  PRM( 57)= 0.000000000000000D+00  PRM( 58)= 0.000000000000000D+00  PRM( 59)= 0.000000000000000D+00  PRM( 60)= 0.000000000000000D+00
+  PRM( 61)= 0.000000000000000D+00  PRM( 62)= 1.000000000000000D+00  PRM( 63)= 1.000000000000000D+00  PRM( 64)= 0.000000000000000D+00
+  PRM( 65)= 0.000000000000000D+00  PRM( 66)= 0.000000000000000D+00  PRM( 67)= 0.000000000000000D+00  PRM( 68)= 0.000000000000000D+00
+  PRM( 69)= 0.000000000000000D+00  PRM( 70)= 0.000000000000000D+00  PRM( 71)= 0.000000000000000D+00  PRM( 72)= 0.000000000000000D+00
+  PRM( 73)= 0.000000000000000D+00  PRM( 74)= 0.000000000000000D+00  PRM( 75)= 0.000000000000000D+00  PRM( 76)= 0.000000000000000D+00
+  PRM( 77)= 0.000000000000000D+00  PRM( 78)= 0.000000000000000D+00  PRM( 79)= 0.000000000000000D+00  PRM( 80)= 0.000000000000000D+00
+  PRM( 81)= 1.000000000000000D+00  PRM( 82)= 0.000000000000000D+00  PRM( 83)= 0.000000000000000D+00  PRM( 84)= 0.000000000000000D+00
+  PRM( 85)= 0.000000000000000D+00  PRM( 86)= 0.000000000000000D+00  PRM( 87)= 0.000000000000000D+00  PRM( 88)= 0.000000000000000D+00
+  PRM( 89)= 0.000000000000000D+00  PRM( 90)= 0.000000000000000D+00  PRM( 91)= 2.344578706750000D+01  PRM( 92)= 7.250000000000000D+00
+  PRM( 93)= 7.506250000000000D+01  PRM( 94)= 6.960000000000000D+05  PRM( 95)= 6.960000000000000D+05  PRM( 96)= 0.000000000000000D+00
+  PRM( 97)= 2.440000500000000D+06  PRM( 98)= 4.263529034000000D-05  PRM( 99)= 0.000000000000000D+00  PRM(100)= 2.997924580000000D+05
+  K(  1)=   0  K(  2)=   0  K(  3)=   0  K(  4)=   0  K(  5)=   0  K(  6)=   0  K(  7)=   0  K(  8)=   0  K(  9)=   0  K( 10)=   0
+  K( 11)=   0  K( 12)=   0  K( 13)=   0  K( 14)=   0  K( 15)=   0  K( 16)=   0  K( 17)=   0  K( 18)=   0  K( 19)=   0  K( 20)=   0
+  K( 21)=   0  K( 22)=   0  K( 23)=   0  K( 24)=   0  K( 25)=   0  K( 26)=   0  K( 27)=   0  K( 28)=   0  K( 29)=   0  K( 30)=   0
+  K( 31)=  -1  K( 32)=  -1  K( 33)=   0  K( 34)=   1  K( 35)=   0  K( 36)=  -1  K( 37)=  -1  K( 38)=  -1  K( 39)=  -1  K( 40)=  -1
+  K( 41)=  -1  K( 42)=  -1  K( 43)=  -1  K( 44)=  -1  K( 45)=  -1  K( 46)=  -1  K( 47)=  -1  K( 48)=  -1  K( 49)=  -1  K( 50)=  -1
+  K( 51)=  -1  K( 52)=  -1  K( 53)=  -1  K( 54)=  -1  K( 55)=  -1  K( 56)=  -1  K( 57)=  -1  K( 58)=  -1  K( 59)=  -1  K( 60)=  -1
+  K( 61)=   1  K( 62)=  -1  K( 63)=  -1  K( 64)=  -1  K( 65)=  -1  K( 66)=  -1  K( 67)=  -1  K( 68)=  -1  K( 69)=  -1  K( 70)=  -1
+  K( 71)=  -1  K( 72)=  -1  K( 73)=  -1  K( 74)=  -1  K( 75)=  -1  K( 76)=  -1  K( 77)=  -1  K( 78)=  -1  K( 79)=  -1  K( 80)=  -1
+  K( 81)=   1  K( 82)=   0  K( 83)=   0  K( 84)=  -1  K( 85)=  -1  K( 86)= 606  K( 87)=   0  K( 88)=   0  K( 89)=  11  K( 90)=   6
+  K( 91)= -14  K( 92)= -17  K( 93)=   0  K( 94)=   0  K( 95)=   0  K( 96)=   0  K( 97)=   0  K( 98)=  20  K( 99)=   0  K(100)=  -1
+ NUMKI=  8  KI= 1-1 1-1-1-1-1    0
+   EPS(1)= 9.00000E-01   EPS(2)= 1.00000E-01   EPS(3)= 1.00000E-07   EPS(4)= 0.00000E+00   EPS(5)= 0.00000E+00   EPS(6)= 0.00000E+00
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT             7/13/17 PAGE   11
+
+ NPLNT0=54  NCODF=NCODA(1)= 2  NTAPA(1)=  0  NSEQA(1)= 4200  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 0  IOBCON= 2  NREWND= 0
+0 RADIO TRACKING  OBSERVATIONS OF VKNG2    MADE FROM 14DSMARS,14DSMARS  SERIES=VO2   (SPOT=    )  FREQUENCY= 2.2900000000000D+09
+0                 NAME  NSITE LSITE     RADIUS       LONGITUDE      LATITUDE  KSITE
+   RECEIVE SITE=14DSMARS  11  0 0 0 5203.994438778 -243.11027827  3677.05200000 -1
+      SEND SITE=14DSMARS  11  0 0 0 5203.994438778 -243.11027827  3677.05200000 -1
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-08  ACCTIM= 1.000E-08  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0  NSPOT =  0   NPREC =  1   NDPREC=  1   NTMDLY=  1   NDOP  =  1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF=  0   NLIBPR=  0  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  1
+0  SETUP FOR  RADIO TRACKING  OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0 GRNWCH  JULIAN  REC UTC (WWV)  UT1-UTC AT-UTC  CT-AT             TIME DELAY (SEC)               DOPPLER SHIFT (CYCLES/SECOND) 
+   DATE   DAY NUM HR MIN  SEC     SEC     SEC     SEC       OBSERVED     ERROR     OBS-TH         OBSERVED     ERROR     OBS-TH 
+  8/16/76 2443007  0  0  0.0000  0.0786 15.0344 32.1489                                       -1.024433533D+05 1.0E-02  0.00000E+00 
+ ILDT=   0   0   0   0   0   0 -1.02443353348003D+05     DERIV(2)=  9.99999977648258D-03  0.00000000000000D+00 -1.66785941155822D+03
+  8/16/76 2443007  2  0  0.0000  0.0784 15.0344 32.1489                                       -1.016950841D+05 1.0E-02  0.00000E+00 
+ ILDT=   0   0   0   0   0   0 -1.01695084075491D+05     DERIV(2)=  9.99999977648258D-03  0.00000000000000D+00 -4.89911874758383D+03
+  8/16/76 2443007 18  0  0.0000  0.0770 15.0344 32.1489                                       -1.161009291D+05 1.0E-02  0.00000E+00 
+ ILDT=   0   0   0   0   0   0 -1.16100929094818D+05     DERIV(2)=  9.99999977648258D-03  0.00000000000000D+00  1.87732929530167D+04
+  8/16/76 2443007 20  0  0.0000  0.0768 15.0344 32.1489                                       -1.099891598D+05 1.0E-02  0.00000E+00 
+ ILDT=   0   0   0   0   0   0 -1.09989159806835D+05     DERIV(2)=  9.99999977648258D-03  0.00000000000000D+00  1.48798408198021D+04
+  8/16/76 2443007 22  0  0.0000  0.0766 15.0344 32.1489                                       -1.075734570D+05 1.0E-02  0.00000E+00 
+ ILDT=   0   0   0   0   0   0 -1.07573456963316D+05     DERIV(2)=  9.99999977648258D-03  0.00000000000000D+00  9.51317801603655D+03
+  8/17/76 2443008  0  0  0.0000  0.0764 15.0344 32.1489                                       -1.064599655D+05 1.0E-02  0.00000E+00 
+ ILDT=   0   0   0   0   0   0 -1.06459965504428D+05     DERIV(2)=  9.99999977648258D-03  0.00000000000000D+00  4.92860268792273D+03
+0ERROR ANALYSIS FOR  RADIO TRACKING  OBSERVATION SERIES EXTENDING FOR   1 PAGES STARTING ON PAGE   11
+ AVERAGE NUMBER OF ITERATIONS FOR     6 OBSERVATIONS WAS (  9.66667,  9.50000)
+                                   TIME DELAY      DOPPLER SHIFT      
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         0             6
+                AVERAGE (OBS-TH)   0.00000E+00   0.00000E+00
+             AVERAGE ABS(OBS-TH)   0.00000E+00   0.00000E+00
+       ROOT MEAN SQUARE (OBS-TH)   0.00000E+00   0.00000E+00
+                   AVERAGE ERROR   0.00000E+00   1.00000E-02
+          ROOT MEAN SQUARE ERROR   0.00000E+00   1.00000E-02
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 2, IOBS= 0, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     6 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  1)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT             7/13/17 PAGE   12
+-ERROR ANALYSIS FOR  RADIO TRACKING  OBSERVATIONS OF VKNG2    PROCESSED DURING THE LAST    3 PAGES STARTING ON PAGE   10
+                                   TIME DELAY      DOPPLER SHIFT      
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         0             6
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON,IOBS,IABS1) = (    0,    0,    0)
+
+       6 +    0 OBSERVATION RECORDS PROCESSED (NPARAM=   1)
+0   PROCESSING OBSERVATIONS  REQUIRED
+           0H  0M  0.03S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT             7/13/17 PAGE   13
+
+ NPLNT0= 4  NCODF=NCODA(1)= 2  NTAPA(1)=  0  NSEQA(1)= 5000  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 0  IOBCON= 2  NREWND= 0
+0 RADIO TRACKING  OBSERVATIONS OF   MARS   MADE FROM 62DSCEBR,62DSCEBR  SERIES=VKL1  (SPOT=VKL1)  FREQUENCY= 2.2900000000000D+09
+0                 NAME  NSITE LSITE     RADIUS       LONGITUDE      LATITUDE  KSITE
+   RECEIVE SITE=62DSCEBR  16  0 0 0 4860.816595481 -355.63199804  4116.90800000 -1
+      SEND SITE=62DSCEBR  16  0 0 0 4860.816595481 -355.63199804  4116.90800000 -1
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-08  ACCTIM= 1.000E-08  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0  NSPOT = 15   NPREC =  1   NDPREC=  1   NTMDLY=  1   NDOP  = -1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF=  0   NLIBPR=  0  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  1
+0  SETUP FOR  RADIO TRACKING  OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0 GRNWCH  JULIAN  REC UTC (WWV)  UT1-UTC AT-UTC  CT-AT             TIME DELAY (SEC)               DOPPLER SHIFT (CYCLES/SECOND) 
+   DATE   DAY NUM HR MIN  SEC     SEC     SEC     SEC       OBSERVED     ERROR     OBS-TH         OBSERVED     ERROR     OBS-TH 
+  8/16/76 2443007 10  0  0.0000  0.0777 15.0344 32.1489 2401.7379102786 1.0E-05  0.00000E+00 
+ ILDT=   0   0   0   0   0   0  2.40173791027860D+03     DERIV(1)=  9.99999974737875D-06  0.00000000000000D+00
+  8/16/76 2443007 12  0  0.0000  0.0775 15.0344 32.1489 2402.0432825379 1.0E-05  0.00000E+00 
+ ILDT=   0   0   0   0   0   0  2.40204328253792D+03     DERIV(1)=  9.99999974737875D-06  0.00000000000000D+00
+  8/16/76 2443007 14  0  0.0000  0.0773 15.0344 32.1489 2402.3549818503 1.0E-05  0.00000E+00 
+ ILDT=   0   0   0   0   0   0  2.40235498185032D+03     DERIV(1)=  9.99999974737875D-06  0.00000000000000D+00
+  8/16/76 2443007 16  0  0.0000  0.0771 15.0344 32.1489 2402.6725245460 1.0E-05  0.00000E+00 
+ ILDT=   0   0   0   0   0   0  2.40267252454596D+03     DERIV(1)=  9.99999974737875D-06  0.00000000000000D+00
+  8/16/76 2443007 18  0  0.0000  0.0770 15.0344 32.1489 2402.9937189564 1.0E-05  0.00000E+00 
+ ILDT=   0   0   0   0   0   0  2.40299371895642D+03     DERIV(1)=  9.99999974737875D-06  0.00000000000000D+00
+  8/16/76 2443007 20  0  0.0000  0.0768 15.0344 32.1489 2403.3152273364 1.0E-05  0.00000E+00 
+ ILDT=   0   0   0   0   0   0  2.40331522733643D+03     DERIV(1)=  9.99999974737875D-06  0.00000000000000D+00
+0ERROR ANALYSIS FOR  RADIO TRACKING  OBSERVATION SERIES EXTENDING FOR   1 PAGES STARTING ON PAGE   13
+ AVERAGE NUMBER OF ITERATIONS FOR     6 OBSERVATIONS WAS (  6.66667,  6.50000)
+                                   TIME DELAY      DOPPLER SHIFT      
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         6             0
+                AVERAGE (OBS-TH)   0.00000E+00   0.00000E+00
+             AVERAGE ABS(OBS-TH)   0.00000E+00   0.00000E+00
+       ROOT MEAN SQUARE (OBS-TH)   0.00000E+00   0.00000E+00
+                   AVERAGE ERROR   1.00000E-05   0.00000E+00
+          ROOT MEAN SQUARE ERROR   1.00000E-05   0.00000E+00
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 2, IOBS= 0, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     6 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  0)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT             7/13/17 PAGE   14
+
+ NPLNT0= 4  NCODF=NCODA(1)= 2  NTAPA(1)=  0  NSEQA(1)= 5050  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 0  IOBCON= 2  NREWND= 0
+0 RADIO TRACKING  OBSERVATIONS OF   MARS   MADE FROM 01CMERTH,01CMERTH  SERIES=VKL1  (SPOT=VKL1)  FREQUENCY= 2.2900000000000D+09
+0                 NAME  NSITE LSITE     RADIUS       LONGITUDE      LATITUDE  KSITE
+   RECEIVE SITE=01CMERTH  39  0 0 0    0.000001000    0.00000100     0.00000100  0
+      SEND SITE=01CMERTH  39  0 0 0    0.000001000    0.00000100     0.00000100  0
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-08  ACCTIM= 1.000E-08  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0  NSPOT = 15   NPREC =  1   NDPREC=  1   NTMDLY=  1   NDOP  = -1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF=  0   NLIBPR=  0  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  1
+0  SETUP FOR  RADIO TRACKING  OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0 GRNWCH  JULIAN  REC UTC (WWV)  UT1-UTC AT-UTC  CT-AT             TIME DELAY (SEC)               DOPPLER SHIFT (CYCLES/SECOND) 
+   DATE   DAY NUM HR MIN  SEC     SEC     SEC     SEC       OBSERVED     ERROR     OBS-TH         OBSERVED     ERROR     OBS-TH 
+  8/16/76 2443007 12 13 20.0000  0.0775 15.0344 32.1489 2402.1046913938 1.0E-05  0.00000E+00 
+ ILDT=   0   0   0   0   0   0  2.40210469139380D+03     DERIV(1)=  9.99999974737875D-06  0.00000000000000D+00
+0ERROR ANALYSIS FOR  RADIO TRACKING  OBSERVATION SERIES EXTENDING FOR   1 PAGES STARTING ON PAGE   14
+ AVERAGE NUMBER OF ITERATIONS FOR     1 OBSERVATIONS WAS (  7.00000,  6.00000)
+                                   TIME DELAY      DOPPLER SHIFT      
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         1             0
+                AVERAGE (OBS-TH)   0.00000E+00   0.00000E+00
+             AVERAGE ABS(OBS-TH)   0.00000E+00   0.00000E+00
+       ROOT MEAN SQUARE (OBS-TH)   0.00000E+00   0.00000E+00
+                   AVERAGE ERROR   1.00000E-05   0.00000E+00
+          ROOT MEAN SQUARE ERROR   1.00000E-05   0.00000E+00
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 2, IOBS= 0, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     1 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  0)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT             7/13/17 PAGE   15
+
+ NPLNT0= 4  NCODF=NCODA(1)= 2  NTAPA(1)=  0  NSEQA(1)= 5100  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 0  IOBCON= 2  NREWND= 0
+0 RADIO TRACKING  OBSERVATIONS OF   MARS   MADE FROM 62DSCEBR,62DSCEBR  SERIES=CMMR  (SPOT=CMMR)  FREQUENCY= 2.2900000000000D+09
+0                 NAME  NSITE LSITE     RADIUS       LONGITUDE      LATITUDE  KSITE
+   RECEIVE SITE=62DSCEBR  16  0 0 0 4860.816595481 -355.63199804  4116.90800000 -1
+      SEND SITE=62DSCEBR  16  0 0 0 4860.816595481 -355.63199804  4116.90800000 -1
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-08  ACCTIM= 1.000E-08  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0  NSPOT = 16   NPREC =  1   NDPREC=  1   NTMDLY=  1   NDOP  = -1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF=  0   NLIBPR=  0  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  1
+0  SETUP FOR  RADIO TRACKING  OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0 GRNWCH  JULIAN  REC UTC (WWV)  UT1-UTC AT-UTC  CT-AT             TIME DELAY (SEC)               DOPPLER SHIFT (CYCLES/SECOND) 
+   DATE   DAY NUM HR MIN  SEC     SEC     SEC     SEC       OBSERVED     ERROR     OBS-TH         OBSERVED     ERROR     OBS-TH 
+  8/16/76 2443007 12 13 20.0000  0.0775 15.0344 32.1489 2402.0801853235 1.0E-05  0.00000E+00 
+ ILDT=   0   0   0   0   0   0  2.40208018532346D+03     DERIV(1)=  9.99999974737875D-06  0.00000000000000D+00
+0ERROR ANALYSIS FOR  RADIO TRACKING  OBSERVATION SERIES EXTENDING FOR   1 PAGES STARTING ON PAGE   15
+ AVERAGE NUMBER OF ITERATIONS FOR     1 OBSERVATIONS WAS (  7.00000,  6.00000)
+                                   TIME DELAY      DOPPLER SHIFT      
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         1             0
+                AVERAGE (OBS-TH)   0.00000E+00   0.00000E+00
+             AVERAGE ABS(OBS-TH)   0.00000E+00   0.00000E+00
+       ROOT MEAN SQUARE (OBS-TH)   0.00000E+00   0.00000E+00
+                   AVERAGE ERROR   1.00000E-05   0.00000E+00
+          ROOT MEAN SQUARE ERROR   1.00000E-05   0.00000E+00
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 2, IOBS= 0, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     1 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  0)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT             7/13/17 PAGE   16
+
+ NPLNT0= 4  NCODF=NCODA(1)= 2  NTAPA(1)=  0  NSEQA(1)= 5150  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 0  IOBCON= 2  NREWND= 0
+0 RADIO TRACKING  OBSERVATIONS OF   MARS   MADE FROM 01CMERTH,01CMERTH  SERIES=CMMR  (SPOT=CMMR)  FREQUENCY= 2.2900000000000D+09
+0                 NAME  NSITE LSITE     RADIUS       LONGITUDE      LATITUDE  KSITE
+   RECEIVE SITE=01CMERTH  39  0 0 0    0.000001000    0.00000100     0.00000100  0
+      SEND SITE=01CMERTH  39  0 0 0    0.000001000    0.00000100     0.00000100  0
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-08  ACCTIM= 1.000E-08  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0  NSPOT = 16   NPREC =  1   NDPREC=  1   NTMDLY=  1   NDOP  = -1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF=  0   NLIBPR=  0  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  1
+0  SETUP FOR  RADIO TRACKING  OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0 GRNWCH  JULIAN  REC UTC (WWV)  UT1-UTC AT-UTC  CT-AT             TIME DELAY (SEC)               DOPPLER SHIFT (CYCLES/SECOND) 
+   DATE   DAY NUM HR MIN  SEC     SEC     SEC     SEC       OBSERVED     ERROR     OBS-TH         OBSERVED     ERROR     OBS-TH 
+  8/16/76 2443007 12 13 20.0000  0.0775 15.0344 32.1489 2402.1072803531 1.0E-05  0.00000E+00 
+ ILDT=   0   0   0   0   0   0  2.40210728035306D+03     DERIV(1)=  9.99999974737875D-06  0.00000000000000D+00
+0ERROR ANALYSIS FOR  RADIO TRACKING  OBSERVATION SERIES EXTENDING FOR   1 PAGES STARTING ON PAGE   16
+ AVERAGE NUMBER OF ITERATIONS FOR     1 OBSERVATIONS WAS (  7.00000,  6.00000)
+                                   TIME DELAY      DOPPLER SHIFT      
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         1             0
+                AVERAGE (OBS-TH)   0.00000E+00   0.00000E+00
+             AVERAGE ABS(OBS-TH)   0.00000E+00   0.00000E+00
+       ROOT MEAN SQUARE (OBS-TH)   0.00000E+00   0.00000E+00
+                   AVERAGE ERROR   1.00000E-05   0.00000E+00
+          ROOT MEAN SQUARE ERROR   1.00000E-05   0.00000E+00
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 2, IOBS= 0, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     1 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  0)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT             7/13/17 PAGE   17
+-ERROR ANALYSIS FOR  RADIO TRACKING  OBSERVATIONS OF   MARS   PROCESSED DURING THE LAST    5 PAGES STARTING ON PAGE   13
+                                   TIME DELAY      DOPPLER SHIFT      
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         9             0
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON,IOBS,IABS1) = (    0,    0,    0)
+
+       9 +    0 OBSERVATION RECORDS PROCESSED (NPARAM=   1)
+0   PROCESSING OBSERVATIONS  REQUIRED
+           0H  0M  0.09S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT             7/13/17 PAGE   18
+
+ NPLNT0=54  NCODF=NCODA(1)= 2  NTAPA(1)=  0  NSEQA(1)= 5200  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 0  IOBCON= 2  NREWND= 0
+0 RADIO TRACKING  OBSERVATIONS OF VKNG2    MADE FROM 14DSMARS,14DSMARS  SERIES=VO2   (SPOT=    )  FREQUENCY= 2.2900000000000D+09
+0                 NAME  NSITE LSITE     RADIUS       LONGITUDE      LATITUDE  KSITE
+   RECEIVE SITE=14DSMARS  11  0 0 0 5203.994438778 -243.11027827  3677.05200000 -1
+      SEND SITE=14DSMARS  11  0 0 0 5203.994438778 -243.11027827  3677.05200000 -1
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-08  ACCTIM= 1.000E-08  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0  NSPOT =  0   NPREC =  1   NDPREC=  1   NTMDLY=  1   NDOP  =  1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF=  0   NLIBPR=  0  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  1
+0  SETUP FOR  RADIO TRACKING  OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0 GRNWCH  JULIAN  REC UTC (WWV)  UT1-UTC AT-UTC  CT-AT             TIME DELAY (SEC)               DOPPLER SHIFT (CYCLES/SECOND) 
+   DATE   DAY NUM HR MIN  SEC     SEC     SEC     SEC       OBSERVED     ERROR     OBS-TH         OBSERVED     ERROR     OBS-TH 
+  8/16/76 2443007  0  0  0.0000  0.0786 15.0344 32.1489 2400.4143209253 1.0E-02  0.00000E+00 
+ ILDT=   0   0   0   0   0   0  2.40041432092531D+03     DERIV(1)=  9.99999977648258D-03  0.00000000000000D+00  1.25318806400680D-01
+  8/16/76 2443007  2  0  0.0000  0.0784 15.0344 32.1489 2400.7354848051 1.0E-02  0.00000E+00 
+ ILDT=   0   0   0   0   0   0  2.40073548480509D+03     DERIV(1)=  9.99999977648258D-03  0.00000000000000D+00  1.35721142272905D-01
+  8/16/76 2443007 18  0  0.0000  0.0770 15.0344 32.1489 2403.0797085642 1.0E-02  0.00000E+00 
+ ILDT=   0   0   0   0   0   0  2.40307970856415D+03     DERIV(1)=  9.99999977648258D-03  0.00000000000000D+00  2.49340323732679D-01
+  8/16/76 2443007 20  0  0.0000  0.0768 15.0344 32.1489 2403.4336688535 1.0E-02  0.00000E+00 
+ ILDT=   0   0   0   0   0   0  2.40343366885349D+03     DERIV(1)=  9.99999977648258D-03  0.00000000000000D+00  1.94868928270153D-01
+  8/16/76 2443007 22  0  0.0000  0.0766 15.0344 32.1489 2403.7751100445 1.0E-02  0.00000E+00 
+ ILDT=   0   0   0   0   0   0  2.40377511004454D+03     DERIV(1)=  9.99999977648258D-03  0.00000000000000D+00  1.56695089314169D-01
+  8/17/76 2443008  0  0  0.0000  0.0764 15.0344 32.1489 2404.1114503183 1.0E-02  0.00000E+00 
+ ILDT=   0   0   0   0   0   0  2.40411145031833D+03     DERIV(1)=  9.99999977648258D-03  0.00000000000000D+00  1.34194764243102D-01
+0ERROR ANALYSIS FOR  RADIO TRACKING  OBSERVATION SERIES EXTENDING FOR   1 PAGES STARTING ON PAGE   18
+ AVERAGE NUMBER OF ITERATIONS FOR     6 OBSERVATIONS WAS (  6.66667,  6.50000)
+                                   TIME DELAY      DOPPLER SHIFT      
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         6             0
+                AVERAGE (OBS-TH)   0.00000E+00   0.00000E+00
+             AVERAGE ABS(OBS-TH)   0.00000E+00   0.00000E+00
+       ROOT MEAN SQUARE (OBS-TH)   0.00000E+00   0.00000E+00
+                   AVERAGE ERROR   1.00000E-02   0.00000E+00
+          ROOT MEAN SQUARE ERROR   1.00000E-02   0.00000E+00
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 2, IOBS= 0, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     6 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  1)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT             7/13/17 PAGE   19
+-ERROR ANALYSIS FOR  RADIO TRACKING  OBSERVATIONS OF VKNG2    PROCESSED DURING THE LAST    2 PAGES STARTING ON PAGE   18
+                                   TIME DELAY      DOPPLER SHIFT      
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         6             0
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON,IOBS,IABS1) = (    0,    0,    0)
+
+       6 +    0 OBSERVATION RECORDS PROCESSED (NPARAM=   1)
+0   PROCESSING OBSERVATIONS  REQUIRED
+           0H  0M  0.03S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+-ERROR ANALYSIS FOR ALL OBSERVATIONS PROCESSED IN THE COMPAR LINK DURING THE PAST   17 PAGES STARTING ON PAGE    3
+
+ NUMBER OF MEASUREMENTS DELETED          0
+ NUMBER OF MEASUREMENTS INCLUDED        30
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON,IOBS,IABS1) = (    0,    0,    0)
+
+      30 +    0 OBSERVATION RECORDS PROCESSED (NPARAM=   1)
+0   PROCESSING OBSERVATIONS  REQUIRED
+           0H  0M  0.25S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1LEAST SQUARES ANALYSIS   (ITERAT  1)     TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT             7/13/17 PAGE   20
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            *********    **           **    *********    **            **   *************
+                           ***********   ***          **   ***********   **            **   *************
+                           **       **   ****         **   **       **   **            **             **
+                           **       **   ** **        **   **       **   **            **            **
+                           **       **   **  **       **   **       **   **            **           **
+                           **       **   **   **      **   **       **   **            **          **
+                           ***********   **    **     **   ***********   **            **         **
+                           ***********   **     **    **   ***********   **            **        **
+                           **       **   **      **   **   **       **   **            **       **
+                           **       **   **       **  **   **       **   **            **      **
+                           **       **   **        ** **   **       **   **            **     **
+                           **       **   **         ****   **       **   **            **    **
+                           **       **   **          ***   **       **   ***********   **   *************
+                           **       **   **           **   **       **   ***********   **   *************
+-
+-
+                                          **           **    **           **   **       **
+                                          **           **    ***          **   **      ** 
+                                          **           **    ****         **   **     **  
+                                          **           **    ** **        **   **    **   
+                                          **           **    **  **       **   **   **    
+                                          **           **    **   **      **   *** **     
+                                          **           **    **    **     **   *****      
+                                          **           **    **     **    **   ** **      
+                                          **           **    **      **   **   **  **     
+                                          **           **    **       **  **   **   **    
+                                          **           **    **        ** **   **    **   
+                                          **           **    **         ****   **     **  
+                                          ***********  **    **          ***   **      ** 
+                                          ***********  **    **           **   **       **
+- PEP VERSION= 20170713 PEP.PEPLOAD.PEP790                          
+
+
+ ANALIZ LINK CANCELLED BY ICT(15)= -1
+1COMPLETION OF LEAST SQUARES ITERATION 1  TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT             7/13/17 PAGE   21
+0    LEAST SQUARES ITERATION  1 DURING THE LAST   19 PAGES STARTING ON PAGE    3 REQUIRED
+           0H  0M  0.26S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0NORMAL STOP  NO MATRIX INVERSION  ICT(15)=   -1
+1PLANETARY EPHEMERIS PROGRAM TERMINATED   TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT             7/13/17 PAGE   22
+
+  NORMAL STOP IN MAIN
+0 TERMINATION DATE       =  7/13/17
+  TERMINATION DAY OF YEAR= 194
+  TERMINATION CLOCK TIME = 21H 51M 26.31S
+
+                            REAL TIMER      TASK TIMER
+         CLOCK INCREMENT =  0H  0M  0.01S   0H  0M  0.00S 
+    TOTAL EXECUTION TIME =  0H  0M  0.31S   0H  0M  0.03S 
+ (TASK TIME)/(REAL TIME) = 0.09677
+-
+-
+-
+-
+-
+                                    ***************   ***               ***    **************  
+                                    ***************   ****              ***    *************** 
+                                    ***************   *****             ***    ****************
+                                    ***               ******            ***    ***          ***
+                                    ***               *** ***           ***    ***          ***
+                                    ***               ***  ***          ***    ***          ***
+                                    ***               ***   ***         ***    ***          ***
+                                    ***               ***    ***        ***    ***          ***
+                                    *************     ***     ***       ***    ***          ***
+                                    *************     ***      ***      ***    ***          ***
+                                    *************     ***       ***     ***    ***          ***
+                                    ***               ***        ***    ***    ***          ***
+                                    ***               ***         ***   ***    ***          ***
+                                    ***               ***          ***  ***    ***          ***
+                                    ***               ***           *** ***    ***          ***
+                                    ***               ***            ******    ***          ***
+                                    ***************   ***             *****    ****************
+                                    ***************   ***              ****    *************** 
+                                    ***************   ***               ***    **************  

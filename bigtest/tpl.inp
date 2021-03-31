@@ -1,0 +1,141 @@
+TPL -  TEST INTEGRATION OF EARTH, MOON, AND PLANET WITH PARTIALS                
+ &NMLST1                                                                        
+ EXTPRC=0,                 $ USE HARDWARE EXTENDED PRECISION                    
+ ICT(1)=1,                 $ ONE ITERATION                                      
+ ICT(3)=1,IOBS1=31,        $ WRITE DUMMIES ON OBSLIB                            
+ ICT(15)=-1,               $ NO SOLUTION                                        
+ ICT(20)=-4,               $ PRINT PARTIALS                                     
+ ICT(28)=1                 $ CALC. NUT-PREC AT BOTH SEND AND RECV TIME          
+ ICT(27)=-1,IBODY=90,NBODY=1,PRMTER(81)=1.D0 $USE S.S.B.C                       
+ ICT(34)=1,                $ ANNUAL BUT NOT SEMI-ANNUAL TERMS IN A1-UT1         
+ ICT(37)=-1,               $ DO NOT SKIP DUMOBS BELOW HORIZON                   
+ ICT(39)=1,                $ USE ANY AVAILABLE INTEGRATIONS                     
+ ICT(40)=1,                $ USE SBFN FOR EMBARY INTEGRATION                    
+ ICT(43)=1,                $ USE NEW CODE                                       
+ JCT(2)=11,1, JCAL(9)=22   $ PROPCO WITH EXTRA PRINT, DO SOLAR PLASMA           
+ JCT(27)=1,                $ * COMMANDS                                         
+ JCT(33)=93,               $ UT1 AND WOBBLE FROM FT93 AND FT94                  
+ JCT(54)=1,                $ USE MOR ROUTINES                                   
+ MASS(11)=6.7D-10,         $ CERES MASS                                         
+ GMVARY=1D-35, SUNHAR=1D-8,                                                     
+ PRMTER(47)= 0, 23.4433,   $ A-BELT ASC. & INCL.                                
+ PRMTER(49)= 2.9, 1D-9,    $ A-BELT DIST & MASS                                 
+ PRMTER(60)=10,            $ ELECTRON DENSITY AT 1 AU                           
+ MDSTSC=0,                 $ GET STANDARD MOON UNITS                            
+ LPRM=3,4,5,10,31,32,33,40,41,42,49,50,51,60                                    
+ LOUT=6,                   $ DISPLAY PARAMETER NAMES                            
+*OBJECT EMBARY                                                                  
+ COND= .9958267665339834, .09780299873377071, .04240314161324497,               
+  -.002111811083818306, .01563879101388465, .006781326667821355,                
+ ICND=-5,                                                                       
+ CON1(1)=2442320.5,                                                             
+ JD1=2442304, JD0=2442321, JD2=2442347,                                         
+ K=1, 3*1,3*-1, 3,4,10,31,32,33,40,41,42, $ PARTIALS                                 
+ K(31)= -1,-1,3*1,4*-1,1,  $ INCLUDE MARS, JUP, MOON                            
+ K(61)=3*1, K(70)=3*1,     $ INCLUDE RELFCT,GMVARY,SUNHAR,POE,BETA,GAMMA        
+ K(79)=2*1,                $ INCLUDE A-BELT                                     
+ K(82)=0,                  $ REACTION ON J2 BY SUN                              
+ K(87)=2, INT=2,           $ INTERVALS                                          
+ K(88)=2,6,                $ ADAMS-MOULTON METHOD, 7 TERMS                      
+ K(91)=-3,-6, EPS(3)=1E-9  $ STARTING INTERVALS                                 
+ K(98)=4,0,-1,             $ PRINT + TAPE; ORDINARY EQNS OF MOTION              
+ L=3*1,3*0, 24,                                                                 
+*OBJECT EARTH-ROTATION                                                          
+ NAME=' EROTAT ', ITAPE=0,                                                      
+ CON(1)=6*0,               $ ZERO ALL AD HOC ROTATION ANGLES AND RATES          
+ CON(10)=2442048.0         $ EPOCH FOR DRIFT IN A1-UT1 IS 0 JAN 1974            
+ CON(22)=5026.75           $ NOMINAL PRECESSION CONSTANT                        
+$CON(23)=84404.84          $ NOMINAL OBLIQUITY AT 1950.0                        
+ CON(24)=9.21              $ NOMINAL NUTATION CONSTANT                          
+*OBJECT MOON                                                                    
+ CON(1)=1738.09,           $ MEAN RADIUS FOR MOON HARMONICS (JPL LLB-5)         
+ CON(16)=8.93645681309210D-2,                                                   
+ K=1, 1,3*-1,2*1, -16,-20,3,10,32,303, 1031,2,3  $ INTEGRATED PARTIALS          
+ K(40)=1,K(61)=1,1,                                                             
+ K(81)=4,3,3,1,1,                                                               
+ K(87)=-2, INT=-1,         $ INTEGRATION STEP SIZE                              
+ K(88)=2,6,                $ A-M INTEGRATOR, 7 TERMS                            
+ K(91)=-4,-6,              $ STARTING INTERVALS                                 
+ K(98)= 10,0,-1,           $ PRINT+TAPE, USUAL EQNS OF MOTION                   
+ COND= .0026232835202694, -.0005304792874056, .0000239484232369,                
+       .0000854824499752,  .0005195905088138, .0002166804074577,                
+ ICND=-5,                  $ CONVERT TO ELLIPTIC                                
+ JD0=2442321,JD1=2442321,JD2=2442332,                                           
+ NZONE=3, NTESS=3,                                                              
+ J2=2.03822000000000D-4, J3=8.78597916047804D-6,                                
+ C2=0.,  3.57863661189565D-5,                                                   
+ C3=3.02761364595177D-5, 1.42242064346298D-5, 1.35361385680119D-5,              
+ S3=5.97661136879657D-6, 4.72438898591151D-6, -2.97262223597402D-6,             
+ LJ2=1, LJ3=1,                                                                  
+ LC3=1,1,                                                                       
+ L=1,3*0,2*1, 16,20    $ I.C.'S + TIDAL FRICTION + ETA DELTA                    
+ EPS(3)=1.0D-10,                                                                
+*OBJECT MOON-ROTATION                                                           
+ NAME=' MROTAT ', ITAPE=21,                                                     
+ K=1, 2*1,4*-1, -3,-6,-7,1031,2,3,1041,3,1,3,2,  $ PARTIALS                     
+ K(31)=2*-1,1,6*-1,1,  $ INCLUDE ONLY EARTH AND MOON                            
+ K(61)=-1,             $ NO RELATIVITY                                          
+ K(81)=1,              $ SUN INCLUDED IN EQNS OF MOTION AND PARTIALS            
+ K(82)=0,              $ F-F INTERACTION IN EOM                                 
+ K(83)=0,              $ ELAS. & DISS. IN EQS. OF MOTION                        
+ K(86)=303,            $ USE 3RD ORDER ZONAL AND TESS. HARMS IN PARTIALS        
+ K(87)=-2,INT=-1,      $ INTEGRATION STEP SIZE                                  
+ K(88)=2,6,            $ ADAMS-MOULTON INTEGRATION, 7 TERMS                     
+ K(91)=-4,-6,          $ STARTING INTERVAL 1/128 DAY, MIN 1/256                 
+ K(98)=10,0,           $ PRINTOUT OF PARTIALS & TAPE                            
+ K(100)=-1,            $ INDICATE EULER ANGLE INTEGRATION                       
+ CON(1)=1738.09,       $ MEAN RADIUS                                            
+ CON(2)=0,             $ USE DERIVED VALUE OF ALPHA                             
+ CON(3)=6.31716849185511D-4, CON(4)=2.27809893710516D-4,                        
+ CON(5)=2.6920298D-2                                                            
+ CON(6)=2.41511993653923D-2, 4.68318905574876D-3, $ K2,K2*DELTA                 
+ L=2*1,4*0,  3,6,7,                                                             
+ COND=.0640689056244628,  .4174732965826930, 442.772215182822606,               
+     -.0001116475592635, -.0000391413652830,    .2300859910558332,              
+ JD0=2442321,JD1=2442321,JD2=2442332                                            
+*OBJECT MARS                                                                    
+ NCENTR=-1,                                                                     
+ COND=-1.582279061283973, -.3680747075174319, -.1265083724103855,               
+     .003872124750611298, -.01123881652406281,-.005262720398365393              
+ ICND=-5,                                                                       
+ CON(1)=3392.459,      $ RADIUS                                                 
+ CON(6)=151.446, 1.025956, 52.6951, 317.3116 $ PHASE, PERIOD, DEC, RA           
+ CON1(1)=2443509.5     $ J1978.0                                                
+ JD1=2442321, JD0=2442321, JD2=2442336,                                         
+ K=1, 3*-1,3*1, 3,5,11,31,40,41,49,50,506,                                      
+ K(31)= -1,-1,3*1,5*-1, 1,                                                      
+ K(61)=1, K(70)=2*1, K(79)=2*1,                                                 
+ K(87)=1, INT=1,       $ INTERVALS                                              
+ K(91)=-10,-14,        $ STARTING INTERVALS                                     
+ K(93)=5,              $ TARGET BODY (FOR MEAN ANOMALY)                         
+ K(98)=4,0,0,          $ PRINT+TAPE, ENCKE METHOD                               
+ L=3*0,3*1, 6,7,8,9, 24                                                         
+*OBJECT JUPITER                                                                 
+ ITAPE=0                                                                        
+ L(6)=1,                                                                        
+ CON1(1)=2440000.5,                                                             
+*OBJECT 11                                                                      
+ NAME=' CERES 1', ITAPE=0,                                                      
+$ I.C. FROM ASTRONOMICAL PAPERS FOR USE OF AMERICAN EPHEMERIS VOL 16,PART 3     
+ CON1(1)=2440000.5D0,                                                           
+ COND(1)=2.766333786805837, COND(2)=7.862823976140470D-2,                       
+ COND(3)=27.17884370592106, COND(4)=23.40674566424140,                          
+ COND(5)=128.9601772696749, COND(6)=58.45329102597486,                          
+*SPOTS                                                                          
+OLYM  4    3396.015377   -133.71234       17.81234               1 1 1          
+*DLTREAD                                                                        
+ 1 10 HAYS LASR HAYS AP15 1.0E0 1.0E0 1.E-9 1       4.317800000000D+14 0 -5 1000
+2442326 10 01 30.5      2442327  2 03 00.0       1.0E-08            7200        
+                                                                                
+ 6 10 NICE ASTG           1.0E0 1.0E0 1.E-9 1       4.317800000000D+14 0 -5 1010
+2442326 10 01 30.5      2442327  2 03 00.0        .01     .1        7200        
+                                                                                
+ 1  4 AREC RADR AREC OLYM 1.0E0 1.0E0 1.E-9 1       2.380000000000D+09 0 -5 1020
+2442326 20 01 30.5      2442327 12 03 00.0       1.0E-08            7200        
+                                                                                
+ 3  4 AREC RADR AREC OLYM 1.0E0 1.0E0 1.E-9 1       2.380000000000D+09 0 -5 1030
+2442326 20 01 30.5      2442327  4 03 00.0       1.0E-08            7200        
+                                                                                
+ 5  4 PARI ASTM           1.0E0 1.0E0 1.E-9 1       4.317800000000D+14 0 -5 1040
+2442327 00 01 30.5      2442327 12 03 00.0        .01     .1        7200        
+**END                                                                           

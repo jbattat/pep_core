@@ -1,0 +1,86 @@
+TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT         
+*INCLUDE LOCK(PRMRED)                                                           
+ ICT(15)=-1,        $ CANCEL ANALYZE                                            
+ JCT(69)=1,         $ USE NEW FORMAT IOBS/DLTRED HEADER CARDS                   
+ LOUT=6, IBUF1=97,  $ GET PARAMETER LIST                                        
+ JPERT=91,          $ S-BODY TAPE                                               
+ IOBS1=31,          $ OUTPUT OBSLIB                                             
+*OBJECT MERCURY                                                                 
+ CON(23)=2438,      $ RADIUS FOR TRANSITS                                       
+ L=2*0,1,3*0,  23,  $ PARTIALS                                                  
+*OBJECT VENUS                                                                   
+*OBJECT JUPITER                                                                 
+ CON(23)=71398,     $ RADIUS FOR TRANSITS                                       
+ L=1                                                                            
+*INCLUDE LOCK(IO)                                                               
+*INCLUDE LOCK(EUROPA)                                                           
+*OBJECT 19                                                                      
+  NAME='GANYMEDE', NCENTR=5,                                                    
+*OBJECT 20                                                                      
+  NAME='CALLISTO', NCENTR=5,                                                    
+*DLTREAD                                                                        
+ 5  5:C.TO OPTP           1.0E0 1.0E0       1                        100        
+.       BONNDRCH                                                                
+2441890                 2441891                  2.      27.       43800        
+                                                                                
+ 6 17:PERT OPTS           1.0E0 1.0E0       1                        200        
+.       K5                                                                      
+2441890                 2441891                  2.      27.       43800        
+                                                                                
+ 4  5.C.TO OPTM           1.0E0 1.0E0       1                        300        
+2441890                 2441893                  2.      27.       86401        
+                                                                                
+20  5.PERT AZEL           1.0E0 1.0E0       1                        400        
+2441890                 2441891                  2.      27.       43800        
+                                                                                
+*INCLUDE LOCK(SITES)                                                            
+*SKYCORR                                                                        
+ CTLG='BONNDRCH', N=2, LSKY=1,1,0,0,0,0,1,1,  SKY=1.                            
+*SKYCORR                                                                        
+ CTLG='K5', N=1, LSKY=4*1,  SKY=0,1.5                                           
+*EECORR                                                                         
+C.TO OPTM       1 1 1                .1                      1.                 
+PERT AZEL       1   1               .0002                                       
+*PHASES                                                                         
+C.TO OPTM  5  2 1 1                                                             
+*END           SUBSTREAM                                                        
+*END                                                                            
+20  5.C.TO TESJ           1E 0  1E 0  1E-03 1                     601020        
+2  5  9 41.3      .001       0.002   78.88         .01                   72673  
+2  5  9 41.3     359.999     0.002   78.80         .01                   72673  
+                                                                                
+ 5  2.C.TO TESV           1E 0  1E 0  1E-03 1                     601030        
+2 15 50  0.      23 59 58.1    2.     -1 24 20.5   10.                   50474  
+2 15 50  0.       0  0  4.2    2.     -1  9 23.6   10.                   50474  
+                                                                                
+ 9 18.     MUTU EMID IO   1E 0  1E 0  1E-03 1                     601040        
+2  MAUN 102519.000 0.4      .9451 .04                                    72673 2
+                                                                                
+ 9 17.     MUTU OMID EURO 1E 0  1E 0  1E-03 1                     601041        
+2  MAUN 103532.000 0.5      .2290 .04                                    72673 1
+                                                                                
+ 9 17.     FAKE OMID JUPI 1E 0  1E 0  1E-03 1                     601043        
+2  CANA  23522.    5.3      .0385 .01                                    72673 1
+                                                                                
+ 9  5.     FAKE OMID IO   1E 0  1E 0  1E-03 1                     601045        
+2  JOHB 235250.    4.3      .0385 .01                                    72673 J
+                                                                                
+ 8  5.     FAKE      IO   1E 0  1E 0  1E-03 1                     601046        
+1  WISE 224221.    3.3                                                   72673 J
+                                                                                
+ 8  1.TRAN 20TH           1.0E0 1.0E0       1                     601450        
+11       74823.000 4.0                131511.000 8.0                    111073T1
+  1ADDIS   0.0           -38.76666666667   9.03333333333              -2        
+01       0 0 0.000 0.0  0 0 0.000 0.0 131538.000 2.0  0 0 0.000 0.0     111073T1
+  2BUDAP   0.0           -17.80000000000  42.36666666667              -2        
+10       74826.000 4.0  0 0 0.000 0.0  0 0 0.000 0.0  0 0 0.000 0.0     111073T1
+  3PISA    0.0           -10.40000000000  43.71666666667              -2        
+30       0 0 0.000 0.0  74936.000 2.0  0 0 0.000 0.0  0 0 0.000 0.0     111073T1
+  3PISA    0.0           -10.40000000000  43.71666666667              -2        
+10       74826.000 4.0  0 0 0.000 0.0  0 0 0.000 0.0  0 0 0.000 0.0     111073T1
+  4PISA    0.0           -10.40000000000  43.71666666667              -2        
+30       0 0 0.000 0.0  74936.000 2.0  0 0 0.000 0.0  0 0 0.000 0.0     111073T1
+  4PISA    0.0           -10.40000000000  43.71666666667              -2        
+01       0 0 0.000 0.0  0 0 0.000 0.0 131517.000 2.0  0 0 0.000 0.0     111073T1
+  4PISA    0.0           -10.40000000000  43.71666666667              -2        
+                                                                                

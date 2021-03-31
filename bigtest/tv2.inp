@@ -1,0 +1,49 @@
+TV2 -  STANDARD VIKING RAD TESTS..SPOT,ORBITER,CM,SUBRADAR PT                   
+                                                                                
+ &NMLST1                                                                        
+ NBODY=9, IBODY=10,IPERT=10,                                                    
+ EXTPRC=-1,                                                                     
+ ICT(1)=1,                                                                      
+ ICT(3)=1, IOBS1=31,     $ WRITE DUMMY OBS ON OBSLIB                            
+ ICT(15)=-1    $SHUT OFF ANALYZ                                                 
+ ICT(20)=-99,  $ PRINT SOME PARTIALS EACH SERIES                                
+ ICT(21)=-1,       $ USE   PHASE DELAY       FOR DOPPLER                        
+  ICT(43)=1        $USE RAD ROUTINES IN COMPAR                                  
+ ICT(80)=0       $TURN ON COMPAR LINK                                           
+ JCT(2)=11                                                                      
+ NOPRNT=1,  $ SUPPRESS PRINTOUT (SAME AS TEST2)                                 
+ &END                                                                           
+                                                                                
+ &NMLST2                                                                        
+*INCLUDE RBGTST(MARS)                                                           
+ &END                                                                           
+                                                                                
+ &NMLST2                                                                        
+*INCLUDE RBGTST(VKNG2)                                                          
+ L= 0,1,4*0,                                                                    
+ &END                                                                           
+                                                                                
+ &NMLST2   &END                                                                 
+*INCLUDE RBGTST(SITES)                                                          
+                                                                                
+VKL1  4  3397.5          226.            19.5                                   
+CMMR  4  .000001         .000001         .000001                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+*INCLUDE RBGTST(DOPOBVKM)                                                       
+ 2  4 62DS VKL1 62DS VKL1 1.0   1.0  1.E-08 1                  2.29D09      5000
+2443007                 2443008                    1.E-5  .00       7200        
+                                                                                
+ 2  4 01CM VKL1 01CM VKL1 1.0   1.0  1.E-08 1                  2.29D09      5050
+2443007                 2443008                    1.E-5  .00      44000        
+                                                                                
+ 2  4 62DS CMMR 62DS CMMR 1.0   1.0  1.E-08 1                  2.29D09      5100
+2443007                 2443008                    1.E-5  .00      44000        
+                                                                                
+ 2  4 01CM CMMR 01CM CMMR 1.0   1.0  1.E-08 1                  2.29D09      5150
+2443007                 2443008                    1.E-5  .00      44000        
+                                                                                
+ 2 54 14DS VO2  14DS      1.0   1.0  1.E-08 1                  2.29D09      5200
+2443007                 2443008                   .01     .00       7200        

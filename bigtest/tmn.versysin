@@ -1,0 +1,3 @@
+ &CNTL  JSIZ=132, KFIN=132, IRFM=3, LCMP=3, IPUN=0  &END
+ &CNTL  PG1ST=0,3, PG1FN=1,999, PG2ST=0,3, PG2FN=1,999, 
+  FNAME='biglist.tmn', 'tmn.out'  &END

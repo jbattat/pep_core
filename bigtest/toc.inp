@@ -1,0 +1,29 @@
+TOC -  STANDARD MARS TEST OBSERVATIONS: ORBITER OCCLT,ECLPS,DIF.OPTCL           
+*INCLUDE LOCK(PRMRED)                                                           
+ ICT(24)=1,  $ GET REFRACTION PRINTOUT                                          
+ IOBS1=31,  ICT(10)= 0,-1,          $ DO PRDICT WITHOUT TAPE                    
+ IBUF1= 97,  LOUT=6,  $ GET PARAMETER NAMES                                     
+*INCLUDE LOCK(MARS)                                                             
+ L(7)=23,  CON(23)=3393.8, $ OFFSET AND ADJUST MARS RADIUS  $                   
+*INCLUDE LOCK(VKNG2)                                                            
+ L=0,1,4*0,                                                                     
+**END                                                                           
+25 54 MCDO DIFO           1.0E0 1.0E0       1                            50 8000
+  4                                                                             
+2 15 15 50.0          0.775947 0.2         0.63165 0.3            ?  JC  81676MV
+2 15 25  0.0          0.029468 0.2         1.55453 0.4            !  BG  81676MV
+                                                                                
+ 9  4      TST1 EMID VKNG 1.0E0 1.0E0       1                            50 8010
+1  AREC 15 0 0.    0.7                                                   81676 M
+2  MILL 152149.995 0.6     .72661.001                                    81676 M
+                                                                                
+ 9 54      TST2 OMID   MA 1.0E0 1.0E0       1                            50 8040
+1  MCDO 15 215.28  0.7                                                   81676 V
+2  14DS 151544.853 0.7     .52458 .01                                    81676 V
+                                                                                
+ 8 54      TST2        MA 1.0E0 1.0E0       1                            50 8050
+3  &&&&                151557.583 7.2                                    81676 V
+3  HAYS                15 215.292 1.8                                    81676 V
+11 14DS 15 215.307 1.1                152857.583 0.9                     81676 V
+ 3 14DS                                              152857.584 1.0      81676 V
+                                                                                

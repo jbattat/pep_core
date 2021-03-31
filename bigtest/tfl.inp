@@ -1,0 +1,144 @@
+TFL -  KALMAN FILTER TEST: 1 ITERATION, 2 SPANS, 19 2-HOUR PVO DATA             
+ &NMLST1                                                                        
+ EPS(2)=1.0D5      $ 1000 HZ MAX                                                
+ EPS(9)=70.,5.     $ PARTIAL/FULL CONVERGENCE CRITERION FACTOR                  
+ EXTPRC=-1,        $ USE DOUBLE PRECISION                                       
+ ICT(1)=1,         $ 1 ITER                                                     
+ ICT(4)=1,         $ MUST RECOMPUTE PARTIALS                                    
+ ICT(5)=0,         $ FORM AND FILTER NEW INSNE                                  
+ ICT(10)=-1,-1     $ PREDICT RADAR, JUST PRINT                                  
+ ICT(20)=-2        $ PRINT SOME PARTIALS                                        
+ ICT(21)=-1        $ USE PHASE DELAY DOPPLER                                    
+ ICT(42)=1,        $ KALMAN FILTER OPERATES                                     
+ ICT(43)=1,        $ USE 'NEW' CODE                                             
+ ICT(47)=0,        $ PRINT OUT UNSCALED N.E.                                    
+ ICT(48)=-2        $ MAX NO ITERATIONS OF SOLUTION CLEANUP                      
+ ICT(49)=-1        $ MAX NUMBER OF ITERATIONS OF MATRIX INVERSION               
+ JCT(27)=1,        $ *COMMAND INPUT                                             
+ IOBS=0                                                                         
+ IBUF1 = 97,       $ PARAMETER NAMES NEXT TO CORRELATIONS                       
+ NBODY=9, IBODY=90,                                                             
+ KOUT=6            $ EXTENDED PRINT                                             
+ LOUT = 6,                                                                      
+ IOBS0=50,IOBS1=51                                                              
+  IBUF6=96,        $ SOLUTION SUMMARY DATA SET                                  
+ JCT(52)=1,        $ PRINT SUMMARY                                              
+ JCT(56)=1,        $ FIRST FILTER ITERATION                                     
+ PRMTER(51)= 4.990047839276704D+02,             $ AULTSC  465A-24 NEW VALUE     
+ PRMTER(60)=10.    $ INTERPLANETARY PLASMA   ELECTRONS PER CC                   
+*OBJECT EARTH-ROT                                                               
+ CON(10)=2443509.5 $ J1978.0                                                    
+ CON(11)=-5.8D-02, 0,0                                                          
+*OBJECT VENUS                                                                   
+ CON(6)=-54.7, -243., 67.3, 273.3, CON1(1)=2438566.5  $ NOTES OF 3 JAN 79       
+ CON(1)=6052, CON1(12)=150,      $ VENUS RADIUS AND REF ALT.                    
+ CON(21)=13.3,     $ SCALE HEIGHT                                               
+ CON(22)=4.414810038765115D-13   $ TEST SOLN.                                   
+ CON1(9)=-3.       $ DRGEPS                                                     
+ L(7)=22,          $ ADJUST VENUS RHOZ                                          
+*OBJECT                                                                         
+ NPLNT=31, NCENTR=2, NAME='PVO'                                                 
+ INT=-7,                                                                        
+ EPS(3)=1.E-7,                                                                  
+ EPS(3)=3.E-9,                                                                  
+$  PVO ELEMENTS FROM TEST SOLN                                                  
+ COND=2.638248020297864D-4, .8429265412459269, 126.6823807694869,               
+         27.82252519949803, 172.5467440118278, 179.9986949956467,               
+ ICND=0, JD0=2443994, JD1=2443994, JD2=2443996,                                 
+ EPS=.408, .50,                                                                 
+ IHR=9,IMIN=48,SEC=12.8999,                                                     
+ K=1,1,1,1,1,1,1,L=1,1,1,1,1,1                                                  
+ K(8)=228,         $ INCLUDE VENUS RHOZ IN PARTIAL SET                          
+ K(31)=-1, 1,-1,-1,-1,-1,-1,-1,-1      $ ONLY SUN INCLUDED IN PARTIALS          
+ K(33)=0           $ INCLUDE EARTH IN E. OF M.TO GET VECTOR TO S/C              
+ CON1=93.,-66.     $ APPROX R.A. AND DEC. OF SOUTH ECLIPTIC POLE                
+ CON1(10)=2.4      $ DRAG COEFF.                                                
+ CON(9)=1.3,       $ RADIATION PRESSURE -- G(R)                                 
+ CON(14)=1.0,      $ RADIATION PRESSURE -- DISK                                 
+ K(81)=1,          $ TURN ON RADIATION PRESSURE (DIRECT, EXACT SHADOW)          
+ K(82)=1           $ TURN ON DRAG                                               
+ K(83)=1           $ TURN ON GAS LEAKS                                          
+ K(88)=0,          $ NORDSIECK V T P                                            
+ K(90)=6,          $ NUMBER OF CONT. EQU                                        
+ K(91)=-14,-17,    $ INTEGRATION STEPS:  START AND MIN                          
+ K(98)= 20         $ PRINT EVERY 20TH STEP                                      
+ K(99)=0,          $ PRINT AND TAPE FOR INTEGRATION                             
+ K(100)=-1,        $ ORDINARY EQUATIONS OF MOTION                               
+ KK(2)=-1          $ PRINT AT EVERY APSIS                                       
+ KK(3)=15,10                                                                    
+ KK(3)=13                                                                       
+ KK(10)=4,         $ SCALE PRINTOUT                                             
+ KK(78)=4,         $ KRADGO OF PLNORB  USE PVO MODEL OF RAD.PR.                 
+ KK(79)=2,         $ S/C FACES S. ECLIPTIC POLE                                 
+*SITES                                                                          
+12DSECHO 5212.051731     -243.1945377     3665.628               0 0 0-1    LS45
+14DSMARS 5203.996994     -243.1104930     3677.052               0 0 0-1    LS45
+43DSCAN2 5205.251036     -148.9812975    -3674.755               0 0 0-1    LS45
+44DSHSKL 5193.980796     -148.9778178    -3691.353               0 0 0-1    LS45
+62DSCEBR 4860.818049     -355.6321890     4116.901               0 0 0-1    LS45
+*DLTREAD                                                                        
+ 2 31 62DS PVCM 62DS     +1.E+0+1.E+0.1E-08 1   0.0  0.22939510154D+08 1 30 2001
+2443994 11 00 00.0      2443994 12 00 00.0       -2.E+03 -2.E+03                
+                                                                                
+ 2 31 14DS PVCM 14DS     +1.E+0+1.E+0.1E-08 1   0.0  0.22939426751D+08 1 30 2002
+2443994 13 00 00.0      2443994 14 30 00.0       -2.E+03 -2.E+03                
+2443994 15 00 00.0      2443994 16 00 00.0       -2.E+03 -2.E+03                
+2443994 17 30 00.0      2443994 18 30 00.0       -2.E+03 -2.E+03                
+2443994 19 00 00.0      2443994 20 00 00.0       -2.E+03 -2.E+03                
+2443994 20 30 00.0      2443994 23 00 00.0       -2.E+03 -2.E+03                
+                                                                                
+ 2 31 44DS PVCM 44DS     +1.E+0+1.E+0.1E-08 1   0.0  0.22939416326D+08 1 30 2003
+                                                                                
+ 2 31 12DS PVCM 12DS     +1.E+0+1.E+0.1E-08 1   0.0  0.22939583121D+08 1 30 2004
+                                                                                
+ 2 31 43DS PVCM 43DS     +1.E+0+1.E+0.1E-08 1   0.0  0.22939416326D+08 1 30 2005
+2443995 21 00 00.0      2443995 22 00 0.0        -2.E+03 -2.E+03                
+2443995 22 30 00.0      2443995 23 00 0.0        -2.E+03 -2.E+03                
+*FILTER                                                                         
+     TIMEZ=2443994.41D0,DELTA=1.00,NEPOCH=2,NPNP=7,                             
+     LFILT=7*1,                                                                 
+     FICT(1)=3,                                                                 
+     FICT(2)=1,                                                                 
+     FICT(3)=-1,                                                                
+     FICT(4)=0,                                                                 
+     FICT(5)=1,                                                                 
+     FICT(6)=0,                                                                 
+     FEPS(2)=1.0E+00,      $ RETAIN ASQT = 10**-19,1.6*10**-25                  
+     FEPS(3)=1.5E-01,      $ TOLERANCE FOR FILTER EPOCH AGREEMENT               
+     DELPRD=1.0,                                                                
+     WZERO=60,                                                                  
+     ICONOF=61,                                                                 
+     INSNE=62,                                                                  
+     FILTER=63,                                                                 
+     OUTSNE=64,                                                                 
+     SMAT=65,                                                                   
+     MAXP=20,                                                                   
+     MAXE=40,                                                                   
+*MARKOV                                                                         
+    VENUS CON(22)                                                               
+    BODY31 A                                                                    
+    BODY31 E                                                                    
+    BODY31 INC                                                                  
+    BODY31 ASC                                                                  
+    BODY31 PER                                                                  
+    BODY31 ANOM                                                                 
+                                                                                
+*STATE                                                                          
+  FEJD=2443994, FEHR=09, FEMIN=50, FESEC=0.0,                                   
+  X=0,                                                                          
+ FLAGS=F,F,F,F,F,F,F,                                                           
+*STATE                                                                          
+  FEJD=2443995, FEHR=9, FEMIN=48, FESEC=33.6093,                                
+$   TEST SOLUTION + W'S:                                                        
+  FICND=0                                                                       
+  X=3.3474D-13, 2.63811669D-4, .8429203537, 126.6823850886,                     
+                27.8225222215, 172.5467454232, 179.99832910,                    
+ FLAGS=T,T,T,T,T,T,T,                                                           
+*STATE                                                                          
+  FEJD=2443996, FEHR=9, FEMIN=48, FESEC=32.3586,                                
+  FICND=-3                                                                      
+$ ELEMENTS FROM NAV. STATE TABLES                                               
+  X(1)=0,       .394594D5,     .84283,      126.7025,                           
+                27.820,        172.542,     180.,                               
+ FLAGS=F,F,F,F,F,F,F,                                                           
+**END                                                                           

@@ -1,0 +1,1639 @@
+1INPUT STREAM TO THE PLANETARY EPHEMERIS PROGRAM (PEP)                                                                   PAGE    1
+0PEP VERSION= 20170713 PEP.PEPLOAD.PEP790                          
+0TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT          TITLE CARD
+ *INCLUDE LOCK(PRMRED)                                                            START OF INCLUSION
+  &NMLST1                                                                         SOLAR SYSTEM PARAMETERS &NMLST1 
+  NBODY=9, IBODY=90, $ USE SAME AS IPERT IN COMPAR LINK * * * * *                
+  ICT(1)=1, ICT(20)=-99,                                                         
+  ICT(3)=1   $ WRITE DUMMY OBS RESULTS ON TAPE    $                              
+  JCT(68)=1,  $  ALWAYS ASSUME FORWARD OBSERVATION SERIES                       $
+  EXTPRC= -1,  $ USE REAL*8                                                      
+  JCT(27)=1,  $ USE * COMMANDS  $                                                
+                                                                                  END OF INCLUSION AFTER   7 CARDS
+  ICT(15)=-1,        $ CANCEL ANALYZE                                            
+  JCT(69)=1,         $ USE NEW FORMAT IOBS/DLTRED HEADER CARDS                   
+  LOUT=6, IBUF1=97,  $ GET PARAMETER LIST                                        
+  JPERT=91,          $ S-BODY TAPE                                               
+  IOBS1=31,          $ OUTPUT OBSLIB                                             
+0*OBJECT MERCURY                                                                 *****
+  CON(23)=2438,      $ RADIUS FOR TRANSITS                                        INDIVIDUAL BODY PARAMETERS &NMLST2  
+  L=2*0,1,3*0,  23,  $ PARTIALS                                                  
+0*OBJECT VENUS                                                                   *****
+                                                                                  INDIVIDUAL BODY PARAMETERS &NMLST2  
+0*OBJECT JUPITER                                                                 *****
+  CON(23)=71398,     $ RADIUS FOR TRANSITS                                        INDIVIDUAL BODY PARAMETERS &NMLST2  
+  L=1                                                                            
+ *INCLUDE LOCK(IO)                                                                START OF INCLUSION
+0*OBJECT  17                                                                     *****
+  NPLNT=17, NCENTR=5, RADIUS=1820, NAME='IO',                                     INDIVIDUAL BODY PARAMETERS &NMLST2  
+   ICND=0, INT= -5,                                                              
+  CON(7)= 1.769138,     64.504084, 267.997782,  $  PERIOD, DELTA, ALPHA          
+  CON(23)= 1820,   $  RADIUS FOR TRANSIT/OCCULT                                  
+   K=1,  $                                                                       
+  K(31)=4*-1,  K(37)=3*-1,  $  TURN OFF OTHER PLANETS BUT JUP & SAT              
+     K(47)=4*2,  $ USE JPERT  $                                                  
+  K(86)=106, K(87)=-7, K(93)=18,19,20, $  TARGETS                                
+   K(91)=-15,-20,  $ START AND MIN STEP SIZE                                     
+   K(98)=-128,  $ PRINTOUT EVERY 4 DAYS                                          
+   K(99)=0,  $ PRINTOUT + TAPE                                                   
+   K(100)=-1,  $  USUAL EQNS OF MOTION                                           
+  KK(10)=3,  $ PRINT EXPONENT                                                    
+                                                                                  END OF INCLUSION AFTER  14 CARDS
+ *INCLUDE LOCK(EUROPA)                                                            START OF INCLUSION
+0*OBJECT  18                                                                     *****
+  NPLNT=18, NCENTR=5, RADIUS=1521, NAME='EUROPA',                                 INDIVIDUAL BODY PARAMETERS &NMLST2  
+   ICND=0, INT= -4,                                                              
+  CON(7)= 3.551181,     64.504084, 267.997782,  $  PERIOD, DELTA,ALPHA           
+  CON(23)= 1521.,  $  RADIUS FOR TRANSIT/OCCULT                                  
+  K(31)=4*-1,  K(37)=3*-1,  $  TURN OFF OTHER PLANETS BUT JUP & SAT              
+     K(47)=4*2,  $ USE JPERT  $                                                  
+  K(86)=206, K(87)=-6, K(93)=17,19,20,                                           
+   K(91)=-15,-20,  $ START AND MIN STEP SIZE                                     
+   K(98)=-64,  $ PRINTOUT EVERY 4 DAYS                                           
+    K(99)=0,  $ PRINTOUT + TAPE                                                  
+   K(100)=-1,  $  USUAL EQNS OF MOTION                                           
+  KK(2)=-1, KK(3)= 12, KK(10)= 3,                                                
+                                                                                  END OF INCLUSION AFTER  13 CARDS
+0*OBJECT 19                                                                      *****
+   NAME='GANYMEDE', NCENTR=5,                                                     INDIVIDUAL BODY PARAMETERS &NMLST2  
+0*OBJECT 20                                                                      *****
+   NAME='CALLISTO', NCENTR=5,                                                     INDIVIDUAL BODY PARAMETERS &NMLST2  
+0*DLTREAD                                                                        *****
+  5  5:C.TO OPTP           1.0E0 1.0E0       1                        100         OVERRIDE ERRORS AND DUMMY OBS. CARDS
+ .       BONNDRCH                                                                
+ 2441890                 2441891                  2.      27.       43800        
+                                                                                 
+  6 17:PERT OPTS           1.0E0 1.0E0       1                        200        
+ .       K5                                                                      
+ 2441890                 2441891                  2.      27.       43800        
+                                                                                 
+  4  5.C.TO OPTM           1.0E0 1.0E0       1                        300        
+ 2441890                 2441893                  2.      27.       86401        
+                                                                                 
+ 20  5.PERT AZEL           1.0E0 1.0E0       1                        400        
+ 2441890                 2441891                  2.      27.       43800        
+                                                                                 
+ *INCLUDE LOCK(SITES)                                                             START OF INCLUSION
+0*SITES                                                                          *****
+ $  PHOTOGRAPHIC SERIES SITES                                                    
+ TABLE MT  2287.            117.68088        34.38167                  -2         SITE CARDS  
+ KIEV       186.            -30.500090       50.36542                  -2        
+ $ MUTUAL EVENT SITES                                                            
+ AGHRVARD   500.             71.560          42.3                      -2        
+ CANARYIS  1600.             16.000          28.01                     -2        
+ CATANIA    100.            -15.09           37.3                      -2        
+ C.TOLOLO  2399.             70.80585       -30.16894                  -2        
+ FERNBANK   300.             84.3195         33.6                      -2        
+ JHNSONSC    60.             93.75           30.0                      -2        
+ JOHBURG   1806.            -28.075000      -26.18203                  -2        
+ LEUSCHNR    94.            122.26212        37.87319                  -2        
+ LOWELL    2210.            111.66333        35.202                    -2        
+ MAUNAKEA  4205.            155.472210       19.82611                  -2        
+ MCDONALD  2081.            104.022255       30.67158                  -2        
+ MITAKA      59.           -139.542090       35.67261                  -2        
+ MTDODAIR   879.            220.805625       36.0062                   -2        
+ NARA JPN   600.            220.455          35.4                      -2        
+ NWMEXICO  2000.            106.6995         32.0                      -2        
+ PALOMAR   1706.            116.863995       33.35622                  -2        
+ PERTH      391.           -116.135040      -32.00894                  -2        
+ SIDINGSP  1165.           -149.066085      -31.27704                  -2        
+ SUTHRLND  1000.             -4.62          -33.8                      -2        
+ VANDRBLT   300.             86.800          35.9                      -2        
+ WISE       900.            -34.7625         30.59583                  -2        
+                                                                                  END OF INCLUSION AFTER  26 CARDS
+0*SKYCORR                                                                        *****
+  CTLG='BONNDRCH', N=2, LSKY=1,1,0,0,0,0,1,1,  SKY=1.                             SKY CORRECTION MODEL
+0*SKYCORR                                                                        *****
+  CTLG='K5', N=1, LSKY=4*1,  SKY=0,1.5                                            SKY CORRECTION MODEL
+0*EECORR                                                                         *****
+ C.TO OPTM       1 1 1                .1                      1.                  EQ-EQ-DECL OR INTERFEROMETER BIAS CARDS 
+ PERT AZEL       1   1               .0002                                       
+0*PHASES                                                                         *****
+ C.TO OPTM  5  2 1 1                                                              PHASE CORRECTION CARDS  
+ *END           SUBSTREAM                                                        
+0*END                                                                            *****
+ -------------------------------------------------------------------------------- END OF INPUT STREAM
+1PLANETARY EPHEMERIS PROGRAM INPUT DATA   TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE    2
+0DAY OF YEAR= 194    CLOCK TIME AT EXECUTION= 21H 51M 26.00S
+-
+-
+-
+
+                                  **   **           **   **********    **       **   ************
+                                  **   ***          **   ***********   **       **   ************
+                                  **   ****         **   **       **   **       **        ** 
+                                  **   ** **        **   **       **   **       **        ** 
+                                  **   **  **       **   **       **   **       **        ** 
+                                  **   **   **      **   **       **   **       **        ** 
+                                  **   **    **     **   ***********   **       **        ** 
+                                  **   **     **    **   **********    **       **        ** 
+                                  **   **      **   **   **            **       **        ** 
+                                  **   **       **  **   **            **       **        ** 
+                                  **   **        ** **   **            **       **        ** 
+                                  **   **         ****   **            **       **        ** 
+                                  **   **          ***   **            ***********        ** 
+                                  **   **           **   **             *********         ** 
+-
+-
+                                          **           **    **           **   **       **
+                                          **           **    ***          **   **      ** 
+                                          **           **    ****         **   **     **  
+                                          **           **    ** **        **   **    **   
+                                          **           **    **  **       **   **   **    
+                                          **           **    **   **      **   *** **     
+                                          **           **    **    **     **   *****      
+                                          **           **    **     **    **   ** **      
+                                          **           **    **      **   **   **  **     
+                                          **           **    **       **  **   **   **    
+                                          **           **    **        ** **   **    **   
+                                          **           **    **         ****   **     **  
+                                          ***********  **    **          ***   **      ** 
+                                          ***********  **    **           **   **       **
+- PEP VERSION= 20170713 PEP.PEPLOAD.PEP790                          
+-
+0SPECIFICATION OF THE UNITS OF MASS, LENGTH AND TIME
+0MASS OF SUN                                   = 1.0000000000000
+ SQRT(GRAVITATIONAL CONSTANT TIMES MASS OF SUN)= 0.0172020989500 ((AU)**3/2)/(DAY)
+ INDEPENDENT TIME VARIABLE OF EPHEMERIDES      = A.1 + 32.15S
+1PLANETARY EPHEMERIS PROGRAM INPUT DATA   TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE    3
+0PERIPHERAL DATA SET NUMBERS NOT BELONGING TO A SPECIFIC BODY OR OBSERVATION LIBRARY
+      IN =  5    IOUT =  6    JOUT =  0    KOUT =  0   IPUNCH=  7   IGRAPH= 97   INTERN= 99    IBUF =  4    IMAT =  0    IPERT= 90
+    JPERT= 91    KPERT=  0    IVCNT=  0   IPLCON=  1   IOBCON=  2    IOBS =  5   ITHING=  3    IMAT1=  0    IMAT2=  0    JMAT =  0
+    IMAT3=  0    IMAT4=  0    ICTAT=  0   LIBHOC=  0
+ NUMMT0=  0   IMAT0=
+0CONTROL CONSTANTS FOR PROGRAM FLOW AND LEAST-SQUARES ANALYSIS     NPARAM=  18
+  ICT( 1)=  1  ICT( 2)=  0  ICT( 3)=  1  ICT( 4)=  0  ICT( 5)= -1  ICT( 6)=  0  ICT( 7)=  0  ICT( 8)=  0  ICT( 9)=  0  ICT(10)= -2
+  ICT(11)=  0  ICT(12)=  0  ICT(13)=  0  ICT(14)=  0  ICT(15)= -1  ICT(16)=  0  ICT(17)=  0  ICT(18)=  0  ICT(19)=  0  ICT(20)=-99
+  ICT(21)=  0  ICT(22)=  0  ICT(23)=  0  ICT(24)=  0  ICT(25)=  0  ICT(26)=  1  ICT(27)=  0  ICT(28)=  0  ICT(29)=  0  ICT(30)=  0
+  ICT(31)=  0  ICT(32)=  0  ICT(33)=  0  ICT(34)=  2  ICT(35)=  0  ICT(36)=  0  ICT(37)=  0  ICT(38)=  0  ICT(39)=  0  ICT(40)=  0
+  ICT(41)=  0  ICT(42)=  0  ICT(43)=  0  ICT(44)=  0  ICT(45)=  0  ICT(46)= -1  ICT(47)=  0  ICT(48)=  0  ICT(49)=  0  ICT(50)=  0
+  ICT(51)=  0  ICT(52)=  0  ICT(53)=  0  ICT(54)=  0  ICT(55)=  0  ICT(56)=  0  ICT(57)=  0  ICT(58)=  0  ICT(59)=  0  ICT(60)=  0
+  ICT(61)=  0  ICT(62)=  0  ICT(63)=  0  ICT(64)=  0  ICT(65)=  0  ICT(66)=  0  ICT(67)=  0  ICT(68)=  0  ICT(69)=  0  ICT(70)=  0
+  ICT(71)=  0  ICT(72)=  0  ICT(73)=  0  ICT(74)=  0  ICT(75)=  0  ICT(76)=  0  ICT(77)=  0  ICT(78)=  0  ICT(79)=  0  ICT(80)=  0
+  EPS( 1)= 1.00000E+03  EPS( 2)= 1.00000E+02  EPS( 3)= 1.00000E+01  EPS( 4)= 1.00000E+01  EPS( 5)= 1.00000E+01  EPS( 6)= 1.00000E+01
+  EPS( 7)= 1.00000E+02  EPS( 8)= 1.00000E+01  EPS( 9)= 1.00000E-01  EPS(10)= 1.00000E-02  EPS(11)= 1.00000E-03  EPS(12)= 1.00000E-06
+  EPS(13)= 1.00000E-32  EPS(14)= 1.00000E+00  EPS(15)= 0.00000E+00  EPS(16)= 0.00000E+00  EPS(17)= 0.00000E+00  EPS(18)= 0.00000E+00
+  EPS(19)= 0.00000E+00  EPS(20)= 0.00000E+00  EPS(21)= 0.00000E+00  EPS(22)= 0.00000E+00  EPS(23)= 0.00000E+00  EPS(24)= 0.00000E+00
+  EPS(25)= 0.00000E+00  EPS(26)= 0.00000E+00  EPS(27)= 0.00000E+00  EPS(28)= 0.00000E+00  EPS(29)= 0.00000E+00  EPS(30)= 0.00000E+00
+0CONTROL CONSTANTS FOR LEAST SQUARES PARAMETER ADJUSTMENT AND THE CORRESPONDING PARAMETER VALUES
+ LPRM( 1)=  0 LPRM( 2)=  0 LPRM( 3)=  0 LPRM( 4)=  0 LPRM( 5)=  0 LPRM( 6)=  0 LPRM( 7)=  0 LPRM( 8)=  0 LPRM( 9)=  0 LPRM(10)=  0
+ LPRM(11)=  0 LPRM(12)=  0 LPRM(13)=  0 LPRM(14)=  0 LPRM(15)=  0 LPRM(16)=  0 LPRM(17)=  0 LPRM(18)=  0 LPRM(19)=  0 LPRM(20)=  0
+ LPRM(21)=  0 LPRM(22)=  0 LPRM(23)=  0 LPRM(24)=  0 LPRM(25)=  0 LPRM(26)=  0 LPRM(27)=  0 LPRM(28)=  0 LPRM(29)=  0 LPRM(30)=  0
+ LPRM(31)=  0 LPRM(32)=  0 LPRM(33)=  0 LPRM(34)=  0 LPRM(35)=  0 LPRM(36)=  0 LPRM(37)=  0 LPRM(38)=  0 LPRM(39)=  0 LPRM(40)=  0
+ LPRM(41)=  0 LPRM(42)=  0 LPRM(43)=  0 LPRM(44)=  0 LPRM(45)=  0 LPRM(46)=  0 LPRM(47)=  0 LPRM(48)=  0 LPRM(49)=  0 LPRM(50)=  0
+ LPRM(51)=  0 LPRM(52)=  0 LPRM(53)=  0 LPRM(54)=  0 LPRM(55)=  0 LPRM(56)=  0 LPRM(57)=  0 LPRM(58)=  0 LPRM(59)=  0 LPRM(60)=  0
+ LPRM(61)=  0 LPRM(62)=  0 LPRM(63)=  0 LPRM(64)=  0 LPRM(65)=  0 LPRM(66)=  0 LPRM(67)=  0 LPRM(68)=  0 LPRM(69)=  0 LPRM(70)=  0
+ LPRM(71)=  0 LPRM(72)=  0 LPRM(73)=  0 LPRM(74)=  0 LPRM(75)=  0 LPRM(76)=  0 LPRM(77)=  0 LPRM(78)=  0 LPRM(79)=  0 LPRM(80)=  0
+ LPRM(81)=  0 LPRM(82)=  0 LPRM(83)=  0 LPRM(84)=  0 LPRM(85)=  0 LPRM(86)=  0 LPRM(87)=  0 LPRM(88)=  0 LPRM(89)=  0 LPRM(90)=  0
+ LPRM(91)=  0 LPRM(92)=  0 LPRM(93)=  0 LPRM(94)=  0 LPRM(95)=  0 LPRM(96)=  0 LPRM(97)=  0 LPRM(98)=  0 LPRM(99)=  0 LPRM(**)=  0
+  MASS( 1)= 1.657848020429993D-07  MASS( 2)= 2.447848585877872D-06  MASS( 3)= 3.040436898620584D-06  MASS( 4)= 3.227159776680543D-07
+  MASS( 5)= 9.547534692876814D-04  MASS( 6)= 2.857796067672611D-04  MASS( 7)= 4.361098996947231D-05  MASS( 8)= 5.192107995846314D-05
+  MASS( 9)= 2.500000000000000D-07  MASS(10)= 1.215052064980984D-02  MASS(11)= 0.000000000000000D+00  MASS(12)= 0.000000000000000D+00
+  MASS(13)= 0.000000000000000D+00  MASS(14)= 0.000000000000000D+00  MASS(15)= 0.000000000000000D+00  MASS(16)= 0.000000000000000D+00
+  MASS(17)= 0.000000000000000D+00  MASS(18)= 0.000000000000000D+00  MASS(19)= 0.000000000000000D+00  MASS(20)= 0.000000000000000D+00
+  MASS(21)= 0.000000000000000D+00  MASS(22)= 0.000000000000000D+00  MASS(23)= 0.000000000000000D+00  MASS(24)= 0.000000000000000D+00
+  MASS(25)= 0.000000000000000D+00  MASS(26)= 0.000000000000000D+00  MASS(27)= 0.000000000000000D+00  MASS(28)= 0.000000000000000D+00
+  MASS(29)= 0.000000000000000D+00  MASS(30)= 0.000000000000000D+00 RELFCT31 = 1.000000000000000D+00 GMVARY32 = 0.000000000000000D+00
+ SUNHAR33 = 0.000000000000000D+00 PRMTR(34)= 0.000000000000000D+00 PRMTR(35)= 0.000000000000000D+00 PRMTR(36)= 0.000000000000000D+00
+ PRMTR(37)= 0.000000000000000D+00 PRMTR(38)= 0.000000000000000D+00 SUNPOE39 =-7.800000000000000D-04 PRMTR(40)= 0.000000000000000D+00
+ BETA  41 = 1.000000000000000D+00 GAMMA 42 = 1.000000000000000D+00 BETA' 43 = 1.000000000000000D+00 GAMMA'44 = 1.000000000000000D+00
+ PRMTR(45)= 0.000000000000000D+00 PRMTR(46)= 0.000000000000000D+00 PRMTR(47)= 0.000000000000000D+00 PRMTR(48)= 0.000000000000000D+00
+  ASBA 49 = 0.000000000000000D+00 ASBMAS50 = 0.000000000000000D+00 AULTSC51 = 4.990047800000000D+02 LTVARY52 = 0.000000000000000D+00
+ RELDEL53 = 1.000000000000000D+00 RELDOP54 = 0.000000000000000D+00 PRMTR(55)= 0.000000000000000D+00 PRMTR(56)= 0.000000000000000D+00
+ PRMTR(57)= 0.000000000000000D+00 PRMTR(58)= 0.000000000000000D+00 PRMTR(59)= 0.000000000000000D+00 PRMTR(60)= 0.000000000000000D+00
+ PRMTR(61)= 0.000000000000000D+00 PRMTR(62)= 1.000000000000000D+00 PRMTR(63)= 1.000000000000000D+00 PRMTR(64)= 0.000000000000000D+00
+ PRMTR(65)= 0.000000000000000D+00 PRMTR(66)= 0.000000000000000D+00 PRMTR(67)= 0.000000000000000D+00 PRMTR(68)= 0.000000000000000D+00
+ PRMTR(69)= 0.000000000000000D+00 PRMTR(70)= 0.000000000000000D+00 PRMTR(71)= 0.000000000000000D+00 CTVARY72 = 0.000000000000000D+00
+ PRMTR(73)= 0.000000000000000D+00 PRMTR(74)= 0.000000000000000D+00 PRMTR(75)= 0.000000000000000D+00 PRMTR(76)= 0.000000000000000D+00
+ PRMTR(77)= 0.000000000000000D+00 PRMTR(78)= 0.000000000000000D+00 PRMTR(79)= 0.000000000000000D+00 PRMTR(80)= 0.000000000000000D+00
+ PRMTR(81)= 1.000000000000000D+00 PRMTR(82)= 0.000000000000000D+00 PRMTR(83)= 0.000000000000000D+00 PRMTR(84)= 0.000000000000000D+00
+ PRMTR(85)= 0.000000000000000D+00 PRMTR(86)= 0.000000000000000D+00 PRMTR(87)= 0.000000000000000D+00 PRMTR(88)= 0.000000000000000D+00
+ PRTMR(89)= 0.000000000000000D+00 PRMTR(90)= 0.000000000000000D+00 ECINC 91 = 2.344578706750000D+01 SEQINC92 = 7.250000000000000D+00
+ SEQASC93 = 7.506250000000000D+01 SUNRAD94 = 6.960000000000000D+05 PRMTR(95)= 6.960000000000000D+05 PRMTR(96)= 0.000000000000000D+00
+ PRMTR(97)= 2.440000500000000D+06 MDSTAU98 = 4.263529034000000D-05 MDSTSC99 = 0.000000000000000D+00 LTVEL100 = 2.997924580000000D+05
+1PLANETARY EPHEMERIS PROGRAM INPUT DATA   TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE    4
+0INVERSE MASSES CALCULATED FROM PREVIOUS PAGE
+ IMASS( 1)= 6.031916000000000D+06 IMASS( 2)= 4.085220000000000D+05 IMASS( 3)= 3.289001000000000D+05 IMASS( 4)= 3.098700000000000D+06
+ IMASS( 5)= 1.047390800000000D+03 IMASS( 6)= 3.499200000000000D+03 IMASS( 7)= 2.293000000000000D+04 IMASS( 8)= 1.926000000000000D+04
+ IMASS( 9)= 4.000000000000000D+06 IMASS(10)= 8.230100000000000D+01 IMASS(11)= 0.000000000000000D+00 IMASS(12)= 0.000000000000000D+00
+ IMASS(13)= 0.000000000000000D+00 IMASS(14)= 0.000000000000000D+00 IMASS(15)= 0.000000000000000D+00 IMASS(16)= 0.000000000000000D+00
+ IMASS(17)= 0.000000000000000D+00 IMASS(18)= 0.000000000000000D+00 IMASS(19)= 0.000000000000000D+00 IMASS(20)= 0.000000000000000D+00
+ IMASS(21)= 0.000000000000000D+00 IMASS(22)= 0.000000000000000D+00 IMASS(23)= 0.000000000000000D+00 IMASS(24)= 0.000000000000000D+00
+ IMASS(25)= 0.000000000000000D+00 IMASS(26)= 0.000000000000000D+00 IMASS(27)= 0.000000000000000D+00 IMASS(28)= 0.000000000000000D+00
+ IMASS(29)= 0.000000000000000D+00 IMASS(30)= 0.000000000000000D+00
+0ALTERNATE PERTURBING PLANET DATA SETS, BUFFERS, ACCURACY CONSTANTS
+   IPERT0= 90   IPERT1=  0   IPERT2=  0   JPERT0= 91   JPERT1=  0   JPERT2=  0   KPERT0=  0   KPERT1=  0   KPERT2=  0
+    IBUF1= 97    IBUF2=  0    IBUF3=  0    IBUF4=  0    IBUF5=  0    IBUF6=  0    IBUF7=  0    IBUF8=  0    IBUF9=  0   IBUF10=  0
+ EPSA( 1)= 0.00000E+00 EPSA( 2)= 0.00000E+00 EPSA( 3)= 0.00000E+00 EPSA( 4)= 0.00000E+00 EPSA( 5)= 0.00000E+00 EPSA( 6)= 0.00000E+00
+ EPSA( 7)= 0.00000E+00 EPSA( 8)= 0.00000E+00 EPSA( 9)= 0.00000E+00 EPSA(10)= 0.00000E+00 EPSA(11)= 0.00000E+00 EPSA(12)= 0.00000E+00
+ EPSA(13)= 0.00000E+00 EPSA(14)= 0.00000E+00 EPSA(15)= 0.00000E+00 EPSA(16)= 0.00000E+00 EPSA(17)= 0.00000E+00 EPSA(18)= 0.00000E+00
+ EPSA(19)= 0.00000E+00 EPSA(20)= 0.00000E+00 EPSA(21)= 0.00000E+00 EPSA(22)= 0.00000E+00 EPSA(23)= 0.00000E+00 EPSA(24)= 0.00000E+00
+ EPSA(25)= 0.00000E+00 EPSA(26)= 0.00000E+00 EPSA(27)= 0.00000E+00 EPSA(28)= 0.00000E+00 EPSA(29)= 0.00000E+00 EPSA(30)= 5.00000E-05
+0ADDITIONAL PERIPHERAL DATA SET NUMBERS NOT BELONGING TO A SPECIFIC BODY OR OBSERVATION LIBRARY + SWITCHES
+   JPUNCH=  0   KPUNCH=  0    LOUT =  6    MOUT =  0    NOUT =  0    IENG =  0    JENG =  0    KENG =  0
+   TYPOUT=  0   EXTPRC= -1   NOPRNT=  0    ISEQ =  0
+0ADDITIONAL CONTROL CONSTANTS FOR PROGRAM FLOW AND LEAST-SQUARES ANALYSIS
+  JCT( 1)=  0  JCT( 2)= 11  JCT( 3)=  0  JCT( 4)=  0  JCT( 5)=  0  JCT( 6)=  0  JCT( 7)=  0  JCT( 8)=  0  JCT( 9)=  0  JCT(10)=  0
+  JCT(11)=  0  JCT(12)=  0  JCT(13)=  0  JCT(14)=  0  JCT(15)=  0  JCT(16)=  0  JCT(17)=  0  JCT(18)=  0  JCT(19)=  0  JCT(20)=  0
+  JCT(21)= -1  JCT(22)=  0  JCT(23)=  0  JCT(24)=  0  JCT(25)=  0  JCT(26)=  0  JCT(27)=  1  JCT(28)=  0  JCT(29)=  0  JCT(30)=  0
+  JCT(31)=  0  JCT(32)=  0  JCT(33)=  0  JCT(34)=  0  JCT(35)=  0  JCT(36)=  0  JCT(37)=  0  JCT(38)=  0  JCT(39)=  0  JCT(40)=  0
+  JCT(41)=  0  JCT(42)=  0  JCT(43)=  0  JCT(44)=  0  JCT(45)=  0  JCT(46)=  0  JCT(47)=  0  JCT(48)=  0  JCT(49)=  0  JCT(50)=  0
+  JCT(51)=  0  JCT(52)=  0  JCT(53)=  0  JCT(54)=  0  JCT(55)=  0  JCT(56)=  0  JCT(57)=  0  JCT(58)=  0  JCT(59)=  0  JCT(60)=  0
+  JCT(61)= -1  JCT(62)= -1  JCT(63)=  0  JCT(64)=  0  JCT(65)=  0  JCT(66)=  0  JCT(67)=  0  JCT(68)=  1  JCT(69)=  1  JCT(70)=  0
+  JCT(71)=  0  JCT(72)=  0  JCT(73)=  0  JCT(74)=  0  JCT(75)=  0  JCT(76)=  0  JCT(77)=  0  JCT(78)=  0  JCT(79)=  0  JCT(80)=  0
+  JCT(81)=  0  JCT(82)=  0  JCT(83)=  0  JCT(84)=  0  JCT(85)=  0  JCT(86)=  0  JCT(87)=  0  JCT(88)=  0  JCT(89)=  0  JCT(90)=  0
+  JCT(91)=  0  JCT(92)=  0  JCT(93)=  0  JCT(94)=  0  JCT(95)=  0  JCT(96)=  0  JCT(97)=  0  JCT(98)=  0  JCT(99)=  0  JCT(**)=  0
+0OBSERVATION LIBRARY PERIPHERAL DATA SET NUMBERS (NUMOBT= 1)
+  IOBS0( 1)= 0  IOBS1( 1)=31  IOBS2( 1)= 0
+0WEIGHTS APPLIED TO NORMAL EQUATIONS FORMED FROM OBSERVATION DATA SETS OR RESTORED FROM SAVED NORMAL EQUATIONS
+ WGTOBS(1)= 1.000000000000000D+00
+0INPUT CONTROL CONSTANTS FOR N-BODY INTEGRATION
+   NBODY =  9   IBODY = 90   JDBDY1=       0   JDBDY0=       0   JDBDY2=       0   JVLBDY=     0   EPSBDY= 1.00000E-16   INTBDY=  2
+ KBDY( 1)= -1 KBDY( 2)= -1 KBDY( 3)=  0 KBDY( 4)= -1 KBDY( 5)= -1 KBDY( 6)= -1 KBDY( 7)= -1 KBDY( 8)= -1 KBDY( 9)= -1 KBDY(10)= -1
+ KBDY(11)= -1 KBDY(12)= -1 KBDY(13)= -1 KBDY(14)= -1 KBDY(15)= -1 KBDY(16)= -1 KBDY(17)= -1 KBDY(18)= -1 KBDY(19)= -1 KBDY(20)= -1
+ KBDY(21)=  0 KBDY(22)= -1 KBDY(23)= -1 KBDY(24)= -1 KBDY(25)= -1 KBDY(26)= -1 KBDY(27)= -1 KBDY(28)=  3 KBDY(29)= 11 KBDY(30)= 54
+ KBDY(31)=-12 KBDY(32)=-14 KBDY(33)= -1 KBDY(34)= -1 KBDY(35)= -1 KBDY(36)=  0 KBDY(37)= -1 KBDY(38)= -1 KBDY(39)=  0 KBDY(40)= -1
+ NPLBDY( 1)= 1 NPLBDY( 2)= 2 NPLBDY( 3)= 3 NPLBDY( 4)= 4 NPLBDY( 5)= 5 NPLBDY( 6)= 6 NPLBDY( 7)= 7 NPLBDY( 8)= 8 NPLBDY( 9)= 9
+1PLANETARY EPHEMERIS PROGRAM INPUT DATA   TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE    5
+0 EMBARY     NPLNT(-3)=  3    IPLNT= 13         JDEM1=       0       JDEM0=       0       JDEM2=       0     INT =  0   NCENTR=  0
+  LEM( 1)=  0  LEM( 2)=  0  LEM( 3)=  0  LEM( 4)=  0  LEM( 5)=  0  LEM( 6)=  0  LEM( 7)=  0  LEM( 8)=  0  LEM( 9)=  0  LEM(10)=  0
+  LEM(11)=  0  LEM(12)=  0  LEM(13)=  0  LEM(14)=  0  LEM(15)=  0  LEM(16)=  0  LEM(17)=  0  LEM(18)=  0  LEM(19)=  0  LEM(20)=  0
+  LEM(21)=  0  LEM(22)=  0  LEM(23)=  0  LEM(24)=  0  LEM(25)=  0  LEM(26)=  0  LEM(27)=  0  LEM(28)=  0  LEM(29)=  0  LEM(30)=  0
+ INITIAL EPOCH (COORD.TIME)      -0.50000000 IHR= 0 IMIN= 0 SEC= 0.0000 INT1=         0 INT2=  0 FRACT= 0.0000000000000  ICND=  0
+         A= 0.000000000000000D+00         E= 0.000000000000000D+00       INC= 0.000000000000000D+00       ASC= 0.000000000000000D+00
+       PER= 0.000000000000000D+00      ANOM= 0.000000000000000D+00    RADIUS= 6.378166000000000D+03      FLAT= 3.352329869259135D-03
+   CON( 3)= 0.000000000000000D+00   CON( 4)= 0.000000000000000D+00   CON( 5)= 0.000000000000000D+00   CON( 6)= 0.000000000000000D+00
+   CON( 7)= 0.000000000000000D+00   CON( 8)= 0.000000000000000D+00   CON( 9)= 0.000000000000000D+00   CON(10)= 0.000000000000000D+00
+   CON(11)= 0.000000000000000D+00   CON(12)= 0.000000000000000D+00   CON(13)= 0.000000000000000D+00   CON(14)= 0.000000000000000D+00
+   CON(15)= 0.000000000000000D+00   CON(16)= 0.000000000000000D+00   CON(17)= 0.000000000000000D+00   CON(18)= 0.000000000000000D+00
+   CON(19)= 0.000000000000000D+00   CON(20)= 0.000000000000000D+00   CON(21)= 0.000000000000000D+00   CON(22)= 0.000000000000000D+00
+   CON(23)= 0.000000000000000D+00   CON(24)= 0.000000000000000D+00  CON1( 1)= 0.000000000000000D+00  CON1( 2)= 0.000000000000000D+00
+  CON1( 3)= 0.000000000000000D+00  CON1( 4)= 0.000000000000000D+00  CON1( 5)= 0.000000000000000D+00  CON1( 6)= 0.000000000000000D+00
+  CON1( 7)= 0.000000000000000D+00  CON1( 8)= 0.000000000000000D+00  CON1( 9)= 0.000000000000000D+00  CON1(10)= 0.000000000000000D+00
+  CON1(11)= 0.000000000000000D+00  CON1(12)= 0.000000000000000D+00
+   K( 1)=   0   K( 2)=   0   K( 3)=   0   K( 4)=   0   K( 5)=   0   K( 6)=   0   K( 7)=   0   K( 8)=   0   K( 9)=   0   K(10)=   0
+   K(11)=   0   K(12)=   0   K(13)=   0   K(14)=   0   K(15)=   0   K(16)=   0   K(17)=   0   K(18)=   0   K(19)=   0   K(20)=   0
+   K(21)=   0   K(22)=   0   K(23)=   0   K(24)=   0   K(25)=   0   K(26)=   0   K(27)=   0   K(28)=   0   K(29)=   0   K(30)=   0
+   K(31)=   0   K(32)=   0   K(33)=   0   K(34)=   0   K(35)=   0   K(36)=   0   K(37)=   0   K(38)=   0   K(39)=   0   K(40)=   0
+   K(41)=   0   K(42)=   0   K(43)=   0   K(44)=   0   K(45)=   0   K(46)=   0   K(47)=   0   K(48)=   0   K(49)=   0   K(50)=   0
+   K(51)=   0   K(52)=   0   K(53)=   0   K(54)=   0   K(55)=   0   K(56)=   0   K(57)=   0   K(58)=   0   K(59)=   0   K(60)=   0
+   K(61)=   0   K(62)=   0   K(63)=   0   K(64)=   0   K(65)=   0   K(66)=   0   K(67)=   0   K(68)=   0   K(69)=   0   K(70)=   0
+   K(71)=   0   K(72)=   0   K(73)=   0   K(74)=   0   K(75)=   0   K(76)=   0   K(77)=   0   K(78)=   0   K(79)=   0   K(80)=   0
+   K(81)=   0   K(82)=   0   K(83)=   0   K(84)=   0   K(85)=   0   K(86)=   0   K(87)=   0   K(88)=   3   K(89)=   0   K(90)=   0
+   K(91)=   0   K(92)=   0   K(93)=   0   K(94)=   0   K(95)=   0   K(96)=   0   K(97)=   0   K(98)=   0   K(99)=   0   K(**)=   0
+ NUMKI=  0  KI=                                                                                                                      
+  EPS( 1)= 0.00000E+00  EPS( 2)= 0.00000E+00  EPS( 3)= 0.00000E+00  EPS( 4)= 0.00000E+00  EPS( 5)= 0.00000E+00  EPS( 6)= 0.00000E+00
+0          ZONAL GRAVITATIONAL POTENTIAL HARMONIC COEFFICIENTS -  EARTH   (NPLNT=  3, NZONE= 11)                                     
+       J2= 1.082637000000000D-03       J3=-2.541000000000000D-06       J4=-1.618000000000000D-06       J5=-2.280000000000000D-07
+       J6= 5.520000000000000D-07       J7=-3.520000000000000D-07       J8=-2.050000000000000D-07       J9=-1.540000000000000D-07
+      J10=-2.370000000000000D-07      J11= 3.120000000000000D-07
+      LJ2=  0      LJ3=  0      LJ4=  0      LJ5=  0      LJ6=  0      LJ7=  0      LJ8=  0      LJ9=  0     LJ10=  0     LJ11=  0
+
+0TESSERAL COSINE GRAVITATIONAL POTENTIAL HARMONIC COEFFICIENTS -  EARTH   (NPLNT=  3, NTESS=  5)                                     
+    C2(1)= 0.000000000000000D+00    C2(2)= 2.379900000000000D-06    C3(1)= 1.997700000000000D-06    C3(2)= 7.783000000000000D-07
+    C3(3)= 4.901100000000000D-07    C4(1)=-5.174800000000000D-07    C4(2)= 3.429600000000000D-07    C4(3)= 1.039000000000000D-06
+    C4(4)=-1.051200000000000D-07    C5(1)=-5.366700000000000D-08    C5(2)= 5.986900000000000D-07    C5(3)=-5.842900000000000D-07
+    C5(4)=-1.158300000000000D-07    C5(5)= 1.395600000000000D-07
+    LC2(1)= 0    LC2(2)= 0    LC3(1)= 0    LC3(2)= 0    LC3(3)= 0    LC4(1)= 0    LC4(2)= 0    LC4(3)= 0    LC4(4)= 0    LC5(1)= 0
+    LC5(2)= 0    LC5(3)= 0    LC5(4)= 0    LC5(5)= 0
+0TESSERAL  SINE  GRAVITATIONAL POTENTIAL HARMONIC COEFFICIENTS -  EARTH   (NPLNT=  3, NTESS=  5)                                     
+    S2(1)= 0.000000000000000D+00    S2(2)=-1.365600000000000D-06    S3(1)= 2.233700000000000D-07    S3(2)=-7.551900000000000D-07
+    S3(3)= 1.528300000000000D-06    S4(1)=-4.814000000000000D-07    S4(2)= 6.717400000000000D-07    S4(3)=-1.192300000000000D-07
+    S4(4)= 3.566100000000000D-07    S5(1)=-7.997300000000000D-08    S5(2)=-3.991000000000000D-07    S5(3)=-1.633800000000000D-07
+    S5(4)=-4.539300000000000D-08    S5(5)=-8.684100000000000D-07
+    LS2(1)= 0    LS2(2)= 0    LS3(1)= 0    LS3(2)= 0    LS3(3)= 0    LS4(1)= 0    LS4(2)= 0    LS4(3)= 0    LS4(4)= 0    LS5(1)= 0
+    LS5(2)= 0    LS5(3)= 0    LS5(4)= 0    LS5(5)= 0
+1PLANETARY EPHEMERIS PROGRAM INPUT DATA   TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE    6
+0  MOON      NPLNT(-2)= 10    IPLNT= 20         JDMN1=       0       JDMN0=       0       JDMN2=       0     INT =  0   NCENTR=  3
+  LMN( 1)=  0  LMN( 2)=  0  LMN( 3)=  0  LMN( 4)=  0  LMN( 5)=  0  LMN( 6)=  0  LMN( 7)=  0  LMN( 8)=  0  LMN( 9)=  0  LMN(10)=  0
+  LMN(11)=  0  LMN(12)=  0  LMN(13)=  0  LMN(14)=  0  LMN(15)=  0  LMN(16)=  0  LMN(17)=  0  LMN(18)=  0  LMN(19)=  0  LMN(20)=  0
+  LMN(21)=  0  LMN(22)=  0  LMN(23)=  0  LMN(24)=  0  LMN(25)=  0  LMN(26)=  0  LMN(27)=  0  LMN(28)=  0  LMN(29)=  0  LMN(30)=  0
+ INITIAL EPOCH (COORD.TIME)      -0.50000000 IHR= 0 IMIN= 0 SEC= 0.0000 INT1=         0 INT2=  0 FRACT= 0.0000000000000  ICND=  0
+         A= 0.000000000000000D+00         E= 0.000000000000000D+00       INC= 0.000000000000000D+00       ASC= 0.000000000000000D+00
+       PER= 0.000000000000000D+00      ANOM= 0.000000000000000D+00    RADIUS= 1.738000000000000D+03      FLAT= 0.000000000000000D+00
+   CON( 3)= 0.000000000000000D+00   CON( 4)= 0.000000000000000D+00   CON( 5)= 0.000000000000000D+00   CON( 6)= 0.000000000000000D+00
+   CON( 7)= 0.000000000000000D+00   CON( 8)= 0.000000000000000D+00   CON( 9)= 0.000000000000000D+00   CON(10)= 0.000000000000000D+00
+   CON(11)= 0.000000000000000D+00   CON(12)= 0.000000000000000D+00   CON(13)= 0.000000000000000D+00   CON(14)= 0.000000000000000D+00
+   CON(15)= 0.000000000000000D+00   CON(16)= 0.000000000000000D+00   CON(17)= 0.000000000000000D+00   CON(18)= 0.000000000000000D+00
+   CON(19)= 0.000000000000000D+00   CON(20)= 0.000000000000000D+00   CON(21)= 0.000000000000000D+00   CON(22)= 0.000000000000000D+00
+   CON(23)= 0.000000000000000D+00   CON(24)= 0.000000000000000D+00  CON1( 1)= 0.000000000000000D+00  CON1( 2)= 0.000000000000000D+00
+  CON1( 3)= 0.000000000000000D+00  CON1( 4)= 0.000000000000000D+00  CON1( 5)= 0.000000000000000D+00  CON1( 6)= 0.000000000000000D+00
+  CON1( 7)= 0.000000000000000D+00  CON1( 8)= 0.000000000000000D+00  CON1( 9)= 0.000000000000000D+00  CON1(10)= 0.000000000000000D+00
+  CON1(11)= 0.000000000000000D+00  CON1(12)= 0.000000000000000D+00
+   K( 1)=   0   K( 2)=   0   K( 3)=   0   K( 4)=   0   K( 5)=   0   K( 6)=   0   K( 7)=   0   K( 8)=   0   K( 9)=   0   K(10)=   0
+   K(11)=   0   K(12)=   0   K(13)=   0   K(14)=   0   K(15)=   0   K(16)=   0   K(17)=   0   K(18)=   0   K(19)=   0   K(20)=   0
+   K(21)=   0   K(22)=   0   K(23)=   0   K(24)=   0   K(25)=   0   K(26)=   0   K(27)=   0   K(28)=   0   K(29)=   0   K(30)=   0
+   K(31)=   0   K(32)=   0   K(33)=   0   K(34)=   0   K(35)=   0   K(36)=   0   K(37)=   0   K(38)=   0   K(39)=   0   K(40)=   0
+   K(41)=   0   K(42)=   0   K(43)=   0   K(44)=   0   K(45)=   0   K(46)=   0   K(47)=   0   K(48)=   0   K(49)=   0   K(50)=   0
+   K(51)=   0   K(52)=   0   K(53)=   0   K(54)=   0   K(55)=   0   K(56)=   0   K(57)=   0   K(58)=   0   K(59)=   0   K(60)=   0
+   K(61)=   0   K(62)=   0   K(63)=   0   K(64)=   0   K(65)=   0   K(66)=   0   K(67)=   0   K(68)=   0   K(69)=   0   K(70)=   0
+   K(71)=   0   K(72)=   0   K(73)=   0   K(74)=   0   K(75)=   0   K(76)=   0   K(77)=   0   K(78)=   0   K(79)=   0   K(80)=   0
+   K(81)=   0   K(82)=   0   K(83)=   0   K(84)=   0   K(85)=   0   K(86)=   0   K(87)=   0   K(88)=   3   K(89)=   0   K(90)=   0
+   K(91)=   0   K(92)=   0   K(93)=   0   K(94)=   0   K(95)=   0   K(96)=   0   K(97)=   0   K(98)=   0   K(99)=   0   K(**)=   0
+ NUMKI=  0  KI=                                                                                                                      
+  EPS( 1)= 0.00000E+00  EPS( 2)= 0.00000E+00  EPS( 3)= 0.00000E+00  EPS( 4)= 0.00000E+00  EPS( 5)= 0.00000E+00  EPS( 6)= 0.00000E+00
+0          ZONAL GRAVITATIONAL POTENTIAL HARMONIC COEFFICIENTS -   MOON   (NPLNT= 10, NZONE=  2)                                     
+       J2= 2.054000000000000D-04
+      LJ2=  0
+0TESSERAL COSINE GRAVITATIONAL POTENTIAL HARMONIC COEFFICIENTS -   MOON   (NPLNT= 10, NTESS=  2)                                     
+    C2(1)= 0.000000000000000D+00    C2(2)= 2.310000000000000D-05
+    LC2(1)= 0    LC2(2)= 0
+0TESSERAL  SINE  GRAVITATIONAL POTENTIAL HARMONIC COEFFICIENTS -   MOON   (NPLNT= 10, NTESS=  2)                                     
+    S2(1)= 0.000000000000000D+00    S2(2)= 0.000000000000000D+00
+    LS2(1)= 0    LS2(2)= 0
+1PLANETARY EPHEMERIS PROGRAM INPUT DATA   TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE    7
+0 EROTAT     NPLNT(-1)= -3    IPLNT=  0         JDER1=       0       JDER0=       0       JDER2=       0     INT =  0   NCENTR=  0
+  LER( 1)=  0  LER( 2)=  0  LER( 3)=  0  LER( 4)=  0  LER( 5)=  0  LER( 6)=  0  LER( 7)=  0  LER( 8)=  0  LER( 9)=  0  LER(10)=  0
+  LER(11)=  0  LER(12)=  0  LER(13)=  0  LER(14)=  0  LER(15)=  0  LER(16)=  0  LER(17)=  0  LER(18)=  0  LER(19)=  0  LER(20)=  0
+  LER(21)=  0  LER(22)=  0  LER(23)=  0  LER(24)=  0  LER(25)=  0  LER(26)=  0  LER(27)=  0  LER(28)=  0  LER(29)=  0  LER(30)=  0
+ INITIAL EPOCH (COORD.TIME)      -0.50000000 IHR= 0 IMIN= 0 SEC= 0.0000 INT1=         0 INT2=  0 FRACT= 0.0000000000000  ICND=  0
+         A= 0.000000000000000D+00         E= 0.000000000000000D+00       INC= 0.000000000000000D+00       ASC= 0.000000000000000D+00
+       PER= 0.000000000000000D+00      ANOM= 0.000000000000000D+00    RADIUS= 0.000000000000000D+00      FLAT= 0.000000000000000D+00
+   CON( 3)= 0.000000000000000D+00   CON( 4)= 0.000000000000000D+00   CON( 5)= 0.000000000000000D+00   CON( 6)= 0.000000000000000D+00
+   CON( 7)= 0.000000000000000D+00   CON( 8)= 0.000000000000000D+00   CON( 9)= 0.000000000000000D+00   CON(10)= 0.000000000000000D+00
+   CON(11)= 0.000000000000000D+00   CON(12)= 0.000000000000000D+00   CON(13)= 0.000000000000000D+00   CON(14)= 0.000000000000000D+00
+   CON(15)= 0.000000000000000D+00   CON(16)= 0.000000000000000D+00   CON(17)= 0.000000000000000D+00   CON(18)= 0.000000000000000D+00
+   CON(19)= 0.000000000000000D+00   CON(20)= 0.000000000000000D+00   CON(21)= 0.000000000000000D+00   CON(22)= 0.000000000000000D+00
+   CON(23)= 0.000000000000000D+00   CON(24)= 0.000000000000000D+00  CON1( 1)= 0.000000000000000D+00  CON1( 2)= 0.000000000000000D+00
+  CON1( 3)= 0.000000000000000D+00  CON1( 4)= 0.000000000000000D+00  CON1( 5)= 0.000000000000000D+00  CON1( 6)= 0.000000000000000D+00
+  CON1( 7)= 0.000000000000000D+00  CON1( 8)= 0.000000000000000D+00  CON1( 9)= 0.000000000000000D+00  CON1(10)= 0.000000000000000D+00
+  CON1(11)= 0.000000000000000D+00  CON1(12)= 0.000000000000000D+00
+   K( 1)=   0   K( 2)=   0   K( 3)=   0   K( 4)=   0   K( 5)=   0   K( 6)=   0   K( 7)=   0   K( 8)=   0   K( 9)=   0   K(10)=   0
+   K(11)=   0   K(12)=   0   K(13)=   0   K(14)=   0   K(15)=   0   K(16)=   0   K(17)=   0   K(18)=   0   K(19)=   0   K(20)=   0
+   K(21)=   0   K(22)=   0   K(23)=   0   K(24)=   0   K(25)=   0   K(26)=   0   K(27)=   0   K(28)=   0   K(29)=   0   K(30)=   0
+   K(31)=   0   K(32)=   0   K(33)=   0   K(34)=   0   K(35)=   0   K(36)=   0   K(37)=   0   K(38)=   0   K(39)=   0   K(40)=   0
+   K(41)=   0   K(42)=   0   K(43)=   0   K(44)=   0   K(45)=   0   K(46)=   0   K(47)=   0   K(48)=   0   K(49)=   0   K(50)=   0
+   K(51)=   0   K(52)=   0   K(53)=   0   K(54)=   0   K(55)=   0   K(56)=   0   K(57)=   0   K(58)=   0   K(59)=   0   K(60)=   0
+   K(61)=   0   K(62)=   0   K(63)=   0   K(64)=   0   K(65)=   0   K(66)=   0   K(67)=   0   K(68)=   0   K(69)=   0   K(70)=   0
+   K(71)=   0   K(72)=   0   K(73)=   0   K(74)=   0   K(75)=   0   K(76)=   0   K(77)=   0   K(78)=   0   K(79)=   0   K(80)=   0
+   K(81)=   0   K(82)=   0   K(83)=   0   K(84)=   0   K(85)=   0   K(86)=   0   K(87)=   0   K(88)=   3   K(89)=   0   K(90)=   0
+   K(91)=   0   K(92)=   0   K(93)=   0   K(94)=   0   K(95)=   0   K(96)=   0   K(97)=   0   K(98)=   0   K(99)=   0   K(**)=   0
+ NUMKI=  0  KI=                                                                                                                      
+  EPS( 1)= 0.00000E+00  EPS( 2)= 0.00000E+00  EPS( 3)= 0.00000E+00  EPS( 4)= 0.00000E+00  EPS( 5)= 0.00000E+00  EPS( 6)= 0.00000E+00
+0 MROTAT     NPLNT( 0)=-10    IPLNT=  0         JDMR1=       0       JDMR0=       0       JDMR2=       0     INT =  0   NCENTR=  0
+  LMR( 1)=  0  LMR( 2)=  0  LMR( 3)=  0  LMR( 4)=  0  LMR( 5)=  0  LMR( 6)=  0  LMR( 7)=  0  LMR( 8)=  0  LMR( 9)=  0  LMR(10)=  0
+  LMR(11)=  0  LMR(12)=  0  LMR(13)=  0  LMR(14)=  0  LMR(15)=  0  LMR(16)=  0  LMR(17)=  0  LMR(18)=  0  LMR(19)=  0  LMR(20)=  0
+  LMR(21)=  0  LMR(22)=  0  LMR(23)=  0  LMR(24)=  0  LMR(25)=  0  LMR(26)=  0  LMR(27)=  0  LMR(28)=  0  LMR(29)=  0  LMR(30)=  0
+ INITIAL EPOCH (COORD.TIME)      -0.50000000 IHR= 0 IMIN= 0 SEC= 0.0000 INT1=         0 INT2=  0 FRACT= 0.0000000000000  ICND=  0
+         A= 0.000000000000000D+00         E= 0.000000000000000D+00       INC= 0.000000000000000D+00       ASC= 0.000000000000000D+00
+       PER= 0.000000000000000D+00      ANOM= 0.000000000000000D+00    RADIUS= 0.000000000000000D+00      FLAT= 0.000000000000000D+00
+   CON( 3)= 6.300000000000000D-04   CON( 4)= 2.280000000000000D-04   CON( 5)= 0.000000000000000D+00   CON( 6)= 0.000000000000000D+00
+   CON( 7)= 0.000000000000000D+00   CON( 8)= 0.000000000000000D+00   CON( 9)= 0.000000000000000D+00   CON(10)= 0.000000000000000D+00
+   CON(11)= 0.000000000000000D+00   CON(12)= 0.000000000000000D+00   CON(13)= 0.000000000000000D+00   CON(14)= 0.000000000000000D+00
+   CON(15)= 0.000000000000000D+00   CON(16)= 0.000000000000000D+00   CON(17)= 0.000000000000000D+00   CON(18)= 0.000000000000000D+00
+   CON(19)= 0.000000000000000D+00   CON(20)= 0.000000000000000D+00   CON(21)= 0.000000000000000D+00   CON(22)= 0.000000000000000D+00
+   CON(23)= 0.000000000000000D+00   CON(24)= 0.000000000000000D+00  CON1( 1)= 0.000000000000000D+00  CON1( 2)= 0.000000000000000D+00
+  CON1( 3)= 0.000000000000000D+00  CON1( 4)= 0.000000000000000D+00  CON1( 5)= 0.000000000000000D+00  CON1( 6)= 0.000000000000000D+00
+  CON1( 7)= 0.000000000000000D+00  CON1( 8)= 0.000000000000000D+00  CON1( 9)= 0.000000000000000D+00  CON1(10)= 0.000000000000000D+00
+  CON1(11)= 0.000000000000000D+00  CON1(12)= 0.000000000000000D+00
+   K( 1)=   0   K( 2)=   0   K( 3)=   0   K( 4)=   0   K( 5)=   0   K( 6)=   0   K( 7)=   0   K( 8)=   0   K( 9)=   0   K(10)=   0
+   K(11)=   0   K(12)=   0   K(13)=   0   K(14)=   0   K(15)=   0   K(16)=   0   K(17)=   0   K(18)=   0   K(19)=   0   K(20)=   0
+   K(21)=   0   K(22)=   0   K(23)=   0   K(24)=   0   K(25)=   0   K(26)=   0   K(27)=   0   K(28)=   0   K(29)=   0   K(30)=   0
+   K(31)=   0   K(32)=   0   K(33)=   0   K(34)=   0   K(35)=   0   K(36)=   0   K(37)=   0   K(38)=   0   K(39)=   0   K(40)=   0
+   K(41)=   0   K(42)=   0   K(43)=   0   K(44)=   0   K(45)=   0   K(46)=   0   K(47)=   0   K(48)=   0   K(49)=   0   K(50)=   0
+   K(51)=   0   K(52)=   0   K(53)=   0   K(54)=   0   K(55)=   0   K(56)=   0   K(57)=   0   K(58)=   0   K(59)=   0   K(60)=   0
+   K(61)=   0   K(62)=   0   K(63)=   0   K(64)=   0   K(65)=   0   K(66)=   0   K(67)=   0   K(68)=   0   K(69)=   0   K(70)=   0
+   K(71)=   0   K(72)=   0   K(73)=   0   K(74)=   0   K(75)=   0   K(76)=   0   K(77)=   0   K(78)=   0   K(79)=   0   K(80)=   0
+   K(81)=   0   K(82)=   0   K(83)=   0   K(84)=   0   K(85)=   0   K(86)=   0   K(87)=   0   K(88)=   3   K(89)=   0   K(90)=   0
+   K(91)=   0   K(92)=   0   K(93)=   0   K(94)=   0   K(95)=   0   K(96)=   0   K(97)=   0   K(98)=   0   K(99)=   0   K(**)=   0
+ NUMKI=  0  KI=                                                                                                                      
+  EPS( 1)= 0.00000E+00  EPS( 2)= 0.00000E+00  EPS( 3)= 0.00000E+00  EPS( 4)= 0.00000E+00  EPS( 5)= 0.00000E+00  EPS( 6)= 0.00000E+00
+1PLANETARY EPHEMERIS PROGRAM INPUT DATA   TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE    8
+0MERCURY     NPLNT( 1)=  1    IPLNT= 11         JDPL1=       0       JDPL0=       0       JDPL2=       0     INT =  2   NCENTR=  0
+  LPL( 1)=  0  LPL( 2)=  0  LPL( 3)=  1  LPL( 4)=  0  LPL( 5)=  0  LPL( 6)=  0  LPL( 7)= 23  LPL( 8)=  0  LPL( 9)=  0  LPL(10)=  0
+  LPL(11)=  0  LPL(12)=  0  LPL(13)=  0  LPL(14)=  0  LPL(15)=  0  LPL(16)=  0  LPL(17)=  0  LPL(18)=  0  LPL(19)=  0  LPL(20)=  0
+  LPL(21)=  0  LPL(22)=  0  LPL(23)=  0  LPL(24)=  0  LPL(25)=  0  LPL(26)=  0  LPL(27)=  0  LPL(28)=  0  LPL(29)=  0  LPL(30)=  0
+ INITIAL EPOCH (COORD.TIME)      -0.50000000 IHR= 0 IMIN= 0 SEC= 0.0000 INT1=         0 INT2=  0 FRACT= 0.0000000000000  ICND=  0
+         A= 0.000000000000000D+00         E= 0.000000000000000D+00       INC= 0.000000000000000D+00       ASC= 0.000000000000000D+00
+       PER= 0.000000000000000D+00      ANOM= 0.000000000000000D+00    RADIUS= 2.438000000000000D+03      FLAT= 0.000000000000000D+00
+   CON( 3)= 0.000000000000000D+00   CON( 4)= 0.000000000000000D+00   CON( 5)= 0.000000000000000D+00   CON( 6)= 0.000000000000000D+00
+   CON( 7)= 0.000000000000000D+00   CON( 8)= 0.000000000000000D+00   CON( 9)= 0.000000000000000D+00   CON(10)= 0.000000000000000D+00
+   CON(11)= 0.000000000000000D+00   CON(12)= 0.000000000000000D+00   CON(13)= 0.000000000000000D+00   CON(14)= 0.000000000000000D+00
+   CON(15)= 0.000000000000000D+00   CON(16)= 0.000000000000000D+00   CON(17)= 0.000000000000000D+00   CON(18)= 0.000000000000000D+00
+   CON(19)= 0.000000000000000D+00   CON(20)= 0.000000000000000D+00   CON(21)= 0.000000000000000D+00   CON(22)= 0.000000000000000D+00
+   CON(23)= 2.438000000000000D+03   CON(24)= 0.000000000000000D+00  CON1( 1)= 0.000000000000000D+00  CON1( 2)= 0.000000000000000D+00
+  CON1( 3)= 0.000000000000000D+00  CON1( 4)= 0.000000000000000D+00  CON1( 5)= 0.000000000000000D+00  CON1( 6)= 0.000000000000000D+00
+  CON1( 7)= 0.000000000000000D+00  CON1( 8)= 0.000000000000000D+00  CON1( 9)= 0.000000000000000D+00  CON1(10)=-6.000000000000000D-11
+  CON1(11)= 0.000000000000000D+00  CON1(12)= 0.000000000000000D+00
+   K( 1)=   0   K( 2)=   0   K( 3)=   0   K( 4)=   0   K( 5)=   0   K( 6)=   0   K( 7)=   0   K( 8)=   0   K( 9)=   0   K(10)=   0
+   K(11)=   0   K(12)=   0   K(13)=   0   K(14)=   0   K(15)=   0   K(16)=   0   K(17)=   0   K(18)=   0   K(19)=   0   K(20)=   0
+   K(21)=   0   K(22)=   0   K(23)=   0   K(24)=   0   K(25)=   0   K(26)=   0   K(27)=   0   K(28)=   0   K(29)=   0   K(30)=   0
+   K(31)=   1   K(32)=   1   K(33)=   1   K(34)=   1   K(35)=   1   K(36)=   1   K(37)=   1   K(38)=   1   K(39)=   1   K(40)=  -1
+   K(41)=  -1   K(42)=  -1   K(43)=  -1   K(44)=  -1   K(45)=  -1   K(46)=  -1   K(47)=  -1   K(48)=  -1   K(49)=  -1   K(50)=  -1
+   K(51)=  -1   K(52)=  -1   K(53)=  -1   K(54)=  -1   K(55)=  -1   K(56)=  -1   K(57)=  -1   K(58)=  -1   K(59)=  -1   K(60)=  -1
+   K(61)=   1   K(62)=  -1   K(63)=  -1   K(64)=  -1   K(65)=  -1   K(66)=  -1   K(67)=  -1   K(68)=  -1   K(69)=  -1   K(70)=  -1
+   K(71)=  -1   K(72)=  -1   K(73)=  -1   K(74)=  -1   K(75)=  -1   K(76)=  -1   K(77)=  -1   K(78)=  -1   K(79)=  -1   K(80)=  -1
+   K(81)=  -1   K(82)=  -1   K(83)=  -1   K(84)=  -1   K(85)=  -1   K(86)=  -1   K(87)=  -1   K(88)=   3   K(89)=  11   K(90)=   6
+   K(91)= -12   K(92)= -14   K(93)=   0   K(94)=   0   K(95)=   0   K(96)=   0   K(97)=   0   K(98)=   0   K(99)=   0   K(**)=   0
+ NUMKI=  8  KI= 0 0 0 0 0 0 0   0                                                                                                    
+  EPS( 1)= 0.00000E+00  EPS( 2)= 0.00000E+00  EPS( 3)= 1.00000E-16  EPS( 4)= 0.00000E+00  EPS( 5)= 0.00000E+00  EPS( 6)= 0.00000E+00
+0 VENUS      NPLNT( 2)=  2    IPLNT= 12         JDPL1=       0       JDPL0=       0       JDPL2=       0     INT =  4   NCENTR=  0
+  LPL( 1)=  0  LPL( 2)=  0  LPL( 3)=  0  LPL( 4)=  0  LPL( 5)=  0  LPL( 6)=  0  LPL( 7)=  0  LPL( 8)=  0  LPL( 9)=  0  LPL(10)=  0
+  LPL(11)=  0  LPL(12)=  0  LPL(13)=  0  LPL(14)=  0  LPL(15)=  0  LPL(16)=  0  LPL(17)=  0  LPL(18)=  0  LPL(19)=  0  LPL(20)=  0
+  LPL(21)=  0  LPL(22)=  0  LPL(23)=  0  LPL(24)=  0  LPL(25)=  0  LPL(26)=  0  LPL(27)=  0  LPL(28)=  0  LPL(29)=  0  LPL(30)=  0
+ INITIAL EPOCH (COORD.TIME)      -0.50000000 IHR= 0 IMIN= 0 SEC= 0.0000 INT1=         0 INT2=  0 FRACT= 0.0000000000000  ICND=  0
+         A= 0.000000000000000D+00         E= 0.000000000000000D+00       INC= 0.000000000000000D+00       ASC= 0.000000000000000D+00
+       PER= 0.000000000000000D+00      ANOM= 0.000000000000000D+00    RADIUS= 6.050000000000000D+03      FLAT= 0.000000000000000D+00
+   CON( 3)= 0.000000000000000D+00   CON( 4)= 0.000000000000000D+00   CON( 5)= 0.000000000000000D+00   CON( 6)= 0.000000000000000D+00
+   CON( 7)= 0.000000000000000D+00   CON( 8)= 0.000000000000000D+00   CON( 9)= 0.000000000000000D+00   CON(10)= 0.000000000000000D+00
+   CON(11)= 0.000000000000000D+00   CON(12)= 0.000000000000000D+00   CON(13)= 0.000000000000000D+00   CON(14)= 0.000000000000000D+00
+   CON(15)= 0.000000000000000D+00   CON(16)= 0.000000000000000D+00   CON(17)= 0.000000000000000D+00   CON(18)= 0.000000000000000D+00
+   CON(19)= 0.000000000000000D+00   CON(20)= 0.000000000000000D+00   CON(21)= 0.000000000000000D+00   CON(22)= 0.000000000000000D+00
+   CON(23)= 0.000000000000000D+00   CON(24)= 0.000000000000000D+00  CON1( 1)= 0.000000000000000D+00  CON1( 2)= 0.000000000000000D+00
+  CON1( 3)= 0.000000000000000D+00  CON1( 4)= 0.000000000000000D+00  CON1( 5)= 0.000000000000000D+00  CON1( 6)= 0.000000000000000D+00
+  CON1( 7)= 0.000000000000000D+00  CON1( 8)= 0.000000000000000D+00  CON1( 9)= 0.000000000000000D+00  CON1(10)=-3.600000000000000D-10
+  CON1(11)= 0.000000000000000D+00  CON1(12)= 0.000000000000000D+00
+   K( 1)=   0   K( 2)=   0   K( 3)=   0   K( 4)=   0   K( 5)=   0   K( 6)=   0   K( 7)=   0   K( 8)=   0   K( 9)=   0   K(10)=   0
+   K(11)=   0   K(12)=   0   K(13)=   0   K(14)=   0   K(15)=   0   K(16)=   0   K(17)=   0   K(18)=   0   K(19)=   0   K(20)=   0
+   K(21)=   0   K(22)=   0   K(23)=   0   K(24)=   0   K(25)=   0   K(26)=   0   K(27)=   0   K(28)=   0   K(29)=   0   K(30)=   0
+   K(31)=   1   K(32)=   1   K(33)=   1   K(34)=   1   K(35)=   1   K(36)=   1   K(37)=   1   K(38)=   1   K(39)=   1   K(40)=  -1
+   K(41)=  -1   K(42)=  -1   K(43)=  -1   K(44)=  -1   K(45)=  -1   K(46)=  -1   K(47)=  -1   K(48)=  -1   K(49)=  -1   K(50)=  -1
+   K(51)=  -1   K(52)=  -1   K(53)=  -1   K(54)=  -1   K(55)=  -1   K(56)=  -1   K(57)=  -1   K(58)=  -1   K(59)=  -1   K(60)=  -1
+   K(61)=   1   K(62)=  -1   K(63)=  -1   K(64)=  -1   K(65)=  -1   K(66)=  -1   K(67)=  -1   K(68)=  -1   K(69)=  -1   K(70)=  -1
+   K(71)=  -1   K(72)=  -1   K(73)=  -1   K(74)=  -1   K(75)=  -1   K(76)=  -1   K(77)=  -1   K(78)=  -1   K(79)=  -1   K(80)=  -1
+   K(81)=  -1   K(82)=  -1   K(83)=  -1   K(84)=  -1   K(85)=  -1   K(86)=  -1   K(87)=   1   K(88)=   3   K(89)=  11   K(90)=   6
+   K(91)= -12   K(92)= -14   K(93)=   0   K(94)=   0   K(95)=   0   K(96)=   0   K(97)=   0   K(98)=   0   K(99)=   0   K(**)=   0
+ NUMKI=  8  KI= 0 0 0 0 0 0 0   0                                                                                                    
+  EPS( 1)= 0.00000E+00  EPS( 2)= 0.00000E+00  EPS( 3)= 1.00000E-16  EPS( 4)= 0.00000E+00  EPS( 5)= 0.00000E+00  EPS( 6)= 0.00000E+00
+1PLANETARY EPHEMERIS PROGRAM INPUT DATA   TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE    9
+0JUPITER     NPLNT( 3)=  5    IPLNT= 15         JDPL1=       0       JDPL0=       0       JDPL2=       0     INT = 20   NCENTR=  0
+  LPL( 1)=  1  LPL( 2)=  0  LPL( 3)=  0  LPL( 4)=  0  LPL( 5)=  0  LPL( 6)=  0  LPL( 7)=  0  LPL( 8)=  0  LPL( 9)=  0  LPL(10)=  0
+  LPL(11)=  0  LPL(12)=  0  LPL(13)=  0  LPL(14)=  0  LPL(15)=  0  LPL(16)=  0  LPL(17)=  0  LPL(18)=  0  LPL(19)=  0  LPL(20)=  0
+  LPL(21)=  0  LPL(22)=  0  LPL(23)=  0  LPL(24)=  0  LPL(25)=  0  LPL(26)=  0  LPL(27)=  0  LPL(28)=  0  LPL(29)=  0  LPL(30)=  0
+ INITIAL EPOCH (COORD.TIME)      -0.50000000 IHR= 0 IMIN= 0 SEC= 0.0000 INT1=         0 INT2=  0 FRACT= 0.0000000000000  ICND=  0
+         A= 0.000000000000000D+00         E= 0.000000000000000D+00       INC= 0.000000000000000D+00       ASC= 0.000000000000000D+00
+       PER= 0.000000000000000D+00      ANOM= 0.000000000000000D+00    RADIUS= 7.135000000000000D+04      FLAT= 0.000000000000000D+00
+   CON( 3)= 0.000000000000000D+00   CON( 4)= 0.000000000000000D+00   CON( 5)= 0.000000000000000D+00   CON( 6)= 0.000000000000000D+00
+   CON( 7)= 0.000000000000000D+00   CON( 8)= 0.000000000000000D+00   CON( 9)= 0.000000000000000D+00   CON(10)= 0.000000000000000D+00
+   CON(11)= 0.000000000000000D+00   CON(12)= 0.000000000000000D+00   CON(13)= 0.000000000000000D+00   CON(14)= 0.000000000000000D+00
+   CON(15)= 0.000000000000000D+00   CON(16)= 0.000000000000000D+00   CON(17)= 0.000000000000000D+00   CON(18)= 0.000000000000000D+00
+   CON(19)= 0.000000000000000D+00   CON(20)= 0.000000000000000D+00   CON(21)= 0.000000000000000D+00   CON(22)= 0.000000000000000D+00
+   CON(23)= 7.139800000000000D+04   CON(24)= 0.000000000000000D+00  CON1( 1)= 0.000000000000000D+00  CON1( 2)= 0.000000000000000D+00
+  CON1( 3)= 0.000000000000000D+00  CON1( 4)= 0.000000000000000D+00  CON1( 5)= 0.000000000000000D+00  CON1( 6)= 0.000000000000000D+00
+  CON1( 7)= 0.000000000000000D+00  CON1( 8)= 0.000000000000000D+00  CON1( 9)= 0.000000000000000D+00  CON1(10)=-5.600000000000000D-07
+  CON1(11)= 0.000000000000000D+00  CON1(12)= 0.000000000000000D+00
+   K( 1)=   0   K( 2)=   0   K( 3)=   0   K( 4)=   0   K( 5)=   0   K( 6)=   0   K( 7)=   0   K( 8)=   0   K( 9)=   0   K(10)=   0
+   K(11)=   0   K(12)=   0   K(13)=   0   K(14)=   0   K(15)=   0   K(16)=   0   K(17)=   0   K(18)=   0   K(19)=   0   K(20)=   0
+   K(21)=   0   K(22)=   0   K(23)=   0   K(24)=   0   K(25)=   0   K(26)=   0   K(27)=   0   K(28)=   0   K(29)=   0   K(30)=   0
+   K(31)=   1   K(32)=   1   K(33)=   1   K(34)=   1   K(35)=   1   K(36)=   1   K(37)=   1   K(38)=   1   K(39)=   1   K(40)=  -1
+   K(41)=  -1   K(42)=  -1   K(43)=  -1   K(44)=  -1   K(45)=  -1   K(46)=  -1   K(47)=  -1   K(48)=  -1   K(49)=  -1   K(50)=  -1
+   K(51)=  -1   K(52)=  -1   K(53)=  -1   K(54)=  -1   K(55)=  -1   K(56)=  -1   K(57)=  -1   K(58)=  -1   K(59)=  -1   K(60)=  -1
+   K(61)=   1   K(62)=  -1   K(63)=  -1   K(64)=  -1   K(65)=  -1   K(66)=  -1   K(67)=  -1   K(68)=  -1   K(69)=  -1   K(70)=  -1
+   K(71)=  -1   K(72)=  -1   K(73)=  -1   K(74)=  -1   K(75)=  -1   K(76)=  -1   K(77)=  -1   K(78)=  -1   K(79)=  -1   K(80)=  -1
+   K(81)=  -1   K(82)=  -1   K(83)=  -1   K(84)=  -1   K(85)=  -1   K(86)=  -1   K(87)=   4   K(88)=   3   K(89)=  11   K(90)=   6
+   K(91)= -12   K(92)= -14   K(93)=   0   K(94)=   0   K(95)=   0   K(96)=   0   K(97)=   0   K(98)=   0   K(99)=   0   K(**)=   0
+ NUMKI=  8  KI= 0 0 0 0 0 0 0   0                                                                                                    
+  EPS( 1)= 0.00000E+00  EPS( 2)= 0.00000E+00  EPS( 3)= 1.00000E-16  EPS( 4)= 0.00000E+00  EPS( 5)= 0.00000E+00  EPS( 6)= 0.00000E+00
+0IO          NPLNT( 4)= 17    IPLNT= 27         JDPL1=       0       JDPL0=       0       JDPL2=       0     INT = -5   NCENTR=  5
+  LPL( 1)=  0  LPL( 2)=  0  LPL( 3)=  0  LPL( 4)=  0  LPL( 5)=  0  LPL( 6)=  0  LPL( 7)=  0  LPL( 8)=  0  LPL( 9)=  0  LPL(10)=  0
+  LPL(11)=  0  LPL(12)=  0  LPL(13)=  0  LPL(14)=  0  LPL(15)=  0  LPL(16)=  0  LPL(17)=  0  LPL(18)=  0  LPL(19)=  0  LPL(20)=  0
+  LPL(21)=  0  LPL(22)=  0  LPL(23)=  0  LPL(24)=  0  LPL(25)=  0  LPL(26)=  0  LPL(27)=  0  LPL(28)=  0  LPL(29)=  0  LPL(30)=  0
+ INITIAL EPOCH (COORD.TIME)      -0.50000000 IHR= 0 IMIN= 0 SEC= 0.0000 INT1=         0 INT2=  0 FRACT= 0.0000000000000  ICND=  0
+         A= 0.000000000000000D+00         E= 0.000000000000000D+00       INC= 0.000000000000000D+00       ASC= 0.000000000000000D+00
+       PER= 0.000000000000000D+00      ANOM= 0.000000000000000D+00    RADIUS= 1.820000000000000D+03      FLAT= 0.000000000000000D+00
+   CON( 3)= 0.000000000000000D+00   CON( 4)= 0.000000000000000D+00   CON( 5)= 0.000000000000000D+00   CON( 6)= 0.000000000000000D+00
+   CON( 7)= 1.769138000000000D+00   CON( 8)= 6.450408400000000D+01   CON( 9)= 2.679977820000000D+02   CON(10)= 0.000000000000000D+00
+   CON(11)= 0.000000000000000D+00   CON(12)= 0.000000000000000D+00   CON(13)= 0.000000000000000D+00   CON(14)= 0.000000000000000D+00
+   CON(15)= 0.000000000000000D+00   CON(16)= 0.000000000000000D+00   CON(17)= 0.000000000000000D+00   CON(18)= 0.000000000000000D+00
+   CON(19)= 0.000000000000000D+00   CON(20)= 0.000000000000000D+00   CON(21)= 0.000000000000000D+00   CON(22)= 0.000000000000000D+00
+   CON(23)= 1.820000000000000D+03   CON(24)= 0.000000000000000D+00  CON1( 1)= 0.000000000000000D+00  CON1( 2)= 0.000000000000000D+00
+  CON1( 3)= 0.000000000000000D+00  CON1( 4)= 0.000000000000000D+00  CON1( 5)= 0.000000000000000D+00  CON1( 6)= 0.000000000000000D+00
+  CON1( 7)= 0.000000000000000D+00  CON1( 8)= 0.000000000000000D+00  CON1( 9)= 0.000000000000000D+00  CON1(10)= 0.000000000000000D+00
+  CON1(11)= 0.000000000000000D+00  CON1(12)= 0.000000000000000D+00
+   K( 1)=  18   K( 2)=  19   K( 3)=  20   K( 4)=   0   K( 5)=   0   K( 6)=   0   K( 7)=   0   K( 8)=   0   K( 9)=   0   K(10)=   0
+   K(11)=   0   K(12)=   0   K(13)=   0   K(14)=   0   K(15)=   0   K(16)=   0   K(17)=   0   K(18)=   0   K(19)=   0   K(20)=   0
+   K(21)=   0   K(22)=   0   K(23)=   0   K(24)=   0   K(25)=   0   K(26)=   0   K(27)=   0   K(28)=   0   K(29)=   0   K(30)=   0
+   K(31)=  -1   K(32)=  -1   K(33)=  -1   K(34)=  -1   K(35)=   1   K(36)=   1   K(37)=  -1   K(38)=  -1   K(39)=  -1   K(40)=  -1
+   K(41)=  -1   K(42)=  -1   K(43)=  -1   K(44)=  -1   K(45)=  -1   K(46)=  -1   K(47)=   2   K(48)=   2   K(49)=   2   K(50)=   2
+   K(51)=  -1   K(52)=  -1   K(53)=  -1   K(54)=  -1   K(55)=  -1   K(56)=  -1   K(57)=  -1   K(58)=  -1   K(59)=  -1   K(60)=  -1
+   K(61)=   1   K(62)=  -1   K(63)=  -1   K(64)=  -1   K(65)=  -1   K(66)=  -1   K(67)=  -1   K(68)=  -1   K(69)=  -1   K(70)=  -1
+   K(71)=  -1   K(72)=  -1   K(73)=  -1   K(74)=  -1   K(75)=  -1   K(76)=  -1   K(77)=  -1   K(78)=  -1   K(79)=  -1   K(80)=  -1
+   K(81)=  -1   K(82)=  -1   K(83)=  -1   K(84)=  -1   K(85)=  -1   K(86)= 106   K(87)=  -7   K(88)=   3   K(89)=  11   K(90)=   6
+   K(91)= -15   K(92)= -20   K(93)=   0   K(94)=   0   K(95)=   0   K(96)=   0   K(97)=   0   K(98)=-128   K(99)=   0   K(**)=  -1
+ NUMKI=  8  KI= 1 0 0 0 0 0 0   0                                                                                                    
+  EPS( 1)= 0.00000E+00  EPS( 2)= 0.00000E+00  EPS( 3)= 1.00000E-16  EPS( 4)= 0.00000E+00  EPS( 5)= 0.00000E+00  EPS( 6)= 0.00000E+00
+1PLANETARY EPHEMERIS PROGRAM INPUT DATA   TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   10
+0EUROPA      NPLNT( 5)= 18    IPLNT= 28         JDPL1=       0       JDPL0=       0       JDPL2=       0     INT = -4   NCENTR=  5
+  LPL( 1)=  0  LPL( 2)=  0  LPL( 3)=  0  LPL( 4)=  0  LPL( 5)=  0  LPL( 6)=  0  LPL( 7)=  0  LPL( 8)=  0  LPL( 9)=  0  LPL(10)=  0
+  LPL(11)=  0  LPL(12)=  0  LPL(13)=  0  LPL(14)=  0  LPL(15)=  0  LPL(16)=  0  LPL(17)=  0  LPL(18)=  0  LPL(19)=  0  LPL(20)=  0
+  LPL(21)=  0  LPL(22)=  0  LPL(23)=  0  LPL(24)=  0  LPL(25)=  0  LPL(26)=  0  LPL(27)=  0  LPL(28)=  0  LPL(29)=  0  LPL(30)=  0
+ INITIAL EPOCH (COORD.TIME)      -0.50000000 IHR= 0 IMIN= 0 SEC= 0.0000 INT1=         0 INT2=  0 FRACT= 0.0000000000000  ICND=  0
+         A= 0.000000000000000D+00         E= 0.000000000000000D+00       INC= 0.000000000000000D+00       ASC= 0.000000000000000D+00
+       PER= 0.000000000000000D+00      ANOM= 0.000000000000000D+00    RADIUS= 1.521000000000000D+03      FLAT= 0.000000000000000D+00
+   CON( 3)= 0.000000000000000D+00   CON( 4)= 0.000000000000000D+00   CON( 5)= 0.000000000000000D+00   CON( 6)= 0.000000000000000D+00
+   CON( 7)= 3.551181000000000D+00   CON( 8)= 6.450408400000000D+01   CON( 9)= 2.679977820000000D+02   CON(10)= 0.000000000000000D+00
+   CON(11)= 0.000000000000000D+00   CON(12)= 0.000000000000000D+00   CON(13)= 0.000000000000000D+00   CON(14)= 0.000000000000000D+00
+   CON(15)= 0.000000000000000D+00   CON(16)= 0.000000000000000D+00   CON(17)= 0.000000000000000D+00   CON(18)= 0.000000000000000D+00
+   CON(19)= 0.000000000000000D+00   CON(20)= 0.000000000000000D+00   CON(21)= 0.000000000000000D+00   CON(22)= 0.000000000000000D+00
+   CON(23)= 1.521000000000000D+03   CON(24)= 0.000000000000000D+00  CON1( 1)= 0.000000000000000D+00  CON1( 2)= 0.000000000000000D+00
+  CON1( 3)= 0.000000000000000D+00  CON1( 4)= 0.000000000000000D+00  CON1( 5)= 0.000000000000000D+00  CON1( 6)= 0.000000000000000D+00
+  CON1( 7)= 0.000000000000000D+00  CON1( 8)= 0.000000000000000D+00  CON1( 9)= 0.000000000000000D+00  CON1(10)= 0.000000000000000D+00
+  CON1(11)= 0.000000000000000D+00  CON1(12)= 0.000000000000000D+00
+   K( 1)=  17   K( 2)=  19   K( 3)=  20   K( 4)=   0   K( 5)=   0   K( 6)=   0   K( 7)=   0   K( 8)=   0   K( 9)=   0   K(10)=   0
+   K(11)=   0   K(12)=   0   K(13)=   0   K(14)=   0   K(15)=   0   K(16)=   0   K(17)=   0   K(18)=   0   K(19)=   0   K(20)=   0
+   K(21)=   0   K(22)=   0   K(23)=   0   K(24)=   0   K(25)=   0   K(26)=   0   K(27)=   0   K(28)=   0   K(29)=   0   K(30)=   0
+   K(31)=  -1   K(32)=  -1   K(33)=  -1   K(34)=  -1   K(35)=   1   K(36)=   1   K(37)=  -1   K(38)=  -1   K(39)=  -1   K(40)=  -1
+   K(41)=  -1   K(42)=  -1   K(43)=  -1   K(44)=  -1   K(45)=  -1   K(46)=  -1   K(47)=   2   K(48)=   2   K(49)=   2   K(50)=   2
+   K(51)=  -1   K(52)=  -1   K(53)=  -1   K(54)=  -1   K(55)=  -1   K(56)=  -1   K(57)=  -1   K(58)=  -1   K(59)=  -1   K(60)=  -1
+   K(61)=   1   K(62)=  -1   K(63)=  -1   K(64)=  -1   K(65)=  -1   K(66)=  -1   K(67)=  -1   K(68)=  -1   K(69)=  -1   K(70)=  -1
+   K(71)=  -1   K(72)=  -1   K(73)=  -1   K(74)=  -1   K(75)=  -1   K(76)=  -1   K(77)=  -1   K(78)=  -1   K(79)=  -1   K(80)=  -1
+   K(81)=  -1   K(82)=  -1   K(83)=  -1   K(84)=  -1   K(85)=  -1   K(86)= 206   K(87)=  -6   K(88)=   3   K(89)=  11   K(90)=   6
+   K(91)= -15   K(92)= -20   K(93)=   0   K(94)=   0   K(95)=   0   K(96)=   0   K(97)=   0   K(98)= -64   K(99)=   0   K(**)=  -1
+ NUMKI=  8  KI= 0 0 0 0 0 0 0   0                                                                                                    
+  EPS( 1)= 0.00000E+00  EPS( 2)= 0.00000E+00  EPS( 3)= 1.00000E-16  EPS( 4)= 0.00000E+00  EPS( 5)= 0.00000E+00  EPS( 6)= 0.00000E+00
+0GANYMEDE    NPLNT( 6)= 19    IPLNT= 29         JDPL1=       0       JDPL0=       0       JDPL2=       0     INT =  0   NCENTR=  5
+  LPL( 1)=  0  LPL( 2)=  0  LPL( 3)=  0  LPL( 4)=  0  LPL( 5)=  0  LPL( 6)=  0  LPL( 7)=  0  LPL( 8)=  0  LPL( 9)=  0  LPL(10)=  0
+  LPL(11)=  0  LPL(12)=  0  LPL(13)=  0  LPL(14)=  0  LPL(15)=  0  LPL(16)=  0  LPL(17)=  0  LPL(18)=  0  LPL(19)=  0  LPL(20)=  0
+  LPL(21)=  0  LPL(22)=  0  LPL(23)=  0  LPL(24)=  0  LPL(25)=  0  LPL(26)=  0  LPL(27)=  0  LPL(28)=  0  LPL(29)=  0  LPL(30)=  0
+ INITIAL EPOCH (COORD.TIME)      -0.50000000 IHR= 0 IMIN= 0 SEC= 0.0000 INT1=         0 INT2=  0 FRACT= 0.0000000000000  ICND=  0
+         A= 0.000000000000000D+00         E= 0.000000000000000D+00       INC= 0.000000000000000D+00       ASC= 0.000000000000000D+00
+       PER= 0.000000000000000D+00      ANOM= 0.000000000000000D+00    RADIUS= 0.000000000000000D+00      FLAT= 0.000000000000000D+00
+   CON( 3)= 0.000000000000000D+00   CON( 4)= 0.000000000000000D+00   CON( 5)= 0.000000000000000D+00   CON( 6)= 0.000000000000000D+00
+   CON( 7)= 0.000000000000000D+00   CON( 8)= 0.000000000000000D+00   CON( 9)= 0.000000000000000D+00   CON(10)= 0.000000000000000D+00
+   CON(11)= 0.000000000000000D+00   CON(12)= 0.000000000000000D+00   CON(13)= 0.000000000000000D+00   CON(14)= 0.000000000000000D+00
+   CON(15)= 0.000000000000000D+00   CON(16)= 0.000000000000000D+00   CON(17)= 0.000000000000000D+00   CON(18)= 0.000000000000000D+00
+   CON(19)= 0.000000000000000D+00   CON(20)= 0.000000000000000D+00   CON(21)= 0.000000000000000D+00   CON(22)= 0.000000000000000D+00
+   CON(23)= 0.000000000000000D+00   CON(24)= 0.000000000000000D+00  CON1( 1)= 0.000000000000000D+00  CON1( 2)= 0.000000000000000D+00
+  CON1( 3)= 0.000000000000000D+00  CON1( 4)= 0.000000000000000D+00  CON1( 5)= 0.000000000000000D+00  CON1( 6)= 0.000000000000000D+00
+  CON1( 7)= 0.000000000000000D+00  CON1( 8)= 0.000000000000000D+00  CON1( 9)= 0.000000000000000D+00  CON1(10)= 0.000000000000000D+00
+  CON1(11)= 0.000000000000000D+00  CON1(12)= 0.000000000000000D+00
+   K( 1)=   0   K( 2)=   0   K( 3)=   0   K( 4)=   0   K( 5)=   0   K( 6)=   0   K( 7)=   0   K( 8)=   0   K( 9)=   0   K(10)=   0
+   K(11)=   0   K(12)=   0   K(13)=   0   K(14)=   0   K(15)=   0   K(16)=   0   K(17)=   0   K(18)=   0   K(19)=   0   K(20)=   0
+   K(21)=   0   K(22)=   0   K(23)=   0   K(24)=   0   K(25)=   0   K(26)=   0   K(27)=   0   K(28)=   0   K(29)=   0   K(30)=   0
+   K(31)=   1   K(32)=   1   K(33)=   1   K(34)=   1   K(35)=   1   K(36)=   1   K(37)=   1   K(38)=   1   K(39)=   1   K(40)=  -1
+   K(41)=  -1   K(42)=  -1   K(43)=  -1   K(44)=  -1   K(45)=  -1   K(46)=  -1   K(47)=  -1   K(48)=  -1   K(49)=  -1   K(50)=  -1
+   K(51)=  -1   K(52)=  -1   K(53)=  -1   K(54)=  -1   K(55)=  -1   K(56)=  -1   K(57)=  -1   K(58)=  -1   K(59)=  -1   K(60)=  -1
+   K(61)=   1   K(62)=  -1   K(63)=  -1   K(64)=  -1   K(65)=  -1   K(66)=  -1   K(67)=  -1   K(68)=  -1   K(69)=  -1   K(70)=  -1
+   K(71)=  -1   K(72)=  -1   K(73)=  -1   K(74)=  -1   K(75)=  -1   K(76)=  -1   K(77)=  -1   K(78)=  -1   K(79)=  -1   K(80)=  -1
+   K(81)=  -1   K(82)=  -1   K(83)=  -1   K(84)=  -1   K(85)=  -1   K(86)=  -1   K(87)=   0   K(88)=   3   K(89)=  11   K(90)=   6
+   K(91)= -12   K(92)= -14   K(93)=   0   K(94)=   0   K(95)=   0   K(96)=   0   K(97)=   0   K(98)=   0   K(99)=   0   K(**)=   0
+ NUMKI=  8  KI= 0 0 0 0 0 0 0   0                                                                                                    
+  EPS( 1)= 0.00000E+00  EPS( 2)= 0.00000E+00  EPS( 3)= 1.00000E-16  EPS( 4)= 0.00000E+00  EPS( 5)= 0.00000E+00  EPS( 6)= 0.00000E+00
+1PLANETARY EPHEMERIS PROGRAM INPUT DATA   TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   11
+0CALLISTO    NPLNT( 7)= 20    IPLNT= 30         JDPL1=       0       JDPL0=       0       JDPL2=       0     INT =  0   NCENTR=  5
+  LPL( 1)=  0  LPL( 2)=  0  LPL( 3)=  0  LPL( 4)=  0  LPL( 5)=  0  LPL( 6)=  0  LPL( 7)=  0  LPL( 8)=  0  LPL( 9)=  0  LPL(10)=  0
+  LPL(11)=  0  LPL(12)=  0  LPL(13)=  0  LPL(14)=  0  LPL(15)=  0  LPL(16)=  0  LPL(17)=  0  LPL(18)=  0  LPL(19)=  0  LPL(20)=  0
+  LPL(21)=  0  LPL(22)=  0  LPL(23)=  0  LPL(24)=  0  LPL(25)=  0  LPL(26)=  0  LPL(27)=  0  LPL(28)=  0  LPL(29)=  0  LPL(30)=  0
+ INITIAL EPOCH (COORD.TIME)      -0.50000000 IHR= 0 IMIN= 0 SEC= 0.0000 INT1=         0 INT2=  0 FRACT= 0.0000000000000  ICND=  0
+         A= 0.000000000000000D+00         E= 0.000000000000000D+00       INC= 0.000000000000000D+00       ASC= 0.000000000000000D+00
+       PER= 0.000000000000000D+00      ANOM= 0.000000000000000D+00    RADIUS= 0.000000000000000D+00      FLAT= 0.000000000000000D+00
+   CON( 3)= 0.000000000000000D+00   CON( 4)= 0.000000000000000D+00   CON( 5)= 0.000000000000000D+00   CON( 6)= 0.000000000000000D+00
+   CON( 7)= 0.000000000000000D+00   CON( 8)= 0.000000000000000D+00   CON( 9)= 0.000000000000000D+00   CON(10)= 0.000000000000000D+00
+   CON(11)= 0.000000000000000D+00   CON(12)= 0.000000000000000D+00   CON(13)= 0.000000000000000D+00   CON(14)= 0.000000000000000D+00
+   CON(15)= 0.000000000000000D+00   CON(16)= 0.000000000000000D+00   CON(17)= 0.000000000000000D+00   CON(18)= 0.000000000000000D+00
+   CON(19)= 0.000000000000000D+00   CON(20)= 0.000000000000000D+00   CON(21)= 0.000000000000000D+00   CON(22)= 0.000000000000000D+00
+   CON(23)= 0.000000000000000D+00   CON(24)= 0.000000000000000D+00  CON1( 1)= 0.000000000000000D+00  CON1( 2)= 0.000000000000000D+00
+  CON1( 3)= 0.000000000000000D+00  CON1( 4)= 0.000000000000000D+00  CON1( 5)= 0.000000000000000D+00  CON1( 6)= 0.000000000000000D+00
+  CON1( 7)= 0.000000000000000D+00  CON1( 8)= 0.000000000000000D+00  CON1( 9)= 0.000000000000000D+00  CON1(10)= 0.000000000000000D+00
+  CON1(11)= 0.000000000000000D+00  CON1(12)= 0.000000000000000D+00
+   K( 1)=   0   K( 2)=   0   K( 3)=   0   K( 4)=   0   K( 5)=   0   K( 6)=   0   K( 7)=   0   K( 8)=   0   K( 9)=   0   K(10)=   0
+   K(11)=   0   K(12)=   0   K(13)=   0   K(14)=   0   K(15)=   0   K(16)=   0   K(17)=   0   K(18)=   0   K(19)=   0   K(20)=   0
+   K(21)=   0   K(22)=   0   K(23)=   0   K(24)=   0   K(25)=   0   K(26)=   0   K(27)=   0   K(28)=   0   K(29)=   0   K(30)=   0
+   K(31)=   1   K(32)=   1   K(33)=   1   K(34)=   1   K(35)=   1   K(36)=   1   K(37)=   1   K(38)=   1   K(39)=   1   K(40)=  -1
+   K(41)=  -1   K(42)=  -1   K(43)=  -1   K(44)=  -1   K(45)=  -1   K(46)=  -1   K(47)=  -1   K(48)=  -1   K(49)=  -1   K(50)=  -1
+   K(51)=  -1   K(52)=  -1   K(53)=  -1   K(54)=  -1   K(55)=  -1   K(56)=  -1   K(57)=  -1   K(58)=  -1   K(59)=  -1   K(60)=  -1
+   K(61)=   1   K(62)=  -1   K(63)=  -1   K(64)=  -1   K(65)=  -1   K(66)=  -1   K(67)=  -1   K(68)=  -1   K(69)=  -1   K(70)=  -1
+   K(71)=  -1   K(72)=  -1   K(73)=  -1   K(74)=  -1   K(75)=  -1   K(76)=  -1   K(77)=  -1   K(78)=  -1   K(79)=  -1   K(80)=  -1
+   K(81)=  -1   K(82)=  -1   K(83)=  -1   K(84)=  -1   K(85)=  -1   K(86)=  -1   K(87)=   0   K(88)=   3   K(89)=  11   K(90)=   6
+   K(91)= -12   K(92)= -14   K(93)=   0   K(94)=   0   K(95)=   0   K(96)=   0   K(97)=   0   K(98)=   0   K(99)=   0   K(**)=   0
+ NUMKI=  8  KI= 0 0 0 0 0 0 0   0                                                                                                    
+  EPS( 1)= 0.00000E+00  EPS( 2)= 0.00000E+00  EPS( 3)= 1.00000E-16  EPS( 4)= 0.00000E+00  EPS( 5)= 0.00000E+00  EPS( 6)= 0.00000E+00
+0 THERE IS NO INPUT ET-UT2, A1-UT1, OR WOBBLE TABLE
+0OBSERVING SITES WITH ADJUSTABLE COORDINATES
+
+        SITE   LSCRD   RADIUS (KM)  LONGITUDE (DEG)  LATITUDE (DEG) KSCRD
+   1. HAYSTACK 0 0 0 6368.551653028   71.4886666667   42.4315183830  0 
+   2. B30LNCLN 0 0 0 6368.485020842   71.2666933000   42.2678790610  0 
+   3. B10LNCLN 0 0 0 6368.475524712   71.2660932800   42.2681595950  0 
+   4. B04LNCLN 0 0 0 6368.478870405   71.2657733700   42.2683426048  0 
+   5. B01LNCLN 0 0 0 6368.475794561   71.2657652700   42.2682041262  0 
+   6. MILLSTON 0 0 0 6368.563831130   71.4913888889   42.4256609690  0 
+   7. ARECIBO  0 0 0 6376.560245971   66.7530277778   18.2287613852  0 
+   8. 85JPLVNS 0 0 0 6372.177000000  116.7940075000   35.0665981000  0 
+   9. 11DSPION 0 0 0 5206.350322378  116.8497745987 3673.7851760000 -1*
+  10. 12DSECHO 0 0 0 5212.050800000 -243.1946300000 3665.6468000000 -1*
+  11. 14DSMARS 0 0 0 5203.997400000 -243.1105900000 3677.0630000000 -1*
+  12. 41DSWOOM 0 0 0 5450.197800000 -136.8875900000-3302.3262000000 -1*
+  13. 42DSCANB 0 0 0 5205.361028200 -148.9809579880-3674.6129890000 -1*
+  14. 51DSJOHA 0 0 0 5742.938000000  -27.6854600000-2768.7193000000 -1*
+  15. 61DSMADR 0 0 0 4862.604400000 -355.7510900000 4114.8518000000 -1*
+  16. 62DSCEBR 0 0 0 4860.811400000 -355.6322900000 4116.9660000000 -1*
+  17. AFLASER  0 0 0 5391.827000000  110.7244167000 3400.6790000000 -1*
+  18. MCDONALD 0 0 0 6374.717550509  104.0222550000   30.5030777207  0 
+  19. 6USNAVAL 0 0 0 6378.000000000   77.0660375000    0.0000000000  0 
+  20. 8USNAVAL 0 0 0 6378.000000000   77.0655416667    0.0000000000  0 
+  21. 9USNAVAL 0 0 0 6378.000000000   77.0654625000    0.0000000000  0 
+  22. MUSNAVAL 0 0 0 6378.000000000   77.0655416667    0.0000000000  0 
+  23. CAPETOWN 0 0 0 6378.000000000  -18.4765833333    0.0000000000  0 
+1PLANETARY EPHEMERIS PROGRAM INPUT DATA   TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   12
+0OBSERVING SITES WITH ADJUSTABLE COORDINATES
+
+        SITE   LSCRD   RADIUS (KM)  LONGITUDE (DEG)  LATITUDE (DEG) KSCRD
+  24. GRENWICH 0 0 0 6378.000000000    0.0000000000    0.0000000000  0 
+  25. CAMBRIDG 0 0 0 6378.000000000   -0.0947916652    0.0000000000  0 
+  26. RADCLIFF 0 0 0 6378.000000000    1.2516666667    0.0000000000  0 
+  27. OTTAWA   0 0 0 6378.000000000   75.7164583200    0.0000000000  0 
+  28. PARIS    0 0 0 6378.000000000   -2.3371249980    0.0000000000  0 
+  29. TOULOUSE 0 0 0 6378.000000000   -1.4624999600    0.0000000000  0 
+  30. NICE     0 0 0 6378.000000000   -7.3004166650    0.0000000000  0 
+  31. BESANCON 0 0 0 6378.000000000   -5.9892499600    0.0000000000  0 
+  32. UCCLE    0 0 0 6378.000000000   -4.3582083333    0.0000000000  0 
+  33. GTOKYO   0 0 0 6378.000000000 -139.5407500000    0.0000000000  0 
+  34. STRASBRG 0 0 0 6378.000000000   -7.7683333333    0.0000000000  0 
+  35. BERLIN   0 0 0 6378.000000000  -13.1066666667    0.0000000000  0 
+  36. EDINBRG  0 0 0 6378.000000000    3.1833333333    0.0000000000  0 
+  37. TABLE MT 0 0 0 6373.673509174  117.6808800000   34.2026216153  0 
+  38. KIEV     0 0 0 6365.713904763  -30.5000900000   50.1762761387  0 
+  39. AGHRVARD 0 0 0 6369.025696007   71.5600000000   42.1085338167  0 
+  40. CANARYIS 0 0 0 6375.081075002   16.0000000000   27.8507979310  0 
+  41. CATANIA  0 0 0 6370.455825316  -15.0900000000   37.1146804236  0 
+  42. C.TOLOLO 0 0 0 6375.198680200   70.8058500000  -30.0020961703  0 
+  43. FERNBANK 0 0 0 6371.956085552   84.3195000000   33.4228763395  0 
+  44. JHNSONSC 0 0 0 6372.914152902   93.7500000000   29.8336612321  0 
+  45. JOHBURG  0 0 0 6375.837489188  -28.0750000000  -26.0300252704  0 
+  46. LEUSCHNR 0 0 0 6370.243494387  122.2621200000   37.6868740020  0 
+  47. LOWELL   0 0 0 6373.310461052  111.6633300000   35.0210144078  0 
+  48. MAUNAKEA 0 0 0 6379.929577424  155.4722100000   19.7037344181  0 
+  49. MITAKA   0 0 0 6370.994002901 -139.5420900000   35.4905195037  0 
+  50. MTDODAIR 0 0 0 6371.696133661  220.8056250000   35.8234227825  0 
+  51. NARA JPN 0 0 0 6371.630968891  220.4550000000   35.2185236054  0 
+  52. NWMEXICO 0 0 0 6374.197877904  106.6995000000   31.8273842273  0 
+  53. PALOMAR  0 0 0 6373.445517691  116.8639950000   33.1797798915  0 
+  54. PERTH    0 0 0 6372.585897441 -116.1350400000  -31.8362542107  0 
+  55. SIDINGSP 0 0 0 6373.602942822 -149.0660850000  -31.1065941357  0 
+  56. SUTHRLND 0 0 0 6372.587400344   -4.6200000000  -33.6223765367  0 
+  57. VANDRBLT 0 0 0 6371.154709920   86.8000000000   35.7174295976  0 
+  58. WISE     0 0 0 6373.561243319  -34.7625000000   30.4275419335  0 
+    9 CYLINDRICAL COORDINATES(EQUAT. RADIUS(KM),LONGITUDE(DEG),Z(KM)) *
+0OBSERVED SPOTS ON OTHER BODIES
+
+      SPOT  PLANET  NO. LSPCRD  RADIUS (KM)  LONGITUDE (DEG) LATITUDE (DEG)
+   1. SUR1   MOON    10  0 0 0 1735.47400000  316.6760000000  -2.5020000000     
+   2. SUR3   MOON    10  0 0 0 1736.10600000  336.6825100000  -3.0550000000     
+   3. SUR5   MOON    10  0 0 0 1735.11400000   23.2170000000   1.4060000000     
+   4. SUR6   MOON    10  0 0 0 1736.43900000  358.6322900000   0.4590000000     
+   5. SUR7   MOON    10  0 0 0 1739.05100000  348.5630000000 -40.9750000000     
+   6. APL2   MOON    10  0 0 0 1735.63900000   23.4602000000   0.6707000000     
+   7. AP11   MOON    10  0 0 0 1735.50100000   23.4119800000   0.6923100000     
+   8. AP14   MOON    10  0 0 0 1736.35900000  -17.5387600000  -3.6244600000     
+   9. AP15   MOON    10  0 0 0 1735.50870000    3.5682200000  26.1540400000     
+  10. AL12   MOON    10  0 0 0 1736.01200000  -23.4850400000  -2.9905100000     
+  11. AL14   MOON    10  0 0 0 1736.36300000  -17.5379800000  -3.6240900000     
+  12. AL15   MOON    10  0 0 0 1735.50870000    3.5696500000  26.1547800000     
+  13. AL16   MOON    10  0 0 0 1737.44700000   15.4362500000  -8.9554100000     
+  14. AL17   MOON    10  0 0 0 1734.81400000   30.7084300000  20.2096600000     
+1PLANETARY EPHEMERIS PROGRAM INPUT DATA   TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   13
+0THERE ARE NO INPUT PULSARS
+0SKY CORRECTION STAR CATALOG ERROR MODELS                                                                                            
+0CATALOG BONNDRCH HAS COEFFICIENTS UP TO ORDER  2:
+ SKY( 1)= 1.000000000000000D+00 0.000000000000000D+00 0.000000000000000D+00 0.000000000000000D+00
+ SKY( 2)= 0.000000000000000D+00 0.000000000000000D+00 0.000000000000000D+00 0.000000000000000D+00
+ LSKY=     1 1 0 0  0 0 1 1
+0CATALOG K5       HAS COEFFICIENTS UP TO ORDER  1:
+ SKY( 1)= 0.000000000000000D+00 1.500000000000000D+00 0.000000000000000D+00 0.000000000000000D+00
+ LSKY=     1 1 1 1
+0CONSTANT BIASES FOR PLANETARY RADAR OBSERVATIONS                                                                                    
+0      PLANET NO. RECV SITE NO. SEND SITE NO. SER. LRBS  BIAS1(SEC)  BIAS2(C/S)
+   1. MERCURY   1  ARECIBO    7  ARECIBO    7 6764  0 0  0.00000E+00 0.00000E+00
+   2.  VENUS    2  ARECIBO    7  ARECIBO    7 6764  0 0  0.00000E+00 0.00000E+00
+0EQUINOX-EQUATOR CORRECTIONS FOR OPTICAL OBSERVATIONS                                                                                
+
+        SITE   NO. SER. LEQN   DEQUINOX    DEQUATOR    DLATITUDE          SITE   NO. SER. LEQN   DEQUINOX    DEQUATOR    DLATITUDE  
+   1. 6USNAVAL  19 6956 0 0 0  0.0000E+00  0.0000E+00  0.0000E+00    2. C.TOLOLO  42 OPTM 1 1 1  1.0000E-01  0.0000E+00  1.0000E+00
+   3. PERTH     54 AZEL 1 0 1  2.0000E-04  0.0000E+00  0.0000E+00
+0PLANETARY PHASE CORRECTIONS FOR OPTICAL OBSERVATIONS                                                                                
+0      PLANET NO.   SITE   NO. SER.        LPHS              APHASE(1)   APHASE(2)   APHASE(3) APHASE(4&7) APHASE(5&8) APHASE(6&9)
+   1. MERCURY   1 6USNAVAL  19 6956 0 0 0 0 0 0 0 0 0
+   2. JUPITER   5 C.TOLOLO  42 OPTM 1 1 0 0 0 0 0 0 0      0.00000E+00 0.00000E+00
+0PARAMETERS FOR GLOBAL INPUT DATA DELETIONS
+ TDLT0=       0.000000  TDLTON=       0.000000  TDLTOF=       0.000000
+-INPUT DATA FOR ALTERATIONS IN ERROR WEIGHTINGS,DELETIONS FROM OBSERVATION SERIES AND THE GENERATION OF DUMMY OBSERVATIONS        
+0NTP NSEQ NCDF PLANET NPLN SITE1 NSITE SERIES SITE2 NSITE SPOT NSPT ERROR WEIGHTS  ACCTIM ITIME FDEV    FREQUENCY        CTLG
+
+   0  100   5 JUPITER   5 C.TOLOLO  42 OPTP             0        0 1.0E+00 1.0E+00 0.0E+00 1   0.0000 0.000000000000D+00 BONNDRCH 
+ ERRORS  2.0E+00, 2.7E+01 USED FOR DUMMY OBS FROM JD 2441890  0H  0M  0.0000S TO JD 2441891  0H  0M  0.0000S EVERY  0 DAYS 43800 SEC
+
+   0  200   6 IO       17 PERTH     54 OPTS             0        0 1.0E+00 1.0E+00 0.0E+00 1   0.0000 0.000000000000D+00 K5       
+ ERRORS  2.0E+00, 2.7E+01 USED FOR DUMMY OBS FROM JD 2441890  0H  0M  0.0000S TO JD 2441891  0H  0M  0.0000S EVERY  0 DAYS 43800 SEC
+
+   0  300   4 JUPITER   5 C.TOLOLO  42 OPTM             0        0 1.0E+00 1.0E+00 0.0E+00 1   0.0000 0.000000000000D+00          
+ ERRORS  2.0E+00, 2.7E+01 USED FOR DUMMY OBS FROM JD 2441890  0H  0M  0.0000S TO JD 2441893  0H  0M  0.0000S EVERY  0 DAYS 86401 SEC
+
+   0  400  20 JUPITER   5 PERTH     54 AZEL             0        0 1.0E+00 1.0E+00 0.0E+00 1   0.0000 0.000000000000D+00          
+ ERRORS  2.0E+00, 2.7E+01 USED FOR DUMMY OBS FROM JD 2441890  0H  0M  0.0000S TO JD 2441891  0H  0M  0.0000S EVERY  0 DAYS 43800 SEC
+1PLANETARY EPHEMERIS PROGRAM INPUT DATA   TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   14
+-SUMMARY OF ADJUSTABLE PARAMETERS
+0      PARAMETER NAME     NOMINAL (SCALED)        SCALE FACTOR   
+    1  C.TOOPTM DENOX     1.0000000149011612D-01  1.0000000000000000D+00                                                        
+    2  C.TOOPTM DEQUAT    0.0000000000000000D+00  1.0000000000000000D+00                                                        
+    3  C.TOOPTM DLAT      1.0000000000000000D+00  1.0000000000000000D+00                                                        
+    4  PERTAZEL DENOX     1.9999999494757503D-04  1.0000000000000000D+00                                                        
+    5  PERTAZEL DLAT      0.0000000000000000D+00  1.0000000000000000D+00                                                        
+    6  BONNDRCH 1         1.0000000000000000D+00  1.0000000000000000D+00                                                        
+    7  BONNDRCH 2         0.0000000000000000D+00  1.0000000000000000D+00                                                        
+    8  BONNDRCH 7         0.0000000000000000D+00  1.0000000000000000D+00                                                        
+    9  BONNDRCH 8         0.0000000000000000D+00  1.0000000000000000D+00                                                        
+   10  K5       1         0.0000000000000000D+00  1.0000000000000000D+00                                                        
+   11  K5       2         1.5000000000000000D+00  1.0000000000000000D+00                                                        
+   12  K5       3         0.0000000000000000D+00  1.0000000000000000D+00                                                        
+   13  K5       4         0.0000000000000000D+00  1.0000000000000000D+00                                                        
+   14  MERCURY  INC       0.0000000000000000D+00  5.7295779513082321D+01                                                        
+   15  MERCURY  CON(23)   2.4380000000000000D+03  1.0000000000000000D+00                                                        
+   16  JUPITER  A         0.0000000000000000D+00  1.0000000000000000D+00                                                        
+   17  C.TOOPTM PL05PHC1  0.0000000000000000D+00  1.0000000000000000D+00                                                        
+   18  C.TOOPTM PL05PHC2  0.0000000000000000D+00  1.0000000000000000D+00                                                        
+0THERE IS NO KALMAN FILTERING
+0  SETTING UP, READING IN AND WRITING OUT INPUT DATA REQUIRED
+           0H  0M  1.00S REAL TIME
+           0H  0M  0.03S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.03000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   15
+-
+-
+-
+-
+
+                        **********    *********    **            **   **********     *********    ********** 
+                       ***********   ***********   ***          ***   ***********   ***********   ***********
+                       **            **       **   ****        ****   **       **   **       **   **       **
+                       **            **       **   ** **      ** **   **       **   **       **   **       **
+                       **            **       **   **  **    **  **   **       **   **       **   **       **
+                       **            **       **   **   **  **   **   **       **   **       **   **       **
+                       **            **       **   **    ****    **   ***********   ***********   ***********
+                       **            **       **   **     **     **   **********    ***********   ********** 
+                       **            **       **   **            **   **            **       **   **  **     
+                       **            **       **   **            **   **            **       **   **   **    
+                       **            **       **   **            **   **            **       **   **    **   
+                       **            **       **   **            **   **            **       **   **     **  
+                       ***********   ***********   **            **   **            **       **   **      ** 
+                        **********    *********    **            **   **            **       **   **       **
+-
+-
+                                          **           **    **           **   **       **
+                                          **           **    ***          **   **      ** 
+                                          **           **    ****         **   **     **  
+                                          **           **    ** **        **   **    **   
+                                          **           **    **  **       **   **   **    
+                                          **           **    **   **      **   *** **     
+                                          **           **    **    **     **   *****      
+                                          **           **    **     **    **   ** **      
+                                          **           **    **      **   **   **  **     
+                                          **           **    **       **  **   **   **    
+                                          **           **    **        ** **   **    **   
+                                          **           **    **         ****   **     **  
+                                          ***********  **    **          ***   **      ** 
+                                          ***********  **    **           **   **       **
+- PEP VERSION= 20170713 PEP.PEPLOAD.PEP790                          
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   16
+0INFORMATION FROM FIRST TWO RECORDS OF 10-BODY DATA SET 90 PRODUCED ON ITERATION  1 PAGE   15 OF RUN WITH TITLE
+  N-BODY RUN 443-0 9-BODY INTEGRATION  442D8 INNER,  384F4 OUTER  I.C.            3/20/73 PERTURBING PLNT TAPE FROM N-BODY INTEG.
+ JDBD1=2441841  JDBD2=2442400  NMOON= 0 NBDY1= 9   INTBD= 2  JVLBD=   0  EPSBD= 1.00000E-16
+  1. MERCURY RUN 443- 3/21/73   NPL= 1   NCP= 0   INT= 2   JD0=2440001      A = 3.870988248079130D-01      E = 2.056143416457730D-01
+             INC= 2.860343745748160D+01     ASC= 1.085941287077680D+01     PER= 6.693261684748430D+01    ANOM= 9.083965359314600D+01
+  2.  VENUS  RUN 443- 3/21/73   NPL= 2   NCP= 0   INT= 4   JD0=2440001      A = 7.233280763362320D-01      E = 6.757538488379489D-03
+             INC= 2.446691434342910D+01     ASC= 7.978123733702580D+00     PER= 1.237851072721730D+02    ANOM= 2.744064790468620D+02
+  3.  EMBARY RUN 443- 3/21/73   NPL= 3   NCP= 0   INT= 4   JD0=2440001      A = 9.999827653637140D-01      E = 1.675271216169400D-02
+             INC= 2.344335783108840D+01     ASC= 6.659250140529500D-04     PER= 1.020340640186800D+02    ANOM= 1.393658182548250D+02
+  4.   MARS  RUN 443- 3/21/73   NPL= 4   NCP= 0   INT= 4   JD0=2440001      A = 1.523604534884400D+00      E = 9.345778628544589D-02
+             INC= 2.469301678564210D+01     ASC= 3.346655760227140D+00     PER= 3.321011352392630D+02    ANOM= 8.989975217532620D+01
+  5. JUPITER RUN 443- 3/20/73   NPL= 5   NCP= 0   INT= 4   JD0=2440001      A = 5.202945960488120D+00      E = 4.819167141557811D-02
+             INC= 2.325294770783580D+01     ASC= 3.260973418885740D+00     PER= 1.037371340811626D+01    ANOM= 1.411862510204257D+02
+  6.  SATURN RUN 443- 3/20/73   NPL= 6   NCP= 0   INT= 4   JD0=2440001      A = 9.526046869249818D+00      E = 5.461675768589707D-02
+             INC= 2.257317229472867D+01     ASC= 5.968803885438612D+00     PER= 8.759383460863923D+01    ANOM= 2.897400092498020D+02
+  7.  URANUS RUN 443- 3/20/73   NPL= 7   NCP= 0   INT= 4   JD0=2440001      A = 1.927444351332630D+01      E = 5.124121845145173D-02
+             INC= 2.367141284461453D+01     ASC= 1.847313091106734D+00     PER= 1.683442408256917D+02    ANOM= 6.990628140027202D+00
+  8. NEPTUNE RUN 443- 3/20/73   NPL= 8   NCP= 0   INT= 4   JD0=2440001      A = 3.011376065452675D+01      E = 6.984876998530826D-03
+             INC= 2.231473025943044D+01     ASC= 3.519876825815031D+00     PER= 5.409517825004429D+01    ANOM= 1.775740764613225D+02
+  9.  PLUTO  RUN 443- 3/20/73   NPL= 9   NCP= 0   INT= 4   JD0=2440001      A = 3.974605251930742D+01      E = 2.522316558278015D-01
+             INC= 2.365507811729088D+01     ASC= 4.377229536665621D+01     PER= 1.819638797966960D+02    ANOM= 3.298440994501460D+02
+ 10.   MOON  RUN 440- 8/ 7/72   NPL=10   NCP= 3   INT=-1   JD0=2440001      A = 2.571514374642509D-03      E = 5.561544735761867D-02
+             INC= 2.839685438634148D+01     ASC= 3.312959209874043D+00     PER= 2.262712472223586D+02    ANOM= 1.548856956849208D+02
+   K( 1)=  -1   K( 2)=  -1   K( 3)=   0   K( 4)=  -1   K( 5)=  -1   K( 6)=  -1   K( 7)=  -1   K( 8)=  -1   K( 9)=  -1   K(10)=  -1
+   K(11)=  -1   K(12)=  -1   K(13)=  -1   K(14)=  -1   K(15)=  -1   K(16)=  -1   K(17)=  -1   K(18)=  -1   K(19)=   0   K(20)=  -1
+   K(21)=   0   K(22)=  -1   K(23)=  -1   K(24)=  -1   K(25)=  -1   K(26)=  -1   K(27)=  -1   K(28)=   3   K(29)=  11   K(30)=  54
+   K(31)= -12   K(32)= -14   K(33)=  -1   K(34)=  -1   K(35)=  -1   K(36)=  -1   K(37)=  -1   K(38)=  -1   K(39)=   0   K(40)=  -1
+ MASS1( 1)= 1.660759315500254D-07 MASS1( 2)= 2.447848585877872D-06 MASS1( 3)= 3.040436898620584D-06 MASS1( 4)= 3.227159776680543D-07
+ MASS1( 5)= 9.547041567532574D-04 MASS1( 6)= 2.857997480046462D-04 MASS1( 7)= 4.374219404144008D-05 MASS1( 8)= 5.159795806034380D-05
+ MASS1( 9)= 2.500000000000000D-07 MASS1(10)= 0.000000000000000D+00
+ RELFT( 1)= 1.000000000000000D+00 RELFT( 2)= 1.000000000000000D+00 RELFT( 3)= 1.000000000000000D+00 RELFT( 4)= 1.000000000000000D+00
+ RELFT( 5)= 1.000000000000000D+00 RELFT( 6)= 1.000000000000000D+00 RELFT( 7)= 1.000000000000000D+00 RELFT( 8)= 1.000000000000000D+00
+ RELFT( 9)= 1.000000000000000D+00 RELFT(10)= 0.000000000000000D+00
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   17
+0INFORMATION FROM FIRST TWO RECORDS OF  2-BODY DATA SET (S-BODY) 91 WITH ITERAT=  1 PAGE=   -1 AND TITLE:
+ BIGTEST MULTIPLE SATELLITE OBSERVATION TAPE                                      INTERLEAVED BODY INTEGRATION TAPES             
+ JD1=2441888  JD2=2441892 (NA1= 1 NA4= 1 NA8= 0) INT= -5  INITIAL CONDITIONS ARE
+0 17 IO      R73 I12  7/19/78 JD0=2441842.500 A= 2.821051143651592D-03    E= 4.231965069607384D-03     INC= 2.545647491092468D+01
+     NCP= 5 ICND= 0                         ASC= 3.581443310135235D+02  PER= 8.747547983290083D+00   ANOM0= 2.588261394692738D+02
+         MASS= 4.471322715389664D-08  CMASS= 9.547861040430417D-04
+0 18 EUROPA  R73 EU2  7/11/78 JD0=2441842.500 A= 4.486866440959159D-03    E= 9.625267364250766D-03     INC= 2.510005455131576D+01
+     NCP= 5 ICND= 0                         ASC= 3.588006932252629D+02  PER= 2.015782462014944D+02   ANOM0= 3.033399956912438D+02
+         MASS= 2.408213795918041D-08  CMASS= 9.547861040430417D-04
+   K( 1)=   0   K( 2)=   0   K( 3)=   0   K( 4)=   0   K( 5)=   0   K( 6)=   0   K( 7)=   0   K( 8)=   0   K( 9)=   0   K(10)=   0
+   K(11)=   0   K(12)=   0   K(13)=   0   K(14)=   0   K(15)=   0   K(16)=   0   K(17)=   0   K(18)=   0   K(19)=   0   K(20)=   0
+   K(21)=   0   K(22)=   0   K(23)=   0   K(24)=   0   K(25)=   0   K(26)=   0   K(27)=   0   K(28)=   0   K(29)=   0   K(30)=   0
+   K(31)=   0   K(32)=   0   K(33)=   0   K(34)=   0   K(35)=   0   K(36)=   0   K(37)=   0   K(38)=   0   K(39)=   0   K(40)=   0
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   18
+
+ NPLNT0= 5  NCODF=NCODA(1)= 5  NTAPA(1)=  0  NSEQA(1)=  100  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 0  IOBCON= 2  NREWND= 0
+0  ASTROMETRIC    OBSERVATIONS OF JUPITER  MADE FROM C.TOLOLO           SERIES=OPTP  (SPOT=    )  FREQUENCY= 0.0000000000000D+00
+0                 NAME  NSITE LSITE     RADIUS       LONGITUDE      LATITUDE  KSITE
+   RECEIVE SITE=C.TOLOLO  42  0 0 0 6375.198680200   70.80585000   -30.00209617  0
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-03  ACCTIM= 1.000E-03  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0NSTAR=  1 (BONNDRCH) N=  2 SKY=  1.00D+00  0.00D+00  0.00D+00  0.00D+00  0.00D+00  0.00D+00  0.00D+00  0.00D+00
+ LSKY= 11000011
+0  NSPOT =  0   NPREC = -1   NDPREC= -1   NTMDLY= -1   NDOP  = -1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF= -1   NLIBPR= -1  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  0
+0TOPOCENTRIC RIGHT ASCENSION-DECLINATION REFERRED TO THE MEAN EQUINOX AND EQUATOR OF 1950.0
+0  SETUP FOR   ASTROMETRIC    OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0 GRNWCH   JULIAN   UT  TIME OF   AT-UT    CT-AT           RIGHT ASCENSION                    DECLINATION                       
+   DATE     DAY     OBSERVATION                      OBSERVED     ERROR    OBS-TH      OBSERVED     ERROR   OBS-TH              
+           NUMBER  HR MIN  SEC     SEC      SEC    HR MIN  SEC     SEC      SEC      DEG  '   ''     ''      ''    CLMP LIMB OBS
+  7/26/73 2441890   0  0  0.0000 12.0344  32.1494  20 40 13.5863  2.1167   0.00000   -19  6 59.282 27.000   0.0000              
+ ILDT=   0   0   0   0   0   0  7.44135863036463D+04     DERIV(1)=  2.11672722882124D+00  0.00000000000000D+00  4.29027851975825D-02 
+ -5.10273991766633D-02  0.00000000000000D+00  0.00000000000000D+00 -1.45854916286007D+04
+ ILDT=   0   0   0   0   0   0 -6.88192816429783D+04     DERIV(2)=  2.70000000000000D+01  0.00000000000000D+00  0.00000000000000D+00 
+  0.00000000000000D+00 -1.71707960030544D-01 -9.85147895730458D-01 -5.01844298496218D+04
+0ERROR ANALYSIS FOR   ASTROMETRIC    OBSERVATION SERIES EXTENDING FOR   1 PAGES STARTING ON PAGE   18
+ AVERAGE NUMBER OF ITERATIONS FOR     1 OBSERVATIONS WAS (  4.00000)
+                               RIGHT ASCENSION    DECLINATION         
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         1             1
+                AVERAGE (OBS-TH)   0.00000E+00   0.00000E+00
+             AVERAGE ABS(OBS-TH)   0.00000E+00   0.00000E+00
+       ROOT MEAN SQUARE (OBS-TH)   0.00000E+00   0.00000E+00
+                   AVERAGE ERROR   2.11673E+00   2.70000E+01
+          ROOT MEAN SQUARE ERROR   2.11673E+00   2.70000E+01
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 2, IOBS= 0, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     1 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  5)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   19
+-ERROR ANALYSIS FOR   ASTROMETRIC    OBSERVATIONS OF JUPITER  PROCESSED DURING THE LAST    5 PAGES STARTING ON PAGE   15
+                               RIGHT ASCENSION    DECLINATION         
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         1             1
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON,IOBS,IABS1) = (    0,    0,    0)
+
+       1 +    0 OBSERVATION RECORDS PROCESSED (NPARAM=  18)
+0   PROCESSING OBSERVATIONS  REQUIRED
+           0H  0M  0.03S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   20
+
+ NPLNT0=17  NCODF=NCODA(1)= 6  NTAPA(1)=  0  NSEQA(1)=  200  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 0  IOBCON= 2  NREWND= 0
+0 ASTROGRAPHIC    OBSERVATIONS OF IO       MADE FROM PERTH              SERIES=OPTS  (SPOT=    )  FREQUENCY= 0.0000000000000D+00
+0                 NAME  NSITE LSITE     RADIUS       LONGITUDE      LATITUDE  KSITE
+   RECEIVE SITE=PERTH     54  0 0 0 6372.585897441 -116.13504000   -31.83625421  0
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-03  ACCTIM= 1.000E-03  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0NSTAR=  2 (K5      ) N=  1 SKY=  0.00D+00  1.50D+00  0.00D+00  0.00D+00
+ LSKY= 1111
+0  NSPOT =  0   NPREC = -1   NDPREC= -1   NTMDLY= -1   NDOP  = -1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF= -1   NLIBPR= -1  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  0
+0TOPOCENTRIC RIGHT ASCENSION-DECLINATION REFERRED TO THE MEAN EQUINOX AND EQUATOR OF 1950.0
+0  SETUP FOR  ASTROGRAPHIC    OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0 GRNWCH   JULIAN   UT  TIME OF   AT-UT    CT-AT           RIGHT ASCENSION                    DECLINATION                       
+   DATE     DAY     OBSERVATION                      OBSERVED     ERROR    OBS-TH      OBSERVED     ERROR   OBS-TH              
+           NUMBER  HR MIN  SEC     SEC      SEC    HR MIN  SEC     SEC      SEC      DEG  '   ''     ''      ''    CLMP LIMB OBS
+  7/26/73 2441890  12 10  0.0000 12.0344  32.1494  20 39 47.9581  2.1171   0.00000   -19  8 44.052 27.000   0.0000              
+ ILDT=   0   0   0   0   0   0  7.43879581216794D+04     DERIV(1)=  2.11710024473727D+00  0.00000000000000D+00  4.28080536128665D-02 
+ -5.11068976785169D-02  0.00000000000000D+00  0.00000000000000D+00 -1.45891540289396D+04
+ ILDT=   0   0   0   0   0   0 -6.89240519676192D+04     DERIV(2)=  2.70000000000000D+01  0.00000000000000D+00  0.00000000000000D+00 
+  0.00000000000000D+00  6.42120804192997D-01 -7.66603465177753D-01 -5.00501135856165D+04
+0ERROR ANALYSIS FOR  ASTROGRAPHIC    OBSERVATION SERIES EXTENDING FOR   1 PAGES STARTING ON PAGE   20
+ AVERAGE NUMBER OF ITERATIONS FOR     1 OBSERVATIONS WAS (  5.00000)
+                               RIGHT ASCENSION    DECLINATION         
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         1             1
+                AVERAGE (OBS-TH)   0.00000E+00   0.00000E+00
+             AVERAGE ABS(OBS-TH)   0.00000E+00   0.00000E+00
+       ROOT MEAN SQUARE (OBS-TH)   0.00000E+00   0.00000E+00
+                   AVERAGE ERROR   2.11710E+00   2.70000E+01
+          ROOT MEAN SQUARE ERROR   2.11710E+00   2.70000E+01
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 2, IOBS= 0, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     1 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  5)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   21
+-ERROR ANALYSIS FOR  ASTROGRAPHIC    OBSERVATIONS OF IO       PROCESSED DURING THE LAST    2 PAGES STARTING ON PAGE   20
+                               RIGHT ASCENSION    DECLINATION         
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         1             1
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON,IOBS,IABS1) = (    0,    0,    0)
+
+       1 +    0 OBSERVATION RECORDS PROCESSED (NPARAM=  18)
+0   PROCESSING OBSERVATIONS  REQUIRED
+           0H  0M  0.03S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   22
+
+ NPLNT0= 5  NCODF=NCODA(1)= 4  NTAPA(1)=  0  NSEQA(1)=  300  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 0  IOBCON= 2  NREWND= 0
+0 MERIDIAN CIRCLE OBSERVATIONS OF JUPITER  MADE FROM C.TOLOLO           SERIES=OPTM  (SPOT=    )  FREQUENCY= 0.0000000000000D+00
+0                 NAME  NSITE LSITE     RADIUS       LONGITUDE      LATITUDE  KSITE
+   RECEIVE SITE=C.TOLOLO  42  0 0 0 6375.198680200   70.80585000   -30.00209617  0
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-02  ACCTIM= 1.000E-03  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0NEQNOX=   2 LEQNX(1)= 1 LEQNX(2)= 1 LEQNX(3)= 1 DEQUINOX= 1.00000E-01 DEQUATOR= 0.00000E+00 DLATITUDE= 1.00000E+00
+0NPHASE=   2 LPHSX(1)= 1 LPHSX(2)= 1 LPHSX(3)= 0 LPHSX(4)= 0 LPHSX(5)= 0 LPHSX(6)= 0 LPHSX(7)= 0 LPHSX(8)= 0 LPHSX(9)= 0
+             APHASE(1)= 0.00000E+00 APHASE(2)= 0.00000E+00
+0  NSPOT =  0   NPREC = -1   NDPREC= -1   NTMDLY= -1   NDOP  = -1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF= -1   NLIBPR= -1  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  0
+0  SETUP FOR  MERIDIAN CIRCLE OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0 GRNWCH   JULIAN   UT  TIME OF   AT-UT    CT-AT           RIGHT ASCENSION                    DECLINATION                       
+   DATE     DAY     OBSERVATION                      OBSERVED     ERROR    OBS-TH      OBSERVED     ERROR   OBS-TH              
+           NUMBER  HR MIN  SEC     SEC      SEC    HR MIN  SEC     SEC      SEC      DEG  '   ''     ''      ''    CLMP LIMB OBS
+  7/26/73 2441890   5  9 41.2999 11.8680  32.1500  20 41 30.1175  2.1157   0.00000   -19  2 12.403 27.000   0.0000              
+ ILDT=   0   0   0   0   0   0  7.44901175464659D+04     DERIV(1)=  2.11570941621699D+00  0.00000000000000D+00  1.00000000000000D+00 
+  1.49013477050571D-02  0.00000000000000D+00 -1.45671462926399D+04  3.37981680239576D+00 -3.37935916000034D+00
+ ILDT=   0   0   0   0   0   0 -6.85324029120081D+04     DERIV(2)=  2.70000000000000D+01  0.00000000000000D+00  0.00000000000000D+00 
+ -7.61820204103027D-01  1.00000000000000D+00 -5.05238311561395D+04  5.10313434154032D+00 -5.10244335419966D+00
+  7/27/73 2441891   5  5 14.0362 11.8704  32.1500  20 40 58.6864  2.1162   0.00000   -19  4 20.028 27.000   0.0000              
+ ILDT=   0   0   0   0   0   0  7.44586864467469D+04     DERIV(1)=  2.11616161202088D+00  0.00000000000000D+00  1.00000000000000D+00 
+  1.48910808233007D-02  0.00000000000000D+00 -1.45721022239280D+04  3.39482082316676D+00 -3.39454434341697D+00
+ ILDT=   0   0   0   0   0   0 -6.86600277392033D+04     DERIV(2)=  2.70000000000000D+01  0.00000000000000D+00  0.00000000000000D+00 
+ -7.63298885029316D-01  1.00000000000000D+00 -5.03611087269528D+04  2.85026508539455D+00 -2.85003295515301D+00
+  7/28/73 2441892   5  0 46.6722 11.8729  32.1500  20 40 27.1550  2.1166   0.00000   -19  6 27.484 27.000   0.0000              
+ ILDT=   0   0   0   0   0   0  7.44271550010810D+04     DERIV(1)=  2.11661426819606D+00  0.00000000000000D+00  1.00000000000000D+00 
+  1.48804196563781D-02  0.00000000000000D+00 -1.45757888889648D+04  3.40129723758816D+00 -3.40115603718452D+00
+ ILDT=   0   0   0   0   0   0 -6.87874844321726D+04     DERIV(2)=  2.70000000000000D+01  0.00000000000000D+00  0.00000000000000D+00 
+ -7.64778279705473D-01  1.00000000000000D+00 -5.01931645600809D+04 -1.21082430892154D+00  1.21077404313492D+00
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   23
+0 MERIDIAN CIRCLE OBSERVATIONS OF JUPITER  MADE FROM C.TOLOLO           SERIES=OPTM  (SPOT=    )  FREQUENCY= 0.0000000000000D+00
+0ERROR ANALYSIS FOR  MERIDIAN CIRCLE OBSERVATION SERIES EXTENDING FOR   2 PAGES STARTING ON PAGE   22
+ AVERAGE NUMBER OF ITERATIONS FOR     3 OBSERVATIONS WAS (  3.00000)
+                               RIGHT ASCENSION    DECLINATION         
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         3             3
+                AVERAGE (OBS-TH)   0.00000E+00   0.00000E+00
+             AVERAGE ABS(OBS-TH)   0.00000E+00   0.00000E+00
+       ROOT MEAN SQUARE (OBS-TH)   0.00000E+00   0.00000E+00
+                   AVERAGE ERROR   2.11616E+00   2.70000E+01
+          ROOT MEAN SQUARE ERROR   2.11616E+00   2.70000E+01
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 2, IOBS= 0, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     3 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  6)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+-ERROR ANALYSIS FOR  MERIDIAN CIRCLE OBSERVATIONS OF JUPITER  PROCESSED DURING THE LAST    2 PAGES STARTING ON PAGE   22
+                               RIGHT ASCENSION    DECLINATION         
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         3             3
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON,IOBS,IABS1) = (    0,    0,    0)
+
+       3 +    0 OBSERVATION RECORDS PROCESSED (NPARAM=  18)
+0   PROCESSING OBSERVATIONS  REQUIRED
+           0H  0M  0.03S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   24
+
+ NPLNT0= 5  NCODF=NCODA(1)=20  NTAPA(1)=  0  NSEQA(1)=  400  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 0  IOBCON= 2  NREWND= 0
+0 AZIMUTH-ELEVAT. OBSERVATIONS OF JUPITER  MADE FROM PERTH              SERIES=AZEL  (SPOT=    )  FREQUENCY= 0.0000000000000D+00
+0                 NAME  NSITE LSITE     RADIUS       LONGITUDE      LATITUDE  KSITE
+   RECEIVE SITE=PERTH     54  0 0 0 6372.585897441 -116.13504000   -31.83625421  0
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-03  ACCTIM= 1.000E-03  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0NEQNOX=   3 LEQNX(1)= 1 LEQNX(2)= 0 LEQNX(3)= 1 DEQUINOX= 2.00000E-04 DEQUATOR= 0.00000E+00 DLATITUDE= 0.00000E+00
+0  NSPOT =  0   NPREC = -1   NDPREC= -1   NTMDLY= -1   NDOP  = -1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF= -1   NLIBPR= -1  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  0
+0NO REFRACTION CORRECTION IN THEORETICAL VALUE OF ELEVATION, ASSUMED REMOVED FROM DATA
+0  SETUP FOR  AZIMUTH-ELEVAT. OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0                                                                                                                               
+  GRNWCH  JULIAN  REC UT(SIGNAL) UT1-UTS AT-UTS  CT-AT        AZIMUTH (DEGREES)              ELEVATION (DEGREES)                
+   DATE   DAY NUM HR MIN  SEC     SEC     SEC     SEC     OBSERVED    ERROR    OBS-TH      OBSERVED    ERROR    OBS-TH          
+  7/26/73 2441890 12 10  0.0000  0.1652 12.0344 32.1494    95.63423   2.27656   0.00000     28.53604  27.00000   0.00000 
+ ILDT=   0   0   0   0   0   0  9.56342283742807D+01     DERIV(1)=  2.27656433589483D+00  0.00000000000000D+00  1.00000000000000D+00 
+  0.00000000000000D+00 -1.51838506433512D+01
+ ILDT=   0   0   0   0   0   0  2.85360395036535D+01     DERIV(2)=  2.70000000000000D+01  0.00000000000000D+00  0.00000000000000D+00 
+  1.00000000000000D+00  5.75645255065929D+01
+0ERROR ANALYSIS FOR  AZIMUTH-ELEVAT. OBSERVATION SERIES EXTENDING FOR   1 PAGES STARTING ON PAGE   24
+ AVERAGE NUMBER OF ITERATIONS FOR     1 OBSERVATIONS WAS (  4.00000)
+                                       AZIMUTH     ELEVATION          
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         1             1
+                AVERAGE (OBS-TH)   0.00000E+00   0.00000E+00
+             AVERAGE ABS(OBS-TH)   0.00000E+00   0.00000E+00
+       ROOT MEAN SQUARE (OBS-TH)   0.00000E+00   0.00000E+00
+                   AVERAGE ERROR   2.27656E+00   2.70000E+01
+          ROOT MEAN SQUARE ERROR   2.27656E+00   2.70000E+01
+          AVERAGE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   0.00000E+00   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   0.00000E+00   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 2, IOBS= 0, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     1 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  3)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   25
+
+ NPLNT0= 5  NCODF=NCODA(2)=20  NTAPA(2)= 60  NSEQA(2)= 1020  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 5  IOBCON= 0  NREWND= 0
+0 AZIMUTH-ELEVAT. OBSERVATIONS OF JUPITER  MADE FROM C.TOLOLO           SERIES=TESJ  (SPOT=    )  FREQUENCY= 0.0000000000000D+00
+0                 NAME  NSITE LSITE     RADIUS       LONGITUDE      LATITUDE  KSITE
+   RECEIVE SITE=C.TOLOLO  42  0 0 0 6375.198680200   70.80585000   -30.00209617  0
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-03  ACCTIM= 1.000E-03  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0  NSPOT =  0   NPREC = -1   NDPREC= -1   NTMDLY= -1   NDOP  = -1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF= -1   NLIBPR= -1  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  0
+0NO REFRACTION CORRECTION IN THEORETICAL VALUE OF ELEVATION, ASSUMED REMOVED FROM DATA
+0  SETUP FOR  AZIMUTH-ELEVAT. OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0                                                                                                                               
+  GRNWCH  JULIAN  REC UT(SIGNAL) UT1-UTS AT-UTS  CT-AT        AZIMUTH (DEGREES)              ELEVATION (DEGREES)                
+   DATE   DAY NUM HR MIN  SEC     SEC     SEC     SEC     OBSERVED    ERROR    OBS-TH      OBSERVED    ERROR    OBS-TH          
+  7/26/73 2441890  5  9 41.3000  0.1659 12.0344 32.1494     0.00100   0.01036   0.00395     78.88000   0.01000   0.01200 
+ ILDT=   0   0   0   0   0   0  1.00000000000000D-03     DERIV(1)=  1.03589355643573D-02  3.95449245934137D-03 -2.97296038188209D+02
+ ILDT=   0   0   0   0   0   0  7.88800000000000D+01     DERIV(2)=  9.99999977648258D-03  1.20022472686820D-02  1.40378856965512D+01
+  7/26/73 2441890  5  9 41.3000  0.1659 12.0344 32.1494   359.99900   0.01036   0.00195     78.80000   0.01000  -0.06800 
+ ILDT=   0   0   0   0   0   0  3.59999000000000D+02     DERIV(1)=  1.03589355643573D-02  1.95449195350481D-03 -2.97296038187098D+02
+ ILDT=   0   0   0   0   0   0  7.88000000000000D+01     DERIV(2)=  9.99999977648258D-03 -6.79977527073801D-02  1.40378856970554D+01
+0ERROR ANALYSIS FOR  AZIMUTH-ELEVAT. OBSERVATION SERIES EXTENDING FOR   1 PAGES STARTING ON PAGE   25
+ AVERAGE NUMBER OF ITERATIONS FOR     2 OBSERVATIONS WAS (  1.50000)
+                                       AZIMUTH     ELEVATION          
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         2             2
+                AVERAGE (OBS-TH)   2.95449E-03  -2.79978E-02
+             AVERAGE ABS(OBS-TH)   2.95449E-03   4.00000E-02
+       ROOT MEAN SQUARE (OBS-TH)   3.11914E-03   4.88249E-02
+                   AVERAGE ERROR   1.03589E-02   1.00000E-02
+          ROOT MEAN SQUARE ERROR   1.03589E-02   1.00000E-02
+          AVERAGE (OBS-TH)/ERROR   2.85212E-01  -2.79978E+00
+       AVERAGE ABS(OBS-TH)/ERROR   2.85212E-01   4.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   3.01106E-01   4.88249E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   9.06649E-02   2.38387E+01
+         SUM ((OBS-TH)/ERROR)**2   1.81330E-01   4.76775E+01
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 0, IOBS= 5, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     2 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  1)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   26
+-ERROR ANALYSIS FOR  AZIMUTH-ELEVAT. OBSERVATIONS OF JUPITER  PROCESSED DURING THE LAST    3 PAGES STARTING ON PAGE   24
+                                       AZIMUTH     ELEVATION          
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         3             3
+          AVERAGE (OBS-TH)/ERROR   1.90141E-01  -1.86652E+00
+       AVERAGE ABS(OBS-TH)/ERROR   1.90141E-01   2.66667E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   2.45852E-01   3.98654E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   6.04432E-02   1.58925E+01
+         SUM ((OBS-TH)/ERROR)**2   1.81330E-01   4.76775E+01
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON,IOBS,IABS1) = (    0,    0,    0)
+
+       3 +    0 OBSERVATION RECORDS PROCESSED (NPARAM=  18)
+0   PROCESSING OBSERVATIONS  REQUIRED
+           0H  0M  0.05S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   27
+
+ NPLNT0= 2  NCODF=NCODA(2)= 5  NTAPA(2)= 60  NSEQA(2)= 1030  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 5  IOBCON= 0  NREWND= 0
+0  ASTROMETRIC    OBSERVATIONS OF  VENUS   MADE FROM C.TOLOLO           SERIES=TESV  (SPOT=    )  FREQUENCY= 0.0000000000000D+00
+0                 NAME  NSITE LSITE     RADIUS       LONGITUDE      LATITUDE  KSITE
+   RECEIVE SITE=C.TOLOLO  42  0 0 0 6375.198680200   70.80585000   -30.00209617  0
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-03  ACCTIM= 1.000E-03  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0  NSPOT =  0   NPREC = -1   NDPREC= -1   NTMDLY= -1   NDOP  = -1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF= -1   NLIBPR= -1  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  0
+0TOPOCENTRIC RIGHT ASCENSION-DECLINATION REFERRED TO THE MEAN EQUINOX AND EQUATOR OF 1950.0
+0  SETUP FOR   ASTROMETRIC    OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0 GRNWCH   JULIAN   UT  TIME OF   AT-UT    CT-AT           RIGHT ASCENSION                    DECLINATION                       
+   DATE     DAY     OBSERVATION                      OBSERVED     ERROR    OBS-TH      OBSERVED     ERROR   OBS-TH              
+           NUMBER  HR MIN  SEC     SEC      SEC    HR MIN  SEC     SEC      SEC      DEG  '   ''     ''      ''    CLMP LIMB OBS
+  5/ 4/74 2442172  15 50  0.0000 13.0344  32.1514  23 59 58.1000  2.0006  -4.74083    -1 24 20.500 10.000  13.1710              
+ ILDT=   0   0   0   0   0   0  8.63981000000000D+04     DERIV(1)=  2.00060517020457D+00 -4.74083323307738D+00
+ ILDT=   0   0   0   0   0   0 -5.06050000000000D+03     DERIV(2)=  1.00000000000000D+01  1.31709872864862D+01
+  5/ 4/74 2442172  15 50  0.0000 13.0344  32.1514   0  0  4.2000  2.0006   1.35917    -1  9 23.600 10.000 910.0710*             
+ ILDT=   0   0   0   0   0   0  4.20000000000000D+00     DERIV(1)=  2.00060517020457D+00  1.35916762128381D+00
+ ILDT=   0   0   0   0   0   0 -4.16360000000000D+03     DERIV(2)=  1.00000000000000D+01  9.10070991210149D+02
+ * MEASUREMENTS ON THIS PAGE DELETED IN LEAST SQUARES ANALYSIS:  0  RIGHT ASCENSION AND  1 DECLINATION 
+0ERROR ANALYSIS FOR   ASTROMETRIC    OBSERVATION SERIES EXTENDING FOR   1 PAGES STARTING ON PAGE   27
+ AVERAGE NUMBER OF ITERATIONS FOR     2 OBSERVATIONS WAS (  1.50000)
+                               RIGHT ASCENSION    DECLINATION         
+ NUMBER OF MEASUREMENTS DELETED          0             1
+ NUMBER OF MEASUREMENTS INCLUDED         2             1
+                AVERAGE (OBS-TH)  -1.69083E+00   1.31710E+01
+             AVERAGE ABS(OBS-TH)   3.05000E+00   1.31710E+01
+       ROOT MEAN SQUARE (OBS-TH)   3.48732E+00   1.31710E+01
+                   AVERAGE ERROR   2.00061E+00   1.00000E+01
+          ROOT MEAN SQUARE ERROR   2.00061E+00   1.00000E+01
+          AVERAGE (OBS-TH)/ERROR  -8.45161E-01   1.31710E+00
+       AVERAGE ABS(OBS-TH)/ERROR   1.52454E+00   1.31710E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   1.74313E+00   1.31710E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   3.03852E+00   1.73475E+00
+         SUM ((OBS-TH)/ERROR)**2   6.07703E+00   1.73475E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 0, IOBS= 5, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     2 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  0)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   28
+-ERROR ANALYSIS FOR   ASTROMETRIC    OBSERVATIONS OF  VENUS   PROCESSED DURING THE LAST    2 PAGES STARTING ON PAGE   27
+                               RIGHT ASCENSION    DECLINATION         
+ NUMBER OF MEASUREMENTS DELETED          0             1
+ NUMBER OF MEASUREMENTS INCLUDED         2             1
+          AVERAGE (OBS-TH)/ERROR  -8.45161E-01   1.31710E+00
+       AVERAGE ABS(OBS-TH)/ERROR   1.52454E+00   1.31710E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   1.74313E+00   1.31710E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   3.03852E+00   1.73475E+00
+         SUM ((OBS-TH)/ERROR)**2   6.07703E+00   1.73475E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON,IOBS,IABS1) = (    0,    0,    0)
+
+       2 +    0 OBSERVATION RECORDS PROCESSED (NPARAM=  18)
+0   PROCESSING OBSERVATIONS  REQUIRED
+           0H  0M  0.03S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   29
+
+ NPLNT0=18  NCODF=NCODA(2)= 9  NTAPA(2)= 60  NSEQA(2)= 1040  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 5  IOBCON= 0  NREWND= 0
+0ECLIPSE MID-TIME OBSERVATIONS OF EUROPA   MADE FROM . . .   ,EMID      SERIES=MUTU  (SPOT=IO  )  FREQUENCY= 0.0000000000000D+00
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-03  ACCTIM= 1.000E-03  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0  NSPOT =  0   NPREC = -1   NDPREC= -1   NTMDLY= -1   NDOP  = -1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF= -1   NLIBPR= -1  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  0
+0  SETUP FOR ECLIPSE MID-TIME OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0 GRNWCH   JULIAN CT-UT     CENTER  OF  PLANET                                  ECLPS BY   SITE        SITE   COORDINATES       
+   DATE     DAY            OBSERVED   ERROR  OBS-TH  SEPARATION  ERROR  OBS-TH   IO                                             
+           NUMBER  SEC   HR MIN  SEC   SEC    SEC        /SUM OF RADII                     NAME      RADIUS  LONGITUDE  LATITUDE
+  7/26/73 2441890 44.019 10 25 19.000  0.4   -1.83    0.9451000 0.040  0.06387           MAUNAKEA  6379.9296 155.47221  19.70373
+ ILDT=   0   0   0   0   0   0  3.75190000000000D+04     DERIV(1)=  4.00000005960464D-01 -1.82766794140289D+00  3.50334868795492D+07
+ ILDT=   0   0   0   0   0   0  9.45100009441376D-01     DERIV(2)=  3.99999991059303D-02  6.38733800084223D-02 -9.87690450189344D+03
+0ERROR ANALYSIS FOR ECLIPSE MID-TIME OBSERVATION SERIES EXTENDING FOR   1 PAGES STARTING ON PAGE   29
+ AVERAGE NUMBER OF ITERATIONS FOR     1 OBSERVATIONS WAS (  5.00000)
+                                  1ST CROSSING    SEPARATION          
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         1             1
+                AVERAGE (OBS-TH)  -1.82767E+00   6.38734E-02
+             AVERAGE ABS(OBS-TH)   1.82767E+00   6.38734E-02
+       ROOT MEAN SQUARE (OBS-TH)   1.82767E+00   6.38734E-02
+                   AVERAGE ERROR   4.00000E-01   4.00000E-02
+          ROOT MEAN SQUARE ERROR   4.00000E-01   4.00000E-02
+          AVERAGE (OBS-TH)/ERROR  -4.56917E+00   1.59683E+00
+       AVERAGE ABS(OBS-TH)/ERROR   4.56917E+00   1.59683E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   4.56917E+00   1.59683E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   2.08773E+01   2.54988E+00
+         SUM ((OBS-TH)/ERROR)**2   2.08773E+01   2.54988E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 0, IOBS= 5, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     1 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  1)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   30
+-ERROR ANALYSIS FOR ECLIPSE MID-TIME OBSERVATIONS OF EUROPA   PROCESSED DURING THE LAST    2 PAGES STARTING ON PAGE   29
+                                  1ST CROSSING    SEPARATION          
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         1             1
+          AVERAGE (OBS-TH)/ERROR  -4.56917E+00   1.59683E+00
+       AVERAGE ABS(OBS-TH)/ERROR   4.56917E+00   1.59683E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   4.56917E+00   1.59683E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   2.08773E+01   2.54988E+00
+         SUM ((OBS-TH)/ERROR)**2   2.08773E+01   2.54988E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON,IOBS,IABS1) = (    0,    0,    0)
+
+       1 +    0 OBSERVATION RECORDS PROCESSED (NPARAM=  18)
+0   PROCESSING OBSERVATIONS  REQUIRED
+           0H  0M  0.03S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   31
+
+ NPLNT0=17  NCODF=NCODA(2)= 9  NTAPA(2)= 60  NSEQA(2)= 1041  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 5  IOBCON= 0  NREWND= 0
+0TRANSIT MID-TIME OBSERVATIONS OF IO       MADE FROM . . .   ,OMID      SERIES=MUTU  (SPOT=EURO)  FREQUENCY= 0.0000000000000D+00
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-03  ACCTIM= 1.000E-03  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0  NSPOT =  0   NPREC = -1   NDPREC= -1   NTMDLY= -1   NDOP  = -1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF= -1   NLIBPR= -1  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  0
+0  SETUP FOR TRANSIT MID-TIME OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0 GRNWCH   JULIAN CT-UT     CENTER  OF  PLANET                                   CROSSES   SITE        SITE   COORDINATES       
+   DATE     DAY            OBSERVED   ERROR  OBS-TH  SEPARATION  ERROR  OBS-TH   EUROPA                                         
+           NUMBER  SEC   HR MIN  SEC   SEC    SEC        /SUM OF RADII                     NAME      RADIUS  LONGITUDE  LATITUDE
+  7/26/73 2441890 44.019 10 35 32.000  0.5    0.29    0.2290000 0.040 -0.00417           MAUNAKEA  6379.9296 155.47221  19.70373
+ ILDT=   0   0   0   0   0   0  3.81320000000000D+04     DERIV(1)=  5.00000000000000D-01  2.94723641117542D-01 -3.55165071150303D+07
+ ILDT=   0   0   0   0   0   0  2.29000002145767D-01     DERIV(2)=  3.99999991059303D-02 -4.16770712479714D-03  9.79532058365555D+03
+0ERROR ANALYSIS FOR TRANSIT MID-TIME OBSERVATION SERIES EXTENDING FOR   1 PAGES STARTING ON PAGE   31
+ AVERAGE NUMBER OF ITERATIONS FOR     1 OBSERVATIONS WAS (  4.00000)
+                                  1ST CROSSING    SEPARATION          
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         1             1
+                AVERAGE (OBS-TH)   2.94724E-01  -4.16771E-03
+             AVERAGE ABS(OBS-TH)   2.94724E-01   4.16771E-03
+       ROOT MEAN SQUARE (OBS-TH)   2.94724E-01   4.16771E-03
+                   AVERAGE ERROR   5.00000E-01   4.00000E-02
+          ROOT MEAN SQUARE ERROR   5.00000E-01   4.00000E-02
+          AVERAGE (OBS-TH)/ERROR   5.89447E-01  -1.04193E-01
+       AVERAGE ABS(OBS-TH)/ERROR   5.89447E-01   1.04193E-01
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   5.89447E-01   1.04193E-01
+     AVERAGE ((OBS-TH)/ERROR)**2   3.47448E-01   1.08561E-02
+         SUM ((OBS-TH)/ERROR)**2   3.47448E-01   1.08561E-02
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 0, IOBS= 5, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     1 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  1)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   32
+
+ NPLNT0=17  NCODF=NCODA(2)= 9  NTAPA(2)= 60  NSEQA(2)= 1043  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 5  IOBCON= 0  NREWND= 0
+0TRANSIT MID-TIME OBSERVATIONS OF IO       MADE FROM . . .   ,OMID      SERIES=FAKE  (SPOT=JUPI)  FREQUENCY= 0.0000000000000D+00
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-03  ACCTIM= 1.000E-03  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0  NSPOT =  0   NPREC = -1   NDPREC= -1   NTMDLY= -1   NDOP  = -1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF= -1   NLIBPR= -1  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  0
+0  SETUP FOR TRANSIT MID-TIME OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0 GRNWCH   JULIAN CT-UT     CENTER  OF  PLANET                                   CROSSES   SITE        SITE   COORDINATES       
+   DATE     DAY            OBSERVED   ERROR  OBS-TH  SEPARATION  ERROR  OBS-TH   JUPITER                                        
+           NUMBER  SEC   HR MIN  SEC   SEC    SEC        /SUM OF RADII                     NAME      RADIUS  LONGITUDE  LATITUDE
+  7/26/73 2441890 44.018  2 35 22.000  5.3   -0.34    0.0385000 0.010  0.00008           CANARYIS  6375.0811  16.00000  27.85080
+ ILDT=   0   0   0   0   0   0  9.32200000000000D+03     DERIV(1)=  5.30000019073486D+00 -3.43413474833318D-01 -3.63914897761271D+07
+ ILDT=   0   0   0   0   0   0  3.84999997913837D-02     DERIV(2)=  9.99999977648258D-03  7.56950270408755D-05  4.56494025128474D+02
+0ERROR ANALYSIS FOR TRANSIT MID-TIME OBSERVATION SERIES EXTENDING FOR   1 PAGES STARTING ON PAGE   32
+ AVERAGE NUMBER OF ITERATIONS FOR     1 OBSERVATIONS WAS (  3.00000)
+                                  1ST CROSSING    SEPARATION          
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         1             1
+                AVERAGE (OBS-TH)  -3.43413E-01   7.56950E-05
+             AVERAGE ABS(OBS-TH)   3.43413E-01   7.56950E-05
+       ROOT MEAN SQUARE (OBS-TH)   3.43413E-01   7.56950E-05
+                   AVERAGE ERROR   5.30000E+00   1.00000E-02
+          ROOT MEAN SQUARE ERROR   5.30000E+00   1.00000E-02
+          AVERAGE (OBS-TH)/ERROR  -6.47950E-02   7.56950E-03
+       AVERAGE ABS(OBS-TH)/ERROR   6.47950E-02   7.56950E-03
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   6.47950E-02   7.56950E-03
+     AVERAGE ((OBS-TH)/ERROR)**2   4.19839E-03   5.72974E-05
+         SUM ((OBS-TH)/ERROR)**2   4.19839E-03   5.72974E-05
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 0, IOBS= 5, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     1 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  1)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   33
+-ERROR ANALYSIS FOR TRANSIT MID-TIME OBSERVATIONS OF IO       PROCESSED DURING THE LAST    3 PAGES STARTING ON PAGE   31
+                                  1ST CROSSING    SEPARATION          
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         2             2
+          AVERAGE (OBS-TH)/ERROR   2.62326E-01  -4.83116E-02
+       AVERAGE ABS(OBS-TH)/ERROR   3.27121E-01   5.58811E-02
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   4.19313E-01   7.38695E-02
+     AVERAGE ((OBS-TH)/ERROR)**2   1.75823E-01   5.45671E-03
+         SUM ((OBS-TH)/ERROR)**2   3.51646E-01   1.09134E-02
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON,IOBS,IABS1) = (    0,    0,    0)
+
+       2 +    0 OBSERVATION RECORDS PROCESSED (NPARAM=  18)
+0   PROCESSING OBSERVATIONS  REQUIRED
+           0H  0M  0.05S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   34
+
+ NPLNT0= 5  NCODF=NCODA(2)= 9  NTAPA(2)= 60  NSEQA(2)= 1045  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 5  IOBCON= 0  NREWND= 0
+0TRANSIT MID-TIME OBSERVATIONS OF JUPITER  MADE FROM . . .   ,OMID      SERIES=FAKE  (SPOT=IO  )  FREQUENCY= 0.0000000000000D+00
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-03  ACCTIM= 1.000E-03  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0  NSPOT =  0   NPREC = -1   NDPREC= -1   NTMDLY= -1   NDOP  = -1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF= -1   NLIBPR= -1  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  0
+0  SETUP FOR TRANSIT MID-TIME OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0 GRNWCH   JULIAN CT-UT     CENTER  OF  PLANET                                   CROSSES   SITE        SITE   COORDINATES       
+   DATE     DAY            OBSERVED   ERROR  OBS-TH  SEPARATION  ERROR  OBS-TH   IO                                             
+           NUMBER  SEC   HR MIN  SEC   SEC    SEC        /SUM OF RADII                     NAME      RADIUS  LONGITUDE  LATITUDE
+  7/26/73 2441890 44.020 23 52 50.000  4.3    1.41    0.0385000 0.010  0.00020           JOHBURG   6375.8375 -28.07500 -26.03003
+ ILDT=   0   0   0   0   0   0  8.59700000000000D+04     DERIV(1)=  4.30000019073486D+00  1.40933340562986D+00 -3.61342401532477D+07
+ ILDT=   0   0   0   0   0   0  3.84999997913837D-02     DERIV(2)=  9.99999977648258D-03  1.99902216955796D-04  4.56426817523986D+02
+0ERROR ANALYSIS FOR TRANSIT MID-TIME OBSERVATION SERIES EXTENDING FOR   1 PAGES STARTING ON PAGE   34
+ AVERAGE NUMBER OF ITERATIONS FOR     1 OBSERVATIONS WAS (  3.00000)
+                                  1ST CROSSING    SEPARATION          
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         1             1
+                AVERAGE (OBS-TH)   1.40933E+00   1.99902E-04
+             AVERAGE ABS(OBS-TH)   1.40933E+00   1.99902E-04
+       ROOT MEAN SQUARE (OBS-TH)   1.40933E+00   1.99902E-04
+                   AVERAGE ERROR   4.30000E+00   1.00000E-02
+          ROOT MEAN SQUARE ERROR   4.30000E+00   1.00000E-02
+          AVERAGE (OBS-TH)/ERROR   3.27752E-01   1.99902E-02
+       AVERAGE ABS(OBS-TH)/ERROR   3.27752E-01   1.99902E-02
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   3.27752E-01   1.99902E-02
+     AVERAGE ((OBS-TH)/ERROR)**2   1.07421E-01   3.99609E-04
+         SUM ((OBS-TH)/ERROR)**2   1.07421E-01   3.99609E-04
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 0, IOBS= 5, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     1 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  1)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   35
+-ERROR ANALYSIS FOR TRANSIT MID-TIME OBSERVATIONS OF JUPITER  PROCESSED DURING THE LAST    2 PAGES STARTING ON PAGE   34
+                                  1ST CROSSING    SEPARATION          
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         1             1
+          AVERAGE (OBS-TH)/ERROR   3.27752E-01   1.99902E-02
+       AVERAGE ABS(OBS-TH)/ERROR   3.27752E-01   1.99902E-02
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   3.27752E-01   1.99902E-02
+     AVERAGE ((OBS-TH)/ERROR)**2   1.07421E-01   3.99609E-04
+         SUM ((OBS-TH)/ERROR)**2   1.07421E-01   3.99609E-04
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON,IOBS,IABS1) = (    0,    0,    0)
+
+       1 +    0 OBSERVATION RECORDS PROCESSED (NPARAM=  18)
+0   PROCESSING OBSERVATIONS  REQUIRED
+           0H  0M  0.03S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   36
+
+ NPLNT0= 5  NCODF=NCODA(2)= 8  NTAPA(2)= 60  NSEQA(2)= 1046  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 5  IOBCON= 0  NREWND= 0
+0    TRANSIT      OBSERVATIONS OF JUPITER  MADE FROM . . .              SERIES=FAKE  (SPOT=IO  )  FREQUENCY= 0.0000000000000D+00
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-03  ACCTIM= 1.000E-03  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0  NSPOT =  0   NPREC = -1   NDPREC= -1   NTMDLY= -1   NDOP  = -1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF= -1   NLIBPR= -1  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  0
+0  SETUP FOR     TRANSIT      OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0 GRNWCH   JULIAN CT-UT  FIRST  LIMB  OF  PLANET     SECOND  LIMB  OF  PLANET    CROSSES    SITE        SITE   COORDINATES      
+   DATE     DAY            OBSERVED   ERROR  OBS-TH    OBSERVED   ERROR  OBS-TH  IO                                             
+           NUMBER  SEC   HR MIN  SEC   SEC    SEC    HR MIN  SEC   SEC    SEC     LIMB    NAME      RADIUS  LONGITUDE  LATITUDE 
+  7/26/73 2441890 44.020 22 42 21.000  3.3   -1.52                                FIRST  WISE      6373.5612 -34.76250  30.42754
+ ILDT=   0   0   0   0   0   0  8.17410000000000D+04     DERIV(1)=  3.29999995231628D+00 -1.51754466504718D+00 -3.66175883794938D+07
+0ERROR ANALYSIS FOR     TRANSIT      OBSERVATION SERIES EXTENDING FOR   1 PAGES STARTING ON PAGE   36
+ AVERAGE NUMBER OF ITERATIONS FOR     1 OBSERVATIONS WAS (  4.00000)
+                                  1ST CROSSING    2ND CROSSING        
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         1             0
+                AVERAGE (OBS-TH)  -1.51754E+00   0.00000E+00
+             AVERAGE ABS(OBS-TH)   1.51754E+00   0.00000E+00
+       ROOT MEAN SQUARE (OBS-TH)   1.51754E+00   0.00000E+00
+                   AVERAGE ERROR   3.30000E+00   0.00000E+00
+          ROOT MEAN SQUARE ERROR   3.30000E+00   0.00000E+00
+          AVERAGE (OBS-TH)/ERROR  -4.59862E-01   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   4.59862E-01   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   4.59862E-01   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   2.11473E-01   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   2.11473E-01   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 0, IOBS= 5, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     1 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  1)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   37
+-ERROR ANALYSIS FOR     TRANSIT      OBSERVATIONS OF JUPITER  PROCESSED DURING THE LAST    2 PAGES STARTING ON PAGE   36
+                                  1ST CROSSING    2ND CROSSING        
+ NUMBER OF MEASUREMENTS DELETED          0             0
+ NUMBER OF MEASUREMENTS INCLUDED         1             0
+          AVERAGE (OBS-TH)/ERROR  -4.59862E-01   0.00000E+00
+       AVERAGE ABS(OBS-TH)/ERROR   4.59862E-01   0.00000E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   4.59862E-01   0.00000E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   2.11473E-01   0.00000E+00
+         SUM ((OBS-TH)/ERROR)**2   2.11473E-01   0.00000E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON,IOBS,IABS1) = (    0,    0,    0)
+
+       1 +    0 OBSERVATION RECORDS PROCESSED (NPARAM=  18)
+0   PROCESSING OBSERVATIONS  REQUIRED
+           0H  0M  0.03S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   38
+
+ NPLNT0= 1  NCODF=NCODA(2)= 8  NTAPA(2)= 60  NSEQA(2)= 1450  IABS1=IOBS0( 1)= 0  IABS2=IOBS1( 1)=31  IOBS= 5  IOBCON= 0  NREWND= 0
+0    TRANSIT      OBSERVATIONS OF MERCURY  MADE FROM . . .              SERIES=20TH  (SPOT=    )  FREQUENCY= 0.0000000000000D+00
+0ACCPRC= 1.000E+01  ACCDST= 1.000E-03  ACCTIM= 1.000E-03  ERWGT1= 1.000E+00  ERWGT2= 1.000E+00  FDEV=   000.0D+00
+0  NSPOT =  0   NPREC = -1   NDPREC= -1   NTMDLY= -1   NDOP  = -1   NMEDIA= -1   NEATM = -1   NPATM = -1   NPSHP = -1   NPLNG = -1
+   NEION = -1  KOB(11)= -1   LOPTRF= -1   NDDIFF= -1   NLIBPR= -1  KOB(15)= -1   CALCVL= -1   ITIME =  1   NTIME =  0    IWOB =  0
+0  SETUP FOR     TRANSIT      OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0 GRNWCH   JULIAN CT-UT  FIRST  LIMB  OF  PLANET     SECOND  LIMB  OF  PLANET    CROSSES    SITE        SITE   COORDINATES      
+   DATE     DAY            OBSERVED   ERROR  OBS-TH    OBSERVED   ERROR  OBS-TH    SUN                                          
+           NUMBER  SEC   HR MIN  SEC   SEC    SEC    HR MIN  SEC   SEC    SEC     LIMB    NAME      RADIUS  LONGITUDE  LATITUDE 
+ 11/10/73 2441997 44.329  7 48 23.000  4.0   40.33*                               FIRST    1ADDIS     0.0000 -38.76667   9.03333
+ ILDT=   0   0   0   0   0   0  2.81030000000000D+04     DERIV(1)=  4.00000000000000D+00  4.03286409201491D+01 -3.06970562828577D+04 
+ -2.06871590960923D-02
+                  44.330 13 15 11.000  8.0    9.78                                SECOND
+ ILDT=   0   0   0   0   0   0  4.77110000000000D+04     DERIV(1)=  8.00000000000000D+00  9.78023370519537D+00  3.58048109676389D+03 
+ -2.07076150978762D-02
+ 11/10/73 2441997 44.330 13 15 38.000  2.0   13.41                                SECOND   2BUDAP     0.0000 -17.80000  42.36667
+ ILDT=   0   0   0   0   0   0  4.77380000000000D+04     DERIV(1)=  2.00000000000000D+00  1.34098675075790D+01  4.38494561169781D+03 
+ -2.07057896914418D-02
+ 11/10/73 2441997 44.329  7 48 26.000  4.0   28.88                                FIRST    3PISA      0.0000 -10.40000  43.71667
+ ILDT=   0   0   0   0   0   0  2.81060000000000D+04     DERIV(1)=  4.00000000000000D+00  2.88773550070048D+01 -3.13828062031295D+04 
+ -2.07148269144323D-02
+ 11/10/73 2441997 44.329                              7 49 36.000  2.0   -2.13    FIRST    3PISA      0.0000 -10.40000  43.71667
+ ILDT=   0   0   0   0   0   0  2.81760000000000D+04     DERIV(2)=  2.00000000000000D+00 -2.12918747759156D+00 -3.15707435595848D+04 
+  2.07146591374521D-02
+ 11/10/73 2441997 44.329  7 48 26.000  4.0   28.88                                FIRST    4PISA      0.0000 -10.40000  43.71667
+ ILDT=   0   0   0   0   0   0  2.81060000000000D+04     DERIV(1)=  4.00000000000000D+00  2.88773600508762D+01 -3.13828062282107D+04 
+ -2.07148269144389D-02
+ 11/10/73 2441997 44.329                              7 49 36.000  2.0   -2.13    FIRST    4PISA      0.0000 -10.40000  43.71667
+ ILDT=   0   0   0   0   0   0  2.81760000000000D+04     DERIV(2)=  2.00000000000000D+00 -2.12918747751825D+00 -3.15707435595852D+04 
+  2.07146591374521D-02
+                  44.330 13 15 17.000  2.0  -11.35                                SECOND
+ ILDT=   0   0   0   0   0   0  4.77170000000000D+04     DERIV(1)=  2.00000000000000D+00 -1.13451930179860D+01  4.36236033600636D+03 
+ -2.07037930190334D-02
+ * MEASUREMENTS ON THIS PAGE DELETED IN LEAST SQUARES ANALYSIS:  1 1ST CROSSING AND  0 2ND CROSSING
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   39
+0    TRANSIT      OBSERVATIONS OF MERCURY  MADE FROM . . .              SERIES=20TH  (SPOT=    )  FREQUENCY= 0.0000000000000D+00
+0ERROR ANALYSIS FOR     TRANSIT      OBSERVATION SERIES EXTENDING FOR   2 PAGES STARTING ON PAGE   38
+ AVERAGE NUMBER OF ITERATIONS FOR     8 OBSERVATIONS WAS (  3.12500)
+                                  1ST CROSSING    2ND CROSSING        
+ NUMBER OF MEASUREMENTS DELETED          1             0
+ NUMBER OF MEASUREMENTS INCLUDED         5             2
+                AVERAGE (OBS-TH)   1.39199E+01  -2.12919E+00
+             AVERAGE ABS(OBS-TH)   1.84580E+01   2.12919E+00
+       ROOT MEAN SQUARE (OBS-TH)   2.03568E+01   2.12919E+00
+                   AVERAGE ERROR   4.00000E+00   2.00000E+00
+          ROOT MEAN SQUARE ERROR   4.56070E+00   2.00000E+00
+          AVERAGE (OBS-TH)/ERROR   3.33871E+00  -1.06459E+00
+       AVERAGE ABS(OBS-TH)/ERROR   5.60775E+00   1.06459E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   6.04759E+00   1.06459E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   3.65734E+01   1.13336E+00
+         SUM ((OBS-TH)/ERROR)**2   1.82867E+02   2.26672E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON= 0, IOBS= 5, IABS1= 0) FOR THIS OBSERVATION SERIES WERE (    0,    0,    0)
+0     8 +   0 OBSERVATION CARDS PROCESSED (NUMBER OF PARTIAL DERIVATIVES=  2)
+0  PROCESSING OBSERVATION SERIES REQUIRED
+           0H  0M  0.01S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+-ERROR ANALYSIS FOR     TRANSIT      OBSERVATIONS OF MERCURY  PROCESSED DURING THE LAST    2 PAGES STARTING ON PAGE   38
+                                  1ST CROSSING    2ND CROSSING        
+ NUMBER OF MEASUREMENTS DELETED          1             0
+ NUMBER OF MEASUREMENTS INCLUDED         5             2
+          AVERAGE (OBS-TH)/ERROR   3.33871E+00  -1.06459E+00
+       AVERAGE ABS(OBS-TH)/ERROR   5.60775E+00   1.06459E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   6.04759E+00   1.06459E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   3.65734E+01   1.13336E+00
+         SUM ((OBS-TH)/ERROR)**2   1.82867E+02   2.26672E+00
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON,IOBS,IABS1) = (    0,    0,    0)
+
+       8 +    0 OBSERVATION RECORDS PROCESSED (NPARAM=  18)
+0   PROCESSING OBSERVATIONS  REQUIRED
+           0H  0M  0.03S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1COMPARISON OF THEORY AND OBS (ITERAT  1) TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   40
+-ERROR ANALYSIS FOR ALL OBSERVATIONS PROCESSED IN THE COMPAR LINK DURING THE PAST   26 PAGES STARTING ON PAGE   15
+
+ NUMBER OF MEASUREMENTS DELETED          2
+ NUMBER OF MEASUREMENTS INCLUDED        35
+          AVERAGE (OBS-TH)/ERROR   1.85874E-01
+       AVERAGE ABS(OBS-TH)/ERROR   1.45269E+00
+ ROOT MEAN SQUARE (OBS-TH)/ERROR   2.75117E+00
+     AVERAGE ((OBS-TH)/ERROR)**2   7.56895E+00
+         SUM ((OBS-TH)/ERROR)**2   2.64913E+02
+ NUMBER OF ERROR RECORDS SKIPPED ON (IOBCON,IOBS,IABS1) = (    0,    0,    0)
+
+      23 +    0 OBSERVATION RECORDS PROCESSED (NPARAM=  18)
+0   PROCESSING OBSERVATIONS  REQUIRED
+           0H  0M  0.35S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+1LEAST SQUARES ANALYSIS   (ITERAT  1)     TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   41
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            *********    **           **    *********    **            **   *************
+                           ***********   ***          **   ***********   **            **   *************
+                           **       **   ****         **   **       **   **            **             **
+                           **       **   ** **        **   **       **   **            **            **
+                           **       **   **  **       **   **       **   **            **           **
+                           **       **   **   **      **   **       **   **            **          **
+                           ***********   **    **     **   ***********   **            **         **
+                           ***********   **     **    **   ***********   **            **        **
+                           **       **   **      **   **   **       **   **            **       **
+                           **       **   **       **  **   **       **   **            **      **
+                           **       **   **        ** **   **       **   **            **     **
+                           **       **   **         ****   **       **   **            **    **
+                           **       **   **          ***   **       **   ***********   **   *************
+                           **       **   **           **   **       **   ***********   **   *************
+-
+-
+                                          **           **    **           **   **       **
+                                          **           **    ***          **   **      ** 
+                                          **           **    ****         **   **     **  
+                                          **           **    ** **        **   **    **   
+                                          **           **    **  **       **   **   **    
+                                          **           **    **   **      **   *** **     
+                                          **           **    **    **     **   *****      
+                                          **           **    **     **    **   ** **      
+                                          **           **    **      **   **   **  **     
+                                          **           **    **       **  **   **   **    
+                                          **           **    **        ** **   **    **   
+                                          **           **    **         ****   **     **  
+                                          ***********  **    **          ***   **      ** 
+                                          ***********  **    **           **   **       **
+- PEP VERSION= 20170713 PEP.PEPLOAD.PEP790                          
+
+
+ ANALIZ LINK CANCELLED BY ICT(15)= -1
+1COMPLETION OF LEAST SQUARES ITERATION 1  TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   42
+0    LEAST SQUARES ITERATION  1 DURING THE LAST   28 PAGES STARTING ON PAGE   15 REQUIRED
+           0H  0M  0.36S REAL TIME
+           0H  0M  0.00S TASK TIME
+  (TASK TIME)/(REAL TIME)= 0.00000
+0NORMAL STOP  NO MATRIX INVERSION  ICT(15)=   -1
+1PLANETARY EPHEMERIS PROGRAM TERMINATED   TTR -  PLANETARY OPTICAL AND TRANSIT/OCCULTATION TESTS WITH IPERT,JPERT   7/13/17 PAGE   43
+
+  NORMAL STOP IN MAIN
+0 TERMINATION DATE       =  7/13/17
+  TERMINATION DAY OF YEAR= 194
+  TERMINATION CLOCK TIME = 21H 51M 27.37S
+
+                            REAL TIMER      TASK TIMER
+         CLOCK INCREMENT =  0H  0M  0.01S   0H  0M  0.00S 
+    TOTAL EXECUTION TIME =  0H  0M  1.37S   0H  0M  0.03S 
+ (TASK TIME)/(REAL TIME) = 0.02190
+-
+-
+-
+-
+-
+                                    ***************   ***               ***    **************  
+                                    ***************   ****              ***    *************** 
+                                    ***************   *****             ***    ****************
+                                    ***               ******            ***    ***          ***
+                                    ***               *** ***           ***    ***          ***
+                                    ***               ***  ***          ***    ***          ***
+                                    ***               ***   ***         ***    ***          ***
+                                    ***               ***    ***        ***    ***          ***
+                                    *************     ***     ***       ***    ***          ***
+                                    *************     ***      ***      ***    ***          ***
+                                    *************     ***       ***     ***    ***          ***
+                                    ***               ***        ***    ***    ***          ***
+                                    ***               ***         ***   ***    ***          ***
+                                    ***               ***          ***  ***    ***          ***
+                                    ***               ***           *** ***    ***          ***
+                                    ***               ***            ******    ***          ***
+                                    ***************   ***             *****    ****************
+                                    ***************   ***              ****    *************** 
+                                    ***************   ***               ***    **************  
