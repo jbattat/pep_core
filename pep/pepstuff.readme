@@ -1,0 +1,121 @@
+						1994 June 9
+
+This package includes card-image files and the conversion programs needed
+to create the native binary files used by PEP.  After you install all the
+files (by running unzip), there will be three related files in the main
+directory: pepstuff.zip (the compressed archive), pepstuff.readme (this
+file), and bigconv (a shell script for converting character-stream data
+files into binary).  In addition, there will be three related
+sub-directories: "bigtest", "peputil", and "verify".  The last two,
+"peputil" and "verify", contain the source files for the necessary utility
+programs.  There is a separate MAKE file for each sub-directory.  There
+must also be a sub-directory called "pep", containing all the source and
+object files for PEP itself.  In short, you should have a PEP module ready
+to test before you install this package.
+
+At this point, the next step is to switch to sub-directory "verify" and
+issue the command "make verify".  The result is an executable file called
+"verify", which must be moved or copied to some directory on the path.
+
+Finally, you must switch to "peputil" and issue the command "make bigtest".
+In the process, you will create several utility programs which are used
+in converting the data files for running BIGTEST -- these utilities are
+useful for import/export of PEP files and may be moved or copied to a
+suitable on-path directory when installation is complete.  BIGTEST makes
+references to an additional utility that is not actually needed for the
+testing (just for ease of identifying "broken" partial derivatives on
+observation libraries).  That utility, "abcps", is not included in this
+package, but a dummy version is created by the installation procedure.  It
+must be on the path when BIGTEST is run.
+
+How to run BIGTEST:
+
+After the files for bigtest have been installed (as described above), and
+an executable PEP module has been created and moved either onto the path
+or into the bigtest directory, you can run the tests by switching to the
+bigtest directory and issuing the command "bigtest".  Two brief progress
+messages are issued for each step -- anything else is likely to be an
+indication of error.  When the test is done, you will find the results
+in the files t*.verout.  These are the differences between the output
+from PEP and the saved reference runs.  When you have ported PEP to a
+new environment, there will undoubtedly be many small differences, and
+these must all be checked for negligibility.  After a version of PEP is
+fully checked-out, it is advisable to replace the reference files
+biglist.t* with the new test output files t*.out.  Subsequent test runs
+will then show only a very few differences.
+
+
+Utility programs for PEP data files:
+
+  CONVW0 - converts Kalman filter initial conditions file.
+Input file: 2	Output file: 1
+Control input:
+ (none)
+
+  CPLNTM - converts/copies single-body integration files.
+Input file: 11	Output file: 12
+Control input during installation:
+ &CARDS SKPHDR = T, CRDIN = T &END
+
+  CPYNRM - converts saved normal equations and/or solution files.
+Input file: 11	Output file: 21
+Control input during installation:
+ &INPUT  CRDIN = T, CRDOUT = F &END
+
+  CPYOBS - converts/copies observation library files.
+Input file: 11	Output file: 21
+Control input during installation:
+ &INPUT  CRDIN = T, PRNT = F, STATS = F &END
+
+  CTCHAR - converts/copies coordinate time integration file.
+Input file: 3	Output file: 4
+Control input during installation:
+ &INPUT  JEPH = 3, NEWEPH = 4 &END
+
+  INTRLV - converts/copies small-body multiple ephemeris file.
+Input file: 11	Output file: 12
+Control input during installation:
+ &INPUT CRDIN = T, SKPHDR = T &END
+
+  CPYNBDY - converts/copies n-body ephemeris files.
+Input file: 11	Output file: 12
+Control input during installation:
+ &INPUT IBODY=11,ITST=6,SKPHDR=T, JBODY=12, CRDIN=T &END
+
+
+The input files necessary for running BIGTEST consist mainly of the "run
+streams" in card image form, but there are a few auxilliary text files and
+also a number of binary files.  These additional files are packaged as text
+(card-image) files and are converted to binary during installation.  The
+other binary files used in BIGTEST are created "on the spot".  The following
+table shows the files that are converted during installation.  The text
+files are not used by PEP and may be deleted to save space if necessary
+(the compressed archive versions will still be in pepstuff.zip).  The
+binary files are strictly used in a read-only sense by PEP -- it may be
+helpful to change the protections on these files to prevent accidental
+damage.
+
+Text file		Binary file		Convertor
+----------------	-------------		---------
+bigtest.intpvm09	tfr.pvm09		cplntm
+bigtest.intpvm13	tfr.pvm13		cplntm
+bigtest.inttfr		tfr.int			cplntm
+bigtest.obsllr		tmn.obsllr		cpyobs
+bigtest.obspvmdl	tfr.obspvmdl		cpyobs
+bigtest.obspvmnc	tfr.obspvmnc		cpyobs
+bigtest.obstfl		tfl.obs			cpyobs
+bigtest.obstfr		tfr.obs			cpyobs
+bigtest.obstin		tin.obs			cpyobs
+bigtest.obstop		top.obstop		cpyobs
+bigtest.tflw0		tfl.w0			convw0
+bigtest.pprsntin	tin.ppr			cpynrm
+bigtest.tfrtsne		tfr.tsne		cpynrm
+bigtest.tmnmoon		tmn.moon		cplntm
+bigtest.tmnmrot		tmn.mrot		cplntm
+bigtest.tmnntp1		tmn.ntp1		cpyobs
+bigtest.tmnntp72	tmn.ntp72		cpyobs
+bigtest.ttrsbody	ttr.sbody		intrlv
+ctatint.nbody740	tfr.ctatint		ctchar
+nbody.f311		nbody.v311		cpynbdy
+nbody.f443		nbody.v443		cpynbdy
+nbody.f452		nbody.v452		cpynbdy

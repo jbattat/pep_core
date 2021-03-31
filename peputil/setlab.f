@@ -1,0 +1,84 @@
+      SUBROUTINE SETLAB(LABEL,LL,NV,OBSNMI,OBSUNI,OBSLUI)
+C        SUBR. SETLAB - J.F.CHANDLER - 1980 APRIL
+C        SET UP AXIS LABEL
+C LABEL - ARRAY TO FILL WITH LABEL TEXT
+C LL    - LENGTH OF LABEL IN BYTES
+C NV    - CODE FOR VARIABLE (SEE MAIN)
+C OBSNMI- 8-CHAR NAME OF OBSERVABLE, IF ANY
+C OBSUNI- NAME OF UNITS, IF ANY
+C OBSLUI- LENGTH OF UNITS EXPRESSION
+C
+      CHARACTER*32 LABEL
+      CHARACTER*8 OBSNMI,OBSUNI
+      INTEGER*4 LL,NV,OBSLUI
+C
+C        COMMONS
+      include 'namen.inc'
+C
+C        LOCALS
+      CHARACTER*10 TLAB/'DERIV(   )'/
+C
+C           DETERMINE TYPE OF VARIABLE
+      IF(NV.GT.0) LABEL(1:8)=OBSNMI
+      IF(NV.EQ.0) THEN
+C           TIME
+         LABEL(1:16)='JD relative to  '
+         LL=24
+         RETURN
+C
+      ELSE IF(NV.EQ.-1) THEN
+C           EAST LONGITUDE ( SAVE(1) )
+         LABEL(1:20)='East longitude (deg)'
+         LL=20
+         RETURN
+C
+      ELSE IF(NV.EQ.-2) THEN
+C           LATITUDE ( SAVE(2) )
+         LABEL(1:14)='Latitude (deg)'
+         LL=14
+         RETURN
+C
+      ELSE IF(NV.EQ.1) THEN
+C           OBSERVABLE
+         LL=8
+         GOTO 35
+C
+      ELSE IF(NV.EQ.2) THEN
+C           RESIDUAL
+         LABEL(9:12)=' O-C'
+         LL=12
+      ELSE
+         GOTO 40
+      ENDIF
+
+   35 LABEL(LL+1:LL+1)=' '
+      LABEL(LL+2:LL+OBSLUI+1)=OBSUNI(1:OBSLUI)
+      LL=LL+1+OBSLUI
+      RETURN
+C
+   40 NNV=IABS(NV)
+      NTL=1
+      IF(NV.LT.0) GOTO 50
+      IF(NV.GT.1000) GOTO 55
+C           PARTIAL DERIVATIVE
+      TLAB(1:5)='DERIV'
+      NTL=2
+      IF(.NOT.NAMES) GOTO 60
+      LABEL(9:15)=' PARTL '
+      LABEL(16:23)=NOMBRE(1,NV-2)
+      LABEL(24:31)=NOMBRE(2,NV-2)
+      LL=31
+      GOTO 999
+C           'SAVE' ITEM
+   50 TLAB(1:5)=' SAVE'
+      GOTO 60
+C           'CAL' ITEM
+   55 TLAB(1:5)='  CAL'
+      NNV=NV-1000
+C           DERIV, SAVE, OR CAL
+   60 LL=2+8*NTL
+      CALL EBCDIX(NNV,TLAB,7,3)
+      LABEL(NTL*8-7:NTL*8+2)=TLAB
+C
+  999 RETURN
+      END

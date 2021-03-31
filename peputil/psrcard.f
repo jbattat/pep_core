@@ -1,0 +1,802 @@
+      PROGRAM PSRCARD
+      IMPLICIT NONE
+C           J.F.CHANDLER - 1984 AUG
+C     READ PRINCETON PULSAR DATA CARDS
+C     GENERATE PEP IOBS0 DATA SET
+C     REVISED 2001 FEB - DON'T INSIST ON SEGREGATING SERIES BY FREQUENCY
+C     REVISED 2001 MAY - RECOGNIZE WOLSZCZAN'S DATA FORMAT
+C     REVISED 2002 DEC - RECOGNIZE JPL SPACECRAFT DATA
+C     REVISED 2017 DEC - RECOGNIZE TEMPO2 DATA FORMAT
+C     REVISED 2018 MAR - RECOGNIZE JPL CASSINI DATA FORMAT
+C     REVISED 2018 MAY - RECOGNIZE JPL NORMAL POINT FORMAT
+C
+C           INPUT ON UNIT 'IN' (SEE BELOW):
+C  PRINCETON PULSAR TIMING CARDS.  MUST BE GROUPED ACCORDING TO RECEIVE
+C  FREQUENCY.  FORMAT DEPENDS ON NAMELIST (SEE BELOW).
+C     ORIGINAL FORMAT:
+C SKP   - sequence no. (A6 or I6), or 'SERIES', or EFAC,EMIN (F3.1,F3.2)
+C SCN   - NSCAN (1X,I5,2X), or series (1X,A4,3X)
+C APSR  - pulsar name (A8)
+C NSIT  - site code (I2)
+C FREQ  - observing frequency in MHz (F10.4)
+C JDM   - date integer part (I6) -- JD-2440000 or MJD or JD-1966.0
+C FM    - date fraction (F15.14) >>counted from noon or midnight<<
+C DT    - time correction in sec (F12.8), or total pulse no. (F12.0)
+C W     - error in usec (F6.3)
+C     WOLSZCZAN FORMAT:
+C NSIT  - site code (I1)
+C SKP   - sequence no. (A6 or I5,1X), or 'SERIES'
+C APSR  - pulsar name (A8)
+C FREQ  - observing frequency in MHz (F9.3)
+C JDM   - date integer part (I5) -- JD-2440000 or MJD or JD-1966.0
+C FM    - date fraction (F15.14) >>counted from noon or midnight<<
+C SCN   - NSCAN (I3,1X), or series (A4)
+C W     - error in usec (F6.3)
+C DT    - NOT time correction in sec (F12.8), or total pulse no. (F12.0)
+C     PRINCETON ARCHIVAL FORMAT:
+C APSR  - pulsar name (A8)
+C JDM   - date integer part (I6) -- JD-2440000 or MJD or JD-1966.0
+C FM    - date fraction (F15.14) >>counted from noon or midnight<<
+C W     - error in usec (F6.3)
+C FREQ  - observing frequency in MHz (F10.4)
+C DT    - dispersion correction, sec-Hz^2, (F10.6)
+C ASIT  - site code (2X,A2,2X)
+C SKP   - sequence no. (A6 or I6), or 'SERIES', or EFAC,EMIN (F3.1,F3.2)
+C SCN   - NSCAN (1X,I5,2X), or series (1X,A4,3X)
+C    JPL SPACECRAFT DATA FORMAT
+C APSR  - s/c number (A2)
+C NSIT2 - send site (I3)
+C NSIT  - rcv site (I3)
+C YEAR  - (1X,I4)
+C MONTH - (1X,A3)
+C IDAYA - (1X,I2)
+C IHRA  - UTC reception hrs (1X,I2)
+C IMINA - UTC reception mins (1X,I2)
+C SEC   - UTC reception secs (1X,F2.0)
+C DT    - roundtrip delay in microsec (6PF17.3)
+C W     - uncertainty or epoch correction in microsec (1X,6PF6.3)
+C    TEMPO2 FORMAT (FREE FORMAT)
+C ---   - file name (ignore)
+C FREQ  - observing frequency in MHz
+C JDM.FM- arrival time MJD
+C W     - error in usec
+C ASIT  - site encoded as an index into TEMPO2 list
+C ...   - various flags
+C    CASSINI SPACECRAFT DATA FORMAT
+C YEAR  - (I4)
+C IMNTHA- (1X,I2)
+C IDAYA - (1X,I2)
+C IHRA  - UTC reception hrs (1X,I2)
+C IMINA - UTC reception mins (1X,I2)
+C SEC   - UTC reception secs (1X,F2.0)
+C NSIT  - rcv site (I3)
+C DT    - roundtrip delay in sec (F21.12)
+C W     - uncertainty or epoch correction in microsec (1X,6PF5.2)
+C SBEPCH- TDB time of s/c state vector, sec past TDB J2000 (1X,0PF20.12)
+C SBSTAT- s/c state w.r.t. system c-o-m in km,km/s (3F21.12,3F11.6)
+C    NORMAL POINT DATA FORMAT
+C APSR  - planet name (A8)
+C YEAR  - (7X,I4)
+C MONTH - (1X,A3)
+C IDAYA - (1X,I2)
+C IHRA  - TDB reception hrs (1X,I2)
+C IMINA - TDB reception mins (1X,I2)
+C SEC   - TDB reception secs (1X,F7.4)
+C DT    - roundtrip delay in microsec (67X,6PF18.3)
+C W     - uncertainty in microsec (11X,6PF10.3)
+
+C           INPUT ON UNIT 3 (OPTIONAL):
+C HEADER INFO, ENDING WITH A LINE CONSISTING OF EQUALS SIGNS (=), THEN
+C UTC CORRECTIONS, ONE PER LINE, TO THE END OF THE FILE:
+C MJDC  - time tag (MJD) of calibration (f10.2)
+C EECO  - not used (f11.3)
+C NIST  - time (usec) to be added to TOA for UTC(NIST) (f12.3)
+C           TEMPO2-STYLE TABLE ON UNIT 3 (ALSO OPTIONAL)
+C LIST OF TABLES TO READ BY NAME IN THE FORM 'read <filename>'
+C EACH TABLE CONSISTS OF HEADER INFO BEGINNING
+C WITH '#', FOLLOWED BY TIME CORRECTIONS IN FREE FORMAT
+C MJDC  - time tag of calibration, then one or more blanks
+C NIST  - time in seconds to be added to TOA (linearly interpolated)
+
+C           INPUT ON UNIT 5:
+C  TITLE CARD (COL 1-72) TO APPEAR ON OUTPUT
+C
+C  NAMELIST/INPUT/
+C     ERRTYP- IF 0, USE W FOR ERROR; IF 1, USE MAX(W*EFAC,EMIN);
+C             IF 2, USE SQRT(EMIN**2+W**2); IF 3, USE EMIN. (DEF 0)
+C             IF 8, USE PRINCETON FORMAT
+C             IF 9, USE WOLSZCZAN FORMAT
+C             IF 10, USE JPL SPACECRAFT FORMAT (FORCES MJD)
+C             IF 11, USE TEMPO2 FORMAT (FORCES MJD)
+C             IF 12, USE JPL CASSINI FORMAT (FORCES MJD)
+C             IF 13, USE JPL NORMAL POINT FORMAT (FORCES MJD)
+C     NTAPE - NTAPE NUMBER FOR OUTPUT TAPE (DEFAULT 40)
+C     IN    - INPUT UNIT (DEFAULT 1) - IF 5, THEN CARDS FOLLOW
+C     IOBS0 - UNIT FOR OUTPUT TAPE, IF ANY (DEFAULT 2)
+C     DEBUG - IF T, PRINT DATA (DEFAULT F)
+C     NMAX  - MAXIMUM NUMBER OF DATA POINTS TO PROCESS (DEFAULT 999999)
+C     CYCN  - IF T, THE FIELD DT REPRESENTS THE KNOWN TOTAL PHASE
+C             IN CYCLES (DEFAULT F)
+C     EDEF  - DEFAULT SPACECRAFT RANGE UNCERTAINTY IN MICROSEC (DEF 0)
+C     FREQ  - DEFAULT OBSERVING FREQUENCY IN MHZ
+C     JD1   - JULIAN DATE TO START OUTPUT (DEFAULT 0)
+C     JD2   - JULIAN DATE TO STOP OUTPUT (DEFAULT 9999999)
+C     JD66  - IF T, INPUT DATES ARE RELATIVE TO 2439126.5
+C             (= 1966 JAN 1.0) (DEF F, I.E., RELATIVE TO 2440000.0)
+C     MJD   - IF T, INPUT DATES ARE RELATIVE TO 2400000.5 (DEF F)
+C             SUPERSEDES JD66
+C     ONEFRQ- IF T, OUTPUT A SERIES FOR EACH OBSERVING FREQUENCY (DEF F)
+C     CORTAB- IF T, READ TIMING CORRECTION TABLE FROM UNIT 3
+
+      include 'pepglob.inc'
+C
+C        COMMON
+      include 't1a.inc'
+      include 't2a.inc'
+      INTEGER*4 ZT2A/10096/
+      include 't3a.inc'
+      INTEGER*4 ZT3A/11124/
+      include 't4a.inc'
+      INTEGER*4 ZT4A/18638/
+C
+      INTEGER MAXSIT,NEW65
+      PARAMETER (MAXSIT=85,NEW65=6)
+      CHARACTER*8 TMPSIT(MAXSIT)/'300FNRAO','QUABBIN','ARECIBO',
+     . 'PRINCTON','PARKES','65NEWDS ','00CM', 3*' ',
+     . '11DSPION','12RAISED',' ','14DSMARS','15DS    ','16DS    ',
+     . '17DS    ',' ','19DS    ',3*' ','23DS    ','24DSGOLD',
+     . '25DSGOLD','26DSGOLD','27DS    ','28DS    ',4*' ','33DS    ',
+     . '34DS    ','35DS    ',6*' ','42DSCANB','43DSCAN2',' ','45DSCANB',
+     . '46DSCAN4',2*' ','PARKES  ',3*' ','53DSMADR','54DSMADR',
+     . '55DSMADR',5*' ','61RAISED',' ','63DSMAD2',
+     . ' ','65DS    ',2*' ','68DS    ','69DS    ',15*' ','85JPLVNS'/
+      CHARACTER*2 ASIT,SITCDS(MAXSIT)/'GB','QU','AO','PR','PK',80*'  '/
+      CHARACTER*2 T2SIT(7)/6*'??','PK'/
+C
+      CHARACTER*8 DATE(3),PSRCRD/' PSROBS '/,BLANK/' '/,PDDING(2),
+     1 STAR/'  STAR  '/, QSER/'SERIES'/, APSR,SCN
+      EQUIVALENCE (PDDING(1),APSR),(PDDING(2),BLANK)
+      CHARACTER*6 SKP
+      CHARACTER*4 NOPSR,NPSR,SERO
+C
+C APPROXIMATE PULSE PERIODS (NEEDED TO CONVERT UNCERTAINTIES)
+C PLANET NUMBERS, SPOT NAMES
+      INTEGER NUMPSR
+      PARAMETER (NUMPSR=13)
+      CHARACTER*4 TMPPSR(NUMPSR)/'1937',  '0532', '1855',
+     . '1713', 'PSRO',
+     . '1   ', '2   ', '3   ', '4   ', '5   ', '11  ',
+     . 'CASS', 'JUNO'/
+C SPACECRAFT DESIGNATIONS:
+C 1 VIKING LANDER 1
+C 2 VIKING LANDER 2
+C 3 MARS PATHFINDER
+C 4 MARS GLOBAL SURVEYOR
+C 5 MARS ODYSSEY
+C 11 MESSENGER
+      REAL*10 TMPPER(NUMPSR)/    .0015578_10,.033095_10,.0053621_10,
+     .      .0045701_10,0._10,
+     .  8*1._10/
+      INTEGER*2 TMPPLN(NUMPSR)/5*-4, 5*4,1,6,5/
+      CHARACTER*4 TMPSPT(NUMPSR)/5*' ', 'VKL1', 'VKL2', 'MPFR', 3*' ',
+     . 'CASS','JUNO'/
+      CHARACTER*8 TMPNAM(NUMPSR)/5*' ', 5*'  MARS  ','MERCURY ',
+     . ' SATURN ','JUPITER '/
+      CHARACTER*8 PLNNMS(9)/'Mercury','Venus','EMbary','Mars','Jupiter',
+     . 'Saturn','Uranus','Neptune','Pluto'/
+      CHARACTER*8 PLNNMU(9)/'MERCURY ',' VENUS  ',' EMBARY ','  MARS  ',
+     . 'JUPITER ',' SATURN ',' URANUS ','NEPTUNE ',' PLUTO  '/
+      CHARACTER*4 PLNSER(9)/'MERN','VENN','EMBN','MARN','JUPN',
+     . 'SATN','URAN','NEPN','PLUN'/
+C
+C LOCAL VARIABLES
+      INTEGER MAXTAB,MAXTABLE,CRDSIZ
+      PARAMETER (MAXTAB=99999,MAXTABLE=9,CRDSIZ=180)
+      CHARACTER*(CRDSIZ) CARD
+      CHARACTER*75 FNAME,T2TCAT,NEWCAT
+      REAL*10 CTAB(MAXTAB),TTAB(MAXTAB)
+      INTEGER*4 TABBEG(MAXTABLE)
+      REAL*10 DT,DTX,EDEF,EFAC,EMEAN,EWMEAN,EMIN,ERR,EISUM,
+     . ESUM,F,FM,FREQ,MJDC,NIST,OFREQ,PPER,SBEPCH,SBSTAT(6),SEC,TOA,W
+      INTEGER*4 JD1966/2439126/
+      INTEGER*4 CORCALL,ERRTYP,I,IC,IEFAC,IEMIN,IEOF,IN,INDIC,
+     . IOBS0,IOC,ITAB,J,JDBAD,JDM,JD1,JD2,JTAB,MTABLE,NCYCL,
+     . NE,NERROR,NMAX,NMIN,NOSIT,NOSIT2,NRD,NREC,NSCN,NSIT,NSIT2,
+     . NSKIP,NTAB,NTAPE,NUMSER,TMPNSIT
+      LOGICAL*4 DEBUG,CORTAB,CYCN,JD66,MJD,ONEFRQ,SKIPIN
+      INTEGER*2 ITIME,ITIMEO,ITIMF
+      CHARACTER*3 MS(12)/'JAN','FEB','MAR','APR','MAY','JUN','JUL',
+     . 'AUG','SEP','OCT','NOV','DEC'/, MONTH
+      INTEGER YEAR
+C
+C EXTERNAL FUNCTIONS
+      INTEGER*4 ISCAN,JULDAY,NSCAN
+      REAL*10 LAGRNG
+C
+      NAMELIST/INPUT/ IOBS0,IN,NTAPE,DEBUG,NMAX,JD1,JD2,CYCN,JD66,MJD,
+     1 ERRTYP,ONEFRQ,CORTAB,FREQ,EDEF,APSR,PPER
+C
+C           INITIALIZE VARIABLES
+      APSR='PSROTH'
+      CORTAB=.FALSE.
+      CYCN=.FALSE.
+      DEBUG=.FALSE.
+      EDEF=0._10
+      EISUM=0._10
+      ERRTYP=0
+      ESUM=0._10
+      IN=1
+      IOBS0=2
+      ITIMF=1
+      JDBAD=0
+      JD1=0
+      JD2=9999999
+      JD66=.FALSE.
+      MJD=.FALSE.
+      NE=0
+      NERROR=0
+      NEWCAT='pksold'
+      NMAX=999999
+      NSIT2=-1
+      NSKIP=0
+      NTAPE=40
+      ONEFRQ=.FALSE.
+      PPER=0._10
+      SKIPIN=.FALSE.
+      T2TCAT=' '
+C
+C           READ TITLE CARD AND CONTROLS
+      READ(5,10) (R1A(I),I=2,10)
+   10 FORMAT(10A8)
+      READ(5,INPUT,END=13)
+C
+   13 CALL TODAY(DATE)
+      IF(ERRTYP.GT.9) MJD=.TRUE.
+      IF(MJD) JD66=.FALSE.
+C
+      R1A(1)=PSRCRD
+      R1A(11)=DATE(1)
+
+C           READ CORRECTION TABLE, IF ANY
+C (INTERNAL SUBROUTINE CALLABLE FROM PROCESSING CODE OR JUST SETUP)
+      CORCALL=1
+   20 FNAME=' '
+      IF(CORTAB.AND.ERRTYP.EQ.9) THEN
+         MTABLE=0
+         CARD=' '
+         ITAB=0
+         DO WHILE (CARD(1:1).NE.'=')
+            READ(3,40,END=970) CARD
+   40       FORMAT(A80)
+            ITAB=ITAB+1
+         END DO
+         NTAB=0
+         DO WHILE (.TRUE.)
+            READ(3,45,END=50) MJDC,NIST
+   45       FORMAT(F10.2,11X,6P,F12.3)
+            NTAB=NTAB+1
+            IF(NTAB.GT.MAXTAB) GOTO 990
+            TTAB(NTAB)=MJDC+2400000.5_10
+            CTAB(NTAB)=NIST
+         END DO
+   50    ITAB=1
+         CLOSE (3)
+      ELSE IF(CORTAB.AND.ERRTYP.EQ.11.AND.NEWCAT.NE.T2TCAT) THEN
+         T2TCAT=NEWCAT
+         FNAME=T2TCAT
+         IF(CORCALL.EQ.2 .AND. DEBUG) WRITE(6,
+     .    '('' READING TIME CORRECTION CATALOG '',A75)') FNAME
+         OPEN(3,FORM='FORMATTED',FILE=FNAME,IOSTAT=IOC,STATUS='OLD')
+         IF(IOC.NE.0) goto 980
+         MTABLE=0
+         NTAB=0
+         DO WHILE(.TRUE.)
+            MTABLE=MTABLE+1
+            IF(MTABLE.GT.MAXTABLE) GOTO 960
+            TABBEG(MTABLE)=NTAB+1
+            CARD='#'
+            ITAB=0
+            DO WHILE(CARD(1:5).NE.'read ')
+               READ(3,40,END=57) CARD
+               ITAB=ITAB+1
+            END DO
+            FNAME=CARD(6:80)
+            OPEN(4,FORM='FORMATTED',FILE=FNAME,IOSTAT=IOC,STATUS='OLD')
+            IF(IOC.NE.0) goto 980
+            CARD='#'
+            ITAB=0
+            DO WHILE(CARD(1:1).EQ.'#')
+               READ(4,40,END=970) CARD
+               ITAB=ITAB+1
+            END DO
+            DO WHILE(.TRUE.)
+               IF(CARD.NE.' ') THEN
+                  READ(CARD,*) MJDC,NIST
+                  NTAB=NTAB+1
+                  IF(NTAB.GT.MAXTAB) GOTO 990
+                  TTAB(NTAB)=MJDC+2400000.5_10
+                  CTAB(NTAB)=NIST
+               ENDIF
+               READ(4,40,END=55) CARD
+            END DO
+   55       CLOSE (4)
+         END DO
+   57    CLOSE (3)
+         MTABLE=MTABLE-1
+         IF(MTABLE.EQ.0) GOTO 970
+      ENDIF
+      IF(CORCALL.EQ.2) GOTO 113
+C
+C           CLEAR OUT COMMONS AND FILL IN A FEW ITEMS
+      CALL ZFILL(JDGS0A,ZT2A)
+      CALL ZFILL(RITA,ZT3A)
+      CALL ZFILL(RESLTA,ZT4A)
+C
+C           TYPE 2
+      NTAPA=NTAPE
+      CALL MVC(PSRCRD,2,4,LNKLVA,1)
+C           TYPE 3
+      CTLGA=BLANK
+      ERWGTA(1)=1.
+      ERWGTA(2)=1.
+      NSEQA=0
+      NOBCNA=2
+      OBSCNA(1)=1._10
+      OBSCNA(2)=1._10
+C TARGET-SPECIFIC ITEMS
+      IF(ERRTYP.EQ.10 .OR. ERRTYP.EQ.12) THEN
+         NCODFA=2
+         SERA='JPLO'
+         OBSCNA(1)=1._10/1174.9_10
+      ELSE IF(ERRTYP.EQ.13) THEN
+         NCODFA=2
+         NSIT=7
+         NSIT2=7
+      ELSE
+         NCODFA=18
+         NPLNTA=-4
+         PNAMA=STAR
+         CALL MVC(PSRCRD,2,4,SERA,1)
+         SITA=BLANK
+      ENDIF
+C           TYPE 4
+      NUM1A=1
+      NXPA=1
+C
+C           WRITE FIRST TWO RECORDS
+      CALL OBSIO(0,IOBS0,1,1,IC)
+      CALL OBSIO(0,IOBS0,2,1,IC)
+C
+C           SET UP SERIES CHECKS
+      WRITE(6,90) IN,IOBS0,NTAPE,NMAX,JD1,JD2,JD66,MJD,DEBUG,CYCN,
+     1 ERRTYP,CORTAB,ONEFRQ,R1A
+   90 FORMAT('1PSRCARD - OBSLIB GENERATOR, INPUT FROM',I3,
+     1 ', OUTPUT ON IOBS0=',I3,' NTAPE=',I3,/'  MAX',I7,' POINTS',
+     2 '  JD1,JD2=',2I8,'  JD66=',L1,'  MJD=',L1,'  DEBUG=',L1,
+     3 '  CYCN=',L1/'  ERRTYP=',I2,'  CORTAB=',L1,'  ONEFRQ=',L1/
+     4 ' TITLE= ',11A8/)
+      ITIMEO=-999
+      NUMSER=0
+      NOPSR=BLANK
+      OFREQ=-1._10
+      NOSIT=-1
+      NOSIT2=-1
+      INDIC=-1
+      IEOF=0
+      NRD=0
+      NREC=0
+C
+  100 READ(IN,101,END=900) CARD
+  101 FORMAT(A)
+
+C FROM HERE TO STMT 113: PROCESS INPUT LINE ACCORDING TO ERRTYP
+      IF(ERRTYP.EQ.8) THEN
+C  PRINCETON ARCHIVE FORMAT:
+         READ(CARD,'(A8,I6,F15.14,F6.3,F10.4,F10.6,2X,A2,A6,A8)')
+     .    APSR,JDM,FM,W,FREQ,DT,ASIT,SKP,SCN
+         IF(FREQ.NE.0._10) DT=DT/FREQ**2/2.410E-4_10
+         NSIT=0
+         DO I=1,MAXSIT
+            IF(ASIT.EQ.SITCDS(I)) NSIT=I
+         END DO
+      ELSE IF(ERRTYP.EQ.9) THEN
+C  WOLSZCZAN FORMAT:
+         IF(CARD(1:1).EQ.'C' .OR. CARD(1:1).EQ.'c') THEN
+            NSKIP=NSKIP+1
+            GOTO 100
+         ELSE IF(CARD(1:4).EQ.'SKIP') THEN
+            SKIPIN=.TRUE.
+            NSKIP=NSKIP+1
+            GOTO 100
+         ELSE IF(CARD(1:6).EQ.'NOSKIP') THEN
+            SKIPIN=.FALSE.
+            NSKIP=NSKIP+1
+            GOTO 100
+         ELSE IF(SKIPIN) THEN
+            NSKIP=NSKIP+1
+            GOTO 100
+         ENDIF
+         READ(CARD,'(I1,A6,A8,F9.3,I5,F15.14,A4,F6.3)')
+     .    NSIT,SKP,APSR,FREQ,JDM,FM,SCN(2:5),W
+         DT=0.
+      ELSE IF(ERRTYP.EQ.11) THEN
+C TEMPO2 FORMAT:
+         IF(CARD(1:1).NE.' ') GOTO 100
+         I=NSCAN(CARD,5,' ')+1
+         IF(I.LT.0) GOTO 100
+C SKIP FILE NAME
+         IC=ISCAN(CARD(I:CRDSIZ),CRDSIZ+1-I,' ')+I
+         IF(IC.LT.0) GOTO 100
+         I=NSCAN(CARD(IC:CRDSIZ),5,' ')+IC
+         IF(I.LT.0) GOTO 100
+         IC=ISCAN(CARD(I:CRDSIZ),CRDSIZ+1-I,' ')+I
+         IF(IC.LT.0) GOTO 100
+         READ(CARD(I:IC-1),'(F30.10)') FREQ
+         I=NSCAN(CARD(IC:CRDSIZ),5,' ')+IC
+         IF(I.LT.0) GOTO 100
+         IC=ISCAN(CARD(I:CRDSIZ),CRDSIZ+1-I,' ')+I
+         IF(IC.LT.0) GOTO 100
+         CALL DECODI(CARD,I,IC-1,JDM)
+         READ(CARD(I-1:IC-1),'(F30.10)') FM
+         I=NSCAN(CARD(IC:CRDSIZ),5,' ')+IC
+         IF(I.LT.0) GOTO 100
+         IC=ISCAN(CARD(I:CRDSIZ),CRDSIZ+1-I,' ')+I
+         IF(IC.LT.0) GOTO 100
+         READ(CARD(I:IC-1),'(F30.10)') W
+         CALL DECODI(CARD,IC,CRDSIZ,TMPNSIT)
+         ASIT=T2SIT(TMPNSIT)
+         NSIT=0
+         DO J=1,MAXSIT
+            IF(ASIT.EQ.SITCDS(J)) NSIT=J
+         END DO
+         DT=0.
+         IF(CORTAB) THEN
+C GO TO INTERNAL SUBROUTINE TO READ TIMING CORRECTIONS AS NEEDED
+            CORCALL=2
+            IF(ASIT.EQ.'PK') THEN
+               IF(JDM.LT.50844) THEN
+                  NEWCAT='pksold'
+               ELSE
+                  NEWCAT='pksnew'
+               ENDIF
+            ELSE
+               STOP 10
+            ENDIF
+            GOTO 20
+         ENDIF
+C SKP,SCN
+      ELSE IF(ERRTYP.EQ.10) THEN
+C JPL SPACECRAFT FORMAT:
+C INPUT DATE IS REFERRED TO MIDNIGHT. THUS, MJD IS FORCED.
+         READ(CARD,108) APSR,NSIT2,NSIT,YEAR,MONTH,IDAYA,
+     .    IHRA,IMINA,SEC,DT,W,SKP,SCN
+  108    FORMAT(A2,2I3,1X,I4,1X,A3,1X,I2,1X,I2,1X,I2,1X,F2.0,
+     .    6PF17.3,1X,6PF6.3,7X,A6,A8)
+         SERA(4:4)=APSR(2:2)
+         DO I=1,12
+            IF(MONTH.EQ.MS(I)) THEN
+               IMNTHA=I
+               GOTO 109
+            ENDIF
+         END DO
+         WRITE(6,'('' ILLEGAL MONTH: '',A)') CARD(1:60)
+         STOP
+      ELSE IF(ERRTYP.EQ.12) THEN
+C JPL CASSINI SPACECRAFT FORMAT:
+C INPUT DATE IS REFERRED TO MIDNIGHT. THUS, MJD IS FORCED.
+         READ(CARD,110) YEAR,IMNTHA,IDAYA,IHRA,IMINA,SEC,NSIT,
+     .    DT,W,SBEPCH,SBSTAT,SKP,SCN
+  110    FORMAT(I4,1X,I2,1X,I2,1X,I2,1X,I2,1X,F2.0,I3,F21.12,1X,
+     .    6PF5.2,1X,0PF20.12,3F21.12,3F11.6,A6,A8)
+         NSIT2=NSIT
+         GOTO 109
+      ELSE IF(ERRTYP.EQ.13) THEN
+C JPL NORMAL POINT FORMAT
+         READ(CARD,'(A8,7X,I4,1X,A3,1X,I2,1X,I2,1X,I2,1X,F7.4,67X,'//
+     .    '6PF18.3,11X,6PF10.3,A6,A8)')
+     .    APSR,YEAR,MONTH,IDAYA,IHRA,IMINA,SEC,DT,W,SKP,SCN
+C        TIME ARGUMENT IS ET, CONVERT TO CT
+         SEC=SEC+0.0003817_10
+         NPLNTA=0
+         DO I=1,9
+            IF(APSR.EQ.PLNNMS(I)) THEN
+               NPLNTA=I
+               PNAMA=PLNNMU(NPLNTA)
+               SERA=PLNSER(I)
+            ENDIF
+         END DO
+         IF(NPLNTA.EQ.0) THEN
+            WRITE(6,'('' ILLEGAL PLANET: '',A)') CARD(1:60)
+            STOP
+         ENDIF
+         DO I=1,12
+            IF(MONTH.EQ.MS(I)) THEN
+               IMNTHA=I
+               GOTO 109
+            ENDIF
+         END DO
+         WRITE(6,'('' ILLEGAL MONTH: '',A)') CARD(1:60)
+         STOP
+      ELSE
+C ORIGINAL FORMAT
+         READ(CARD,'(A6,A8,A8,I2,F10.3,I6,F15.14,F12.8,F6.3)')
+     .    SKP,SCN,APSR,NSIT,FREQ,JDM,FM,DT,W
+      ENDIF
+      GOTO 113
+C COMBINED JPL FORMATS
+  109 IYEARA=YEAR-1900
+      JDM=JULDAY(IMNTHA,IDAYA,IYEARA)-2400001
+C EPOCH CORRECTION
+      IF(EDEF.NE.0._10 .AND. W.NE.0._10) THEN
+         DT=DT-2._10*W
+         SEC=SEC-W
+         IF(SEC.LT.0._10) THEN
+            SEC=SEC+60._10
+            IMINA=IMINA-1
+            IF(IMINA.LT.0) THEN
+               IMINA=IMINA+60
+               IHRA=IHRA-1
+               IF(IHRA.LT.0) THEN
+                  IHRA=IHRA+24
+                  JDM=JDM-1
+                  IDAYA=IDAYA-1
+               ENDIF
+            ENDIF
+         ENDIF
+      ENDIF
+      IF(EDEF.GT.0._10) W=EDEF*1E-6_10
+      FM=(((SEC/60._10)+IMINA)/60._10+IHRA)/24._10
+      IF(JDM.GT.53450) THEN
+         IF(NSIT.EQ.65) NSIT=NEW65
+         IF(NSIT2.EQ.65) NSIT2=NEW65
+      ENDIF
+
+C RETURN HERE AFTER REREADING TIME CORRECTION TABLES
+  113 CONTINUE
+      NRD=NRD+1
+      IF(SKP.EQ.QSER .AND. (APSR.EQ.BLANK.OR.ERRTYP.EQ.12)) THEN
+         CALL MVC(SCN,2,4,SERA,1)
+         NOSIT=-1
+         NOSIT2=-1
+         GOTO 100
+      ELSE IF(SKP.EQ.'NEXT' .AND. (APSR.EQ.BLANK.OR.ERRTYP.EQ.12)) THEN
+         READ(5,INPUT,END=900)
+         NOSIT=-1
+         NOSIT2=-1
+         GOTO 100
+      ENDIF
+      IF(JD66.OR.MJD) THEN
+         IF(JD66) THEN
+            JDA=JDM+JD1966
+         ELSE
+            JDA=JDM+2400000
+         ENDIF
+         F=FM+0.5_10
+         IF(F.GE.1._10) THEN
+            F=F-1._10
+            JDA=JDA+1
+         ENDIF
+      ELSE
+         JDA=JDM+2440000
+         F=FM
+      ENDIF
+      IF(JDA.LT.JD1.OR.JDA.GT.JD2) GOTO 100
+      I=2
+      CALL DECODI(SCN,I,6,NSCN)
+      I=MAX0(NSCAN(APSR,8,BLANK),0)
+      CALL MVC(APSR,I+1,4,NPSR,1)
+C PRELIMINARY CALL TO MDYJUL TO SET CENTURY. DAY MAY STILL CHANGE...
+      CALL MDYJUL(IMNTHA,IDAYA,IYEARA,ITIME,JDA)
+      NREC=NREC+1
+      IF(NREC.GT.NMAX) GOTO 900
+      IF(NPSR.EQ.NOPSR .AND. NSIT.EQ.NOSIT .AND. ITIME.EQ.ITIMEO .AND.
+     . (FREQ.EQ.OFREQ.OR..NOT.ONEFRQ) .AND. NSIT2.EQ.NOSIT2) GOTO 150
+  115 IF(INDIC.LT.0) GOTO 120
+      WRITE(6,117) SERO,NSEQA,INDIC
+  117 FORMAT(' ---END OF SERIES ',A4,' NSEQ=',I4,I10,' POINTS')
+C           WRITE NULL TYPE 4 FROM PREVIOUS SERIES
+      CALL OBSIO(0,IOBS0,4,2,IC)
+C
+C           SET UP FOR NEW SERIES
+  120 IF(IEOF.GT.0) GOTO 930
+      INDIC=-1
+      NCODEA=1
+      NSAVA=40
+      NSEQA=NSEQA+10
+      NUMPRA=2
+      NOPSR=NPSR
+      OFREQ=FREQ
+      NOSIT=NSIT
+      NOSIT2=NSIT2
+      FREQA=FREQ*1E6_10
+      ACCTMA=1E-9
+      RITA=TMPSIT(NSIT)
+      IF(NSIT2.GT.0) SITA=TMPSIT(NSIT2)
+      CALL MVC(NPSR,1,4,SPOTA,1)
+      DO 135 I=1,NUMPSR
+      IF(NPSR.NE.TMPPSR(I)) GOTO 135
+      PPER=TMPPER(I)
+      IF(ERRTYP.EQ.10 .OR. ERRTYP.EQ.12) THEN
+         SPOTA=TMPSPT(I)
+         NPLNTA=TMPPLN(I)
+         PNAMA=TMPNAM(I)
+         ITIMF=1
+      ENDIF
+      GOTO 140
+  135 CONTINUE
+      IF(ERRTYP.EQ.13) THEN
+         SPOTA=BLANK
+         ITIMF=5
+         GOTO 140
+      ENDIF
+      IF(PPER.EQ.0._10) GOTO 800
+  140 INDIC=0
+      SERO=SERA
+      ITIMEO=ITIME
+      ITIMA=ITIME
+      IF(ITIMA.GT.0) ITIMA=10*ITIMA+ITIMF
+      IF(ITIMA.EQ.0 .AND. IYEARA.GT.60) ITIMA=ITIMF
+      CALL OBSIO(0,IOBS0,3,1,IC)
+      IF(DEBUG) THEN
+         IF(ERRTYP.EQ.10 .OR. ERRTYP.EQ.12 .OR. ERRTYP.EQ.13) THEN
+            WRITE(6,142) NTAPA,NSEQA,RITA,SPOTA,APSR,NPLNTA,FREQA
+  142       FORMAT('0SERIES, NTAPE=',I3,'  NSEQ=',I4,'  SITE=',A8,
+     1       '  SPOT=',A4,1X,A4,I2,'  FREQ=',1PD12.5/
+     .       '    JD     DATE    H  M   S     RANGE',9X,'ERR'/)
+         ELSE
+            WRITE(6,144) NTAPA,NSEQA,RITA,NPSR,FREQA
+  144       FORMAT('0NEW SERIES, NTAPE=',I3,'  NSEQ=',I4,'  SITE=',A8,
+     1 '  PSR=',A4,'  FREQ=',1PD15.8/' NSCAN    TOBS',17X,'JD     DATE
+     2  H  M   S',10X,'ERR    CORR(USEC)'/)
+         ENDIF
+      ENDIF
+      NUMSER=NUMSER+1
+  150 TOA=JDA+F
+      F=(F+0.5_10)*86400._10
+      IF(ERRTYP.EQ.9 .AND. CORTAB) THEN
+         IF(TOA.LT.TTAB(ITAB+1)) ITAB=1
+         DO WHILE (TOA.GT.TTAB(ITAB+2) .AND. ITAB+3.LT.NTAB)
+            ITAB=ITAB+1
+         END DO
+         IF(TOA.LT.TTAB(1) .OR. TOA.GT.TTAB(NTAB)) THEN
+            IF(JDBAD.EQ.0) JDBAD=JDA
+         ELSE
+C 4-POINT LAGRANGE INTERPOLATION
+            DT=LAGRNG(TOA,TTAB(ITAB),CTAB(ITAB),0)
+         ENDIF
+      ELSE IF(ERRTYP.EQ.11 .AND. CORTAB) THEN
+         DT=0._10
+         DO I=1,MTABLE
+            ITAB=TABBEG(I)
+            JTAB=TABBEG(I+1)
+            DO WHILE(TOA.GE.TTAB(ITAB) .AND. ITAB.LT.JTAB-1)
+               ITAB=ITAB+1
+            END DO
+            IF(ITAB.GT.TABBEG(I)) THEN
+C LINEAR INTERPOLATION
+               DTX=(CTAB(ITAB)*(TOA-TTAB(ITAB-1)) +
+     .          CTAB(ITAB-1)*(TTAB(ITAB)-TOA))/(TTAB(ITAB)-TTAB(ITAB-1))
+               DT=DT+DTX
+               TOA=TOA+DTX/86400._10
+            ELSE
+               IF(DEBUG) WRITE(6,
+     .          '('' *** BAD TIME CORRECTIONS'',I2,I6,F12.3)')
+     .          I,ITAB,TOA
+            ENDIF
+         END DO
+      ENDIF
+      IF(.NOT.CYCN .AND. ERRTYP.NE.8 .AND. ERRTYP.NE.10 .AND.
+     . ERRTYP.NE.12 .AND. ERRTYP.NE.13) F=F+DT
+      IF(F.GE.86400._10) THEN
+         F=F-86400._10
+         JDA=JDA+1
+      ELSE IF(F.LT.0._10) THEN
+         F=F+86400._10
+         JDA=JDA-1
+      ENDIF
+      ERR=W
+      IF(ERRTYP.EQ.0) THEN
+      ELSE IF(ERRTYP.EQ.8) THEN
+         NCALA=25
+         ICALA(25)=1
+         CALA(25)=DT
+      ELSE IF(ERRTYP.EQ.9 .OR. ERRTYP.EQ.11) THEN
+      ELSE IF(ERRTYP.EQ.10 .OR. ERRTYP.EQ.13) THEN
+         RESLTA(1)=DT
+      ELSE IF(ERRTYP.EQ.12) THEN
+         RESLTA(1)=DT
+         NSAVA=62
+         SAVA(56)=SBEPCH
+         DO I=1,6
+            SAVA(I+56)=SBSTAT(I)
+         END DO
+      ELSE
+         I=1
+         CALL DECODI(SKP,I,6,IEFAC)
+         CALL DECODI(SKP,I,6,IEMIN)
+         IF(I.NE.7.OR.IEMIN.EQ.0) GOTO 820
+         EFAC=IEFAC*.1_10
+         EMIN=IEMIN*.01_10
+         IF(ERRTYP.EQ.1) ERR=MAX1(EFAC*W,EMIN)
+         IF(ERRTYP.EQ.2) ERR=SQRT(W**2+EMIN**2)
+         IF(ERRTYP.EQ.3) ERR=EMIN
+      ENDIF
+      IF(ERRTYP.NE.10 .AND. ERRTYP.NE.12 .AND. ERRTYP.NE.13) THEN
+         NMIN=F/60._10
+         IHRA=NMIN/60
+         IMINA=NMIN-60*IHRA
+         SEC=F-NMIN*60._10
+         ERR=1E-6_10*ERR/PPER
+      ENDIF
+      ERRORA(1)=ERR
+      DERIVA(1,1)=ERR
+      IF(ERR.GT.0._10) THEN
+         ESUM=ESUM+ERR**2
+         EISUM=EISUM+1._10/ERR**2
+         NE=NE+1
+      ENDIF
+      SECA=SEC
+      SAVA(40)=SEC
+      SAVA(29)=FREQ*1E6_10
+      IF(CYCN .AND. ERRTYP.NE.8) SAVA(5)=DT
+      CALL MDYJUL(IMNTHA,IDAYA,IYEARA,ITIME,JDA)
+      JDSA=JDA
+      CALL OBSIO(0,IOBS0,4,1,IC)
+      IF(.NOT.DEBUG) GOTO 190
+      IF(ERRTYP.EQ.10 .OR. ERRTYP.EQ.12 .OR. ERRTYP.EQ.13) THEN
+         WRITE(6,166) JDA,IMNTHA,IDAYA,IYEARA,
+     1    IHRA,IMINA,SEC,DT,ERR
+  166    FORMAT(I8,1X,2(I2,'/'),I2,2I3,F5.1,F16.9,1PD10.2)
+      ELSE IF(.NOT.CYCN) THEN
+         WRITE(6,170) NSCN,JDM,FM,JDA,IMNTHA,IDAYA,IYEARA,
+     1    IHRA,IMINA,SEC,ERR,DT
+  170    FORMAT(I6,I6,F15.14,I8,1X,2(I2,'/'),I2,2I3,F12.8,1PD9.2,6PF8.2)
+      ELSE
+         NCYCL=DT
+         WRITE(6,180) NSCN,JDM,FM,JDA,IMNTHA,IDAYA,IYEARA,
+     1    IHRA,IMINA,SEC,ERR,NCYCL
+  180    FORMAT(I6,I6,F15.14,I8,1X,2(I2,'/'),I2,2I3,F12.8,1PD9.2,I11)
+      ENDIF
+  190 INDIC=INDIC+1
+      GOTO 100
+C
+  800 WRITE(6,810) SKP,SCN,APSR,NPSR
+  810 FORMAT(' CARD: ',A6,A8,A8,' PULSAR ',A4,' NOT KNOWN.  STOP.')
+      GOTO 880
+C
+  820 WRITE(6,830) SKP,SCN,APSR,FREQ,JDM,FM
+  830 FORMAT(' CARD: ',A6,A8,A8,F7.1,I6,F4.3,'  INVALID EFAC/EMIN.')
+C
+  880 NERROR=NERROR+1
+      NOPSR=BLANK
+      IF(NERROR.LT.10) GOTO 100
+C
+  900 IEOF=1
+      IF(NREC.GT.NMAX) NREC=NMAX
+      GOTO 115
+  930 EWMEAN=1._10/SQRT(EISUM/MAX0(1,NE))
+      EMEAN=SQRT(ESUM/MAX0(1,NE))
+      WRITE(6,940) NUMSER,NREC,NRD,NE,EMEAN,EWMEAN
+  940 FORMAT('-END OF PROCESSING AFTER',I5,' SERIES WITH',I8,' POINTS',
+     1 I7,' RECORDS READ'/
+     . I7,' POINTS IN RMS AND WEIGHTED RMS ERROR',1P2D10.2,' (PPER)')
+      NCODFA=0
+      CALL OBSIO(0,IOBS0,3,1,IC)
+      CALL OBSIO(0,IOBS0,0,1,IC)
+      STOP
+
+C          CANNOT PROCEED AT ALL
+  960 WRITE(6,965) MTABLE-1
+  965 FORMAT(' **** TOO MANY TIME CORRECTION TABLES:',I3)
+      STOP 10
+  970 WRITE(6,975) ITAB,FNAME
+  975 FORMAT(' **** REACHED END OF TIME CORRECTION FILE AFTER',I5,
+     . ' RECORDS BEFORE SEEING END OF HEADER'/A75)
+      STOP 10
+  980 WRITE(6,985) FNAME
+  985 FORMAT(' **** FILE NOT FOUND: ',A75)
+      STOP 10
+  990 WRITE(6,995) NTAB,MTABLE
+  995 FORMAT(' **** TOO MANY TIME CORRECTIONS:',I8,' IN TABLE',I3)
+      STOP 10
+      END

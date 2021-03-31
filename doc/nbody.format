@@ -1,0 +1,74 @@
+                          NBODY tape format
+Revisions:
+2009/9/16 - all character fields now described as such
+2011/4/8  - all R*8 promoted to R*10 (R*10, denoted R*A below, occupies
+            16 bytes in files and in memory)
+ 
+Parts of PEP expect the moon to be either body NBDY or body 10, so a
+tape with < 10 bodies is probably unreadable.
+ 
+Coordinates are relative to the center of mass of the sun, not of the
+solar system.
+ 
+----------------------------  First record  ----------------------------
+ 
+NAMBOD      - C*8 - characters ' N-BODY '
+HEDING(18)  - C*4 - 72 character title of PEP run
+DATE(2)     - C*4 - date of integration (characters)
+FILBOD(9)   - C*4 - chars ' PERTURBING PLNT TAPE FROM NBODY INT'
+LNKLVA      - C*4 - level of PEP (or whatever) used to write integration
+                    tape (characters), not present before PEP750
+ 
+---------------------------  Second record  ----------------------------
+ 
+NBDY        - I*2 - NBODY + 1 = number of bodies including the moon
+NPLBDY(10)  - I*2 - NBDY planet numbers in order integrated
+NCBDY(10)   - I*2 - NBDY central body numbers
+INTB(10)    - I*2 - tabular interval control for each body (like INTBDY).
+                    Normally, Mercury has INTB=2, others have INTB=4,
+                    and Moon has INTB=-1
+JDBDY1      - I*4 - starting time of integration (midnight of JD)
+JDBDY2      - I*4 - ending time of integration (midnight of JD)
+JDBDY0(10)  - I*4 - NBDY epochs for integration (usually all the same)
+BETA(6,10)  - R*A - NBDY sets of i.c.'s (elliptic elements: a (AU), e,
+                    inc (deg), asc (deg), per (deg), anom (deg))
+NAME(3,10)  - C*8 - NBDY sets of planet name, first 8 characters of
+                    title of PEP run, and date of integration, or
+                    other descriptive information
+NMOON       - I*4 - .le.0 --> lunar ephemeris distance unit is AU
+NBODY       - I*2 - number of bodies excluding the moon
+INTBDY      - I*2 - tabular interval is 2**INTBDY days if INTBDY <= 0,
+                    else tabular interval is INTBDY days
+JVLBDY      - I*4 - flag indicating whether velocity as well as position
+                    information is on tape (see PRMRED)
+EPSBDY      - R*4 - accuracy constant controlling integration step size
+KBDY(40)    - I*2 - KBDY array (see PRMRED)
+ITERAT      - I*4 - iteration number in PEP run that made this file
+NPAGE       - I*4 - page number for start of PEP printout
+MASS1(10)   - R*A - planet masses used (solar mass units)
+RELTFB(10)  - R*A - NBDY individual body relativity motion factors
+KKBDY(80)   - I*2 - KKBDY array (see PRMRED)
+LNKLVA      - C*4 - level of PEP (or whatever) used to write integration
+                    tape (characters), not present before PEP750
+LEVP(10)    - C*4 - level of PEP (or whatever) for each body (post-PEP750)
+ZERO(120)   - R*8 - zeroes for future expansion
+ 
+----------------------------  Data records  ----------------------------
+ 
+JDT         - I*4 - Julian day number of first point in record
+FRACT       - R*A - fraction of a day past midnight (always 0)
+IVL         - I*4 - actual range of first subscript of MERC and BODY
+                    3->just positions, 6->also velocities
+MVL         - I*4 - actual range of first subscript of MOON
+MERC(6,10)  - R*A - coordinates of Mercury in steps of its tabular
+                    interval (half that of other planets) - in AU
+BODY(6,5,8) - R*A - coordinates of Venus to Pluto in steps of their
+                    tabular intervals (all the same) - in AU
+MOON(6,40)  - R*A - coordinates of moon in steps of its tabular interval
+                    (1/8 that of planets 2-9) - in "Moon" units
+| PSID(40)  - R*4 - nutation in longitude delta(psi), units: radians
+| EPSD(40)  - R*4 - nutation in obliquity delta(epsilon), units: radians
+LIBRT(40,3) - R*4 - moon librations: TAU, RHO, I*(TAU-SIGMA); second
+                    subscript varies most rapidly
+ 
+* * * * * * * * *  Not padded with any zeroes  * * * * * * * * * * * * *

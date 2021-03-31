@@ -1,0 +1,121 @@
+#!/bin/sh
+echo PEPSOL - RESTORE AND SOLVE NORMAL EQUATIONS - $1
+# Syntax:   pepsol <name> [-num <n>] [-iter <name>] [-jpert <n>] [-path <path>]
+#			[-var1 <value>] [-unw <value>] [-unc <count>]
+#                       [-sol <oldsol>] [-skip1] [-skip2] [-pep <pgm>]
+# defaults:     ('-----' means no default)
+# name:		# first part of file name - $ppath/pepin/<name>.peprun
+  iter=lock5	# group of include files
+  jpert=0	# perturbing small-body data set
+  num='-----'	# number of input nrmeqs
+  oldsol=''	# restore saved solution sol.XXX in this run
+  pep=pep	# version of PEP to execute
+  ppath="~/alt4"	# path to input files: data/ ephem/ pepin/
+#if [ "$HOST" != titan -a "$HOST" != mars ]; then ppath="/home/chandler/alt"; fi
+# runnum:	# optional override for normal next run number
+  skip1=''	# do not skip anything by default
+  skip2=''	# do not skip anything by default
+  uncount=1	# count of datasets to unweight (see below)
+  unwgt=0	# number of an input dataset to downweight by 1000
+  var1=0	# some value to specify
+# End of description
+other=''
+foo=name
+for i
+do
+	case $i in
+## SPECIAL
+	-iter) foo=iter ;;
+	-jpert) foo=jpert ;;
+	-num*) foo=num ;;
+	-path) foo=ppath ;;
+	-pep) foo=pep ;;
+	-run*) foo=runnum ;;
+	-sol) foo=oldsol ;;
+	-skip1) skip1='/ ONLY FOR PART 1:/,/ END OF PART 1/d' ;;
+	-skip2) skip2='/ ONLY FOR PART 2:/,/ END OF PART 2/d' ;;
+	-unc*) foo=uncount ;;
+	-unw*) foo=unwgt ;;
+	-var1) foo=var1 ;;
+#
+	-*) foo=other ; badopt=$i ;;
+	*) eval "$foo=\$i" ;;
+	esac
+	done
+if [ "$badopt" != '' ]
+then
+	echo "$0: $badopt not recognized"
+	exit
+fi
+if [ "$other" != '' ]
+then
+	echo "$0: value $other not allowed"
+	exit
+fi
+if [ "$#" = "0" ]
+then
+	sed '/^# End of description/q' $0
+	exit
+fi
+## SPECIAL
+for i in iter jpert name num
+#
+do
+	eval "foo=\$$i"
+	if test "$foo" = "-----"
+	then
+		echo -n "$i: "
+		read $i
+		eval "foo=\$$i"
+		case $foo in
+			!) exit 1 ;;
+			\?) sed -n "/$i: /p
+				/ $i=/p" $0 ; echo -n "$i: " ; read $i ;;
+		esac
+	fi
+done
+setwgt="s/?UNWGT/$unwgt/"
+if [ "$unwgt" = "0" ]
+then
+	setwgt="/?UNWGT/d"
+fi
+#
+rm -f fort.*
+## SPECIAL
+if [ -f $ppath/halt ]
+then
+	exit
+fi
+if [ "$runnum" = "" ]
+then
+	runnum=`runnum sne`
+	echo New run number is $runnum.
+fi
+if [ -f sol.$oldsol ]
+then
+	ln sol.$oldsol fort.93
+elif [ -f $ppath/data/sol.$oldsol ]
+then
+	ln -s $ppath/data/sol.$oldsol fort.93
+fi
+(echo "export HOME; HOME=$ppath"
+sed -n "/\/SPECIAL/,/\/GO/p" < $ppath/pepin/$name.peprun | sed "/\/SPECIAL/d
+/\/GO/d
+s=?PATH=$ppath=g") | sh
+sed "/\/SPECIAL/,/\/GO/d
+s/?RUNNUM/$runnum/g
+s/?ITER/$iter/g
+s/?OLDSOL/$oldsol/g
+s=?PATH=$ppath=g
+s/?JPERT/$jpert/g
+s/?NUMMT0/$num/g
+s/?UNCOUNT/$uncount/g
+$skip1
+$skip2
+$setwgt
+s/?VAR1/$var1/g" < $ppath/pepin/$name.peprun | $pep >pep.out
+if [ -f fort.95 ]
+then
+	mv fort.95 pep.msgs
+	echo 'see pep.msgs'
+fi

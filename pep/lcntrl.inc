@@ -1,0 +1,5 @@
+C           CONTROL CONSTANTS FOR LEAST SQUARES ADJUSTMENT OF VARIABLES
+C           IN /PARAM/ AND /EMPCND/ LABELED COMMONS
+      COMMON/LCNTRL/ LPRM(u_nmprm),LEM(u_nmbod),LMN(u_nmbod),
+     1 LER(u_nmbod),LMR(u_nmbod),LPL(u_nmbod,u_mxpl)
+      INTEGER*2 LPRM,LEM,LMN,LER,LMR,LPL

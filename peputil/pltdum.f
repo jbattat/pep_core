@@ -1,0 +1,4 @@
+      SUBROUTINE NEWPLT
+      ENTRY ENDPLT
+      RETURN
+      END

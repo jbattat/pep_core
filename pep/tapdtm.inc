@@ -1,0 +1,3 @@
+C           INTEGRATION DATA FROM MOON TAPE
+      COMMON/WRKCOM/ MOON(6,i_mxplprt+1,24)
+      REAL*10 MOON

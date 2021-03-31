@@ -1,0 +1,6 @@
+C           PLOT AXIS LABELS                                            =
+      COMMON/PLTLAB/ XLAB,YLAB,PTITLE,LLX,LLY,LLT,THGT,NAMOB
+      CHARACTER*32 XLAB,YLAB
+      CHARACTER*88 PTITLE
+      REAL*4 THGT
+      INTEGER*4 LLX,LLY,LLT,NAMOB

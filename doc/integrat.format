@@ -1,0 +1,120 @@
+                      Integration tape format
+
+Revisions:
+2011/4/8  - all R*8 promoted to R*10, new NPRMX and NCNMX
+            (R*10, denoted R*A below, occupies 16 bytes in files and in
+             memory)
+ 
+Most variables are described in BODRED.  PLNHED has a table for
+converting the names here to BODRED names.
+ 
+-----------------------------  Record 1  -------------------------------
+ 
+NAME(2)     - C*4 - Name of integrated body
+HEDING(18)  - C*4 - Title from integration runstream
+DATE(2)     - C*4 - Date of integration run (mm/dd/yy)
+LNKLVL      - C*4 - Version of PEP which wrote the tape (characters),
+                    may be absent from older tapes
+ 
+-----------------------------  Record 2  -------------------------------
+ 
+NPLNT       - I*2 - Planet number
+NCENTR      - I*2 - Central body number
+IPARP       - I*2 - 1 + number of partials
+INTP        - I*2 - Tabular interval is INTP days if INTP > 0, else
+                    2**INTP days
+JDP1        - I*4 - Julian day number of first data record on tape
+JDP0        - I*4 - Epoch of integration i.c.'s
+JDP2        - I*4 - Julian day number of last data on tape (not updated
+                    if integration is restarted, may be updated by
+                    routines which copy integrations)
+NPRMX       - I*4 - number of solar-system parameters (always 100 for now)
+NCNMX       - I*4 - number of body parameters (always 30 for now)
+COND(6)     - R*A - Initial conditions, meaning depends on value of ICND
+CON(24)     - R*A - Adjustable parameters for integrated body
+CON1(12)    - R*A - Non-adjustable parameters for integrated body
+PRMTER(100) - R*A - Solar system parameters
+EPSP(6)     - R*4 - Fraction of a day for start and stop times, startup
+                    accuracy tolerance (see BODRED)
+KP(100)     - I*2 - K array in BODRED, old format if NUMKI = 0
+NPAGE       - I*4 - Page number
+ITERAT      - I*4 - Iteration number
+ICND        - I*2 - Code giving meaning of COND's, described in BODRED
+INTP1       - I*4 - Starting fraction of a day for initial epoch JD0
+INTP2       - I*4 -   is INTP1*(2**INTP2), -30 < INTP2 < 0
+IHRP        - I*2 - Initial epoch (measured from midnight on JD0) hour,
+IMINP       - I*2 -   minute, and
+SECP        - R*A -   second, converted internally to INTP1, INTP2 which
+                      are actually used
+KKP(100)    - I*2 - KK array in BODRED
+IFILTR      - I*4 - 1 if Kalman-Bucy filter used, 0 if not
+LNKLVL      - C*4 - PEP level (characters)
+ 
+- - - - - - - - - - - - - -  before PEP730 - - - - - - - - - - - - - -
+ 
+ZERO                800 bytes of zeroes
+ 
+- - - - - - - - - - - -  PEP 730 to 770 - - - - - - - - - - - - - - -
+ 
+NUMKI       - I*2 - actual dimension of KI
+KI(100)     - I*2 - KI array in BODRED
+ZERO                1200 bytes of zeroes
+ 
+- - - - - - - - - - - -  PEP 780 and later  - - - - - - - - - - - - - -
+ 
+NUMKI       - I*2 - actual dimension of KI
+KI(100)     - I*2 - KI array in BODRED
+NPARITR     - I*2 - actual number of target or central bodies with
+                    iterated indirect partials
+NPARIT1     - I*2 - max(NPARITR,1), used for implied DO
+NPARPL(n)   - I*2 - array of planet numbers for above target or central
+                    bodies, where n=NPARIT1
+ZERO                1200 bytes of zeroes
+ 
+---------------------------  Data records  -----------------------------
+     (for NCENTR=0 or K(88) > 0 which force fixed tabular output)
+ 
+JD          - I*4 - Julian day number of data at first tabular point
+FRACT       - R*A - Fraction of a day from midnight beginning this day
+IVL         - I*4 - First dimension of array planet, 3 if only
+                    coordinates, 6 if also velocities
+PLANET(IVL,IPARP,5 or 8) - R*A - Coordinates and partials, 8 tabular
+                    points per record for the moon, 5 for all other
+                    bodies
+ 
+- - - - - - - - - - - - - -  Moon only  - - - - - - - - - - - - - - - -
+ 
+| PSI(8)    - R*4 - Nutation in longitude of the earth (radians)
+| EPS(8)    - R*4 - Nutation in obliquity of the earth (radians)
+LIBRAT(8,3) - R*4 - Physical libration of the moon, second index
+                    varies most rapidly
+ 
+---------------------------  Data records  -----------------------------
+ (for NCENTR=-1 or >0 and K(88)=0 which force variable tabular output)
+ 
+JD          - I*4 - Julian day number of data at first tabular point
+FRACT       - R*A - Fraction of a day from midnight beginning this day
+IORD        - I*4 - Order of highest time derivative + 1 for motion
+JORD        - I*4 - Order of highest time derivative + 1 for partials
+NUMPRT      - I*4 - Number of partials on tape
+NUMPT1      - I*4 - NUMPRT if NUMPRT > 0, else 1
+SPRB(3,IORD)  R*A - Position, velocity, acceleration, jerk, ...
+DSPRB(3,JORD,NUMPT1) - R*A - similar to SPRB for partials, last
+                    subscript indexes parameters
+HC1         - R*A - Time from previous tabular point to this one
+HC2         - R*A - Time to next tabular point
+ZERO                720 bytes of zeroes
+ 
+-----------------  Filter header/trailer records  ----------------------
+Present if IFILTR non-zero (must be variable tabular output).  At the
+end of each block are three points with dates beyond the current span.
+At the beginning of each block except the first are a variable number
+of points with dates before the current span.
+ 
+TPREV       - R*A - Julian date of start of previous filter span
+TTHIS       - R*A - Julian date of start of immediately following filter
+                    span
+TNEXT       - R*A - Julian date of start of nextfilter span
+IEPOCH      - I*4 - Epoch number
+NLFLAG      - I*4 - 1 for last header/trailer record, 0 otherwise
+NRCFIL      - I*4 - Number of tabular points in previous span

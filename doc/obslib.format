@@ -1,0 +1,218 @@
+                         OBSLIB tape format
+
+Variable names as in OBSIO common blocks T1A, T2A, T3A AND T4A; variable
+order the same as in obslib records.  Type 2, 3 and 4 records are also
+padded with zeroes for future expansion.
+
+Revisions:
+2001/4/16 - new exo-planets NAA,NBA,NMPEXA,NPLEXA,LPEXA
+2009/8/19 - expansion of site arrays, new NSITCA, T0SITA
+2011/4/8  - all R*8 promoted to R*10, new NPRMXA and NCNMXA
+            (R*10, denoted R*A below, occupies 16 bytes in files and in
+             memory)
+--------------------------  Type 1 record  ----------------------------
+ 
+R1A(11)     - C*8 - 88 character title, first 8 characters indicate
+                    which routine wrote the tape, last 8 are date
+LNKLVA      - C*4 - Level of PEP (or whatever) used to write obslib
+                    (characters), not present on older tapes
+ 
+--------------------------  Type 2 record  ----------------------------
+ 
+NTAPA       - I*4 - NTAPE value
+NPG2A       - I*4 - page number
+ITRTA       - I*4 - iteration number
+NPRMXA      - I*4 - dimension of PRMA and LPRMA arrays, now 100
+NCNMXA      - I*4 - dimension of GSCNA, LGSA, PLCNA, etc., now 30
+JDGS0A(4)   - I*4 - JD0's for embary, moon, erotat and mrotat
+PRMA(100)   - R*A - solar system parameters (masses, etc)
+GSCNA(30,4) - R*A - COND's and CON's for embary, moon, erotat and mrotat
+LPRMA(100)  - I*2 - LPRM vector indicating which solar system parameters
+                    have partials on tape
+LGSA(30,4)  - I*2 - L vectors for embary, moon, erotat and mrotat
+                    indicating which parameters have partials on tape
+NUMDTA      - I*2 - number of DT epochs
+NMDT1A      - I*2 - actual dimension of JDDTA, DTA and LDTA (for read)
+JDDTA(600)  - I*4 - dates for DT parameters
+DTA(600)    - R*4 - DT parameters (ET-UT2 if NMDTA=NMDT1A, else A1-UT1
+                    and wobble in DT(I), DT(I+200) and DT(I+400); older
+                    tapes may increment by 100 rather than 200
+LDTA(600)   - I*2 - L vector for DT parameters indicating which have
+                    partials on tape
+NLABA       - I*4 - actual dimension of LABA
+LABA(20)    - C*4 - title for correlated observation run if any
+JDDT0A      - I*4 - DT type flag (see DTCHCK)
+LNKLVA      - C*4 - Level of PEP (or whatever) used to write obslib
+                    (characters)
+NSITCA      - I*4 - actual dimension of site coordinate arrays (3 or 6)
+
+--------------------------  Type 3 record  ----------------------------
+ 
+NSEQA       - I*4 - series sequence number, zero here means end of
+                    obslib
+NCODFA      - I*2 - observation type code, see IOBS card description
+                    in PRMRED
+NPLNTA      - I*2 - obseved body number
+RITA        - C*8 - receiving site name
+SERA        - C*4 - series name (characters), used to assign biases
+SITA        - C*8 - sending site name
+SPOTA       - C*4 - name of first observed spot
+ERWGTA(2)   - R*4 - overriding error weight for entire series (from
+                    DLTRED cards)
+ACCTMA      - R*4 - accuracy parameter for light time iteration
+FDEVA       - R*4 - fractional offset in units of 10**-10 from A.1 time
+                    of unit of time used in time delay measurement
+FREQA       - R*A - nominal transmitter frequency for series
+ITIMA       - I*2 - code for time in observation series, see ITIME in
+                    COMPAR or DLTRED;  ITIMA=5 for normal points
+NREWA       - I*2 - code indicating which tapes are to be rewound at
+                    start of series, see COMPAR or DLTRED
+NPG3A       - I*4 - page number
+PNAMA       - C*8 - observed planet name if any
+NCENTA      - I*2 - central body of numerical integration
+JDPL0A      - I*4 - JD0 for major planet
+PLCNA(30)   - R*A - COND's and CON's for major planet
+LPLA(30)    - I*2 - L vector for PLCNA
+JDSB0A      - I*4 - JD0 for observed satellite or probe
+SBCNA(30)   - R*A - COND's and CON's for observed satellite or probe
+LSBA(30)    - I*2 - L vector for SBCNA
+LSCRDA(6,2) - I*2 - L vector for site coordinates
+NRBSA       - I*2 - number of radar bias in list
+RBSA(2)     - R*4 - radar biases for delay(sec), doppler(Hz) measurement
+LRBSA(2)    - I*2 - L vector for radar biases
+NEQNA       - I*2 - number of equator-equinox correction in list
+EQNA(3)     - R*4 - equator-equinox corrections (clock polynomial
+                    coefficients in radar and radio observations)
+LEQNA(3)    - I*2 - L vector for equator-equinox corrections
+NCPHA       - I*2 - number of phase correction terms
+APHSA(9)    - R*4 - phase correction polynomial coefficients or
+                    planetary atmosphere parameters
+LPHSA(9)    - I*2 - L vector for phase corrections
+NOBCNA      - I*2 - actual dimension of OBCNA
+OBSCNA(24)  - R*A - non-adjustable constants for observation series (see
+                    RADAR)
+SCORDA(6,2) - R*A - site coordinates
+KSITEA(2)   - I*2 - type of site coordinates (see SITRED), or which
+                    planet if > 0 in which case spherical coords assumed
+SPCDA(3)    - R*A - observed spot coordinates (spherical)
+LSPCDA(3)   - I*2 - L vector for spot coordinates
+NCZNEA      - I*2 - order of zonal harmonics for central body - 1
+N2A         - I*2 - actual dimension of LCZHRA
+LCZHRA(24)  - I*2 - L vector for zonal harmonics of central body
+NCTSSA      - I*2 - order of tesseral harmonics for central body - 1
+N3A         - I*2 - actual dimensions of LCCHRA and LCSHRA
+LCCHRA(209) - I*2 - L vector for cosine tesseral harmonics
+LCSHRA(209) - I*2 - L vector for sine tesseral harmonics
+NUMTRA      - I*2 - number of target bodies
+N4A         - I*2 - actual (last) dimension of NTRGA, LTBODA, NTZNEA,
+                    LTZHRA, NTTSSA, LTCHRA and LTSHRA
+NTRGA(11)   - I*2 - planet numbers of target bodies
+LTBODA(30,11) I*2 - L vectors for target bodies
+NTZNEA(11)  - I*2 - order of target body zonal harmonics - 1
+LTZHRA(4,11)- I*2 - L vectors for target body zonal harmonics
+NTTSSA(11)  - I*2 - order of target body tesseral harmonics
+LTCHRA(5,11)- I*2 - L vectors for target body cosine tesseral harmonics
+LTSHRA(5,11)- I*2 - L vectors for target body sine tesseral harmonics
+N5A         - I*2 - actual (last) dimension of SCNAMA, LSCA, JDSC0A and
+                    SCCNA
+N6A         - I*2 - actual (first) dimension of LSCA and SCCNA (see also
+                    NCNMXA above, which should be an upper bound of N6A)
+SCNAMA(2)   - C*8 - observing spacecraft name(s) or second observed body
+LSCA(30,2)  - I*2 - L vector for SCCNA
+JDSC0A(2)   - I*4 - JD0 for SCCNA
+SCCNA(30,2) - R*A - COND's and CON's for observing body
+ 
+    Fourier and grid shape models use same space as spherical
+        harmonic shape model but allocate it differently
+ 
+NSZNEA      - I*2 - number of zonal harmonics for spherical harmonic
+                    shape model
+N7A         - I*2 - actual dimension of LSZHAR
+LSZHRA(24)  - I*2 - L vector for zonal harmonics of shape model
+NSTSSA      - I*2 - number of tesseral harmonics for spherical harmonic
+                    shape model
+N8A         - I*2 - actual dimensions of LSCHRA and LSSHRA
+LSCHRA(209) - I*2 - L vectors for cosine tesseral harmonics of spherical
+                    harmonic shape model
+LSSHRA(209) - I*2 - L vectors for sine tesseral harmonics of spherical
+                    harmonic shape model
+NPLN2A      - I*2 - planet number of second observed body
+SPOT2A      - C*4 - name of second observed spot
+SPCD2A(3)   - R*A - coordinates of second observed spot
+LSPC2A(3)   - I*2 - L vector for second observed spot
+FREQ2A      - R*A - receive frequency for second observed body
+LEMMNA(6)   - I*2 - L vector for EMBARY i.c.'s on moon tape
+NEXTA       - I*4 - actual second dimension of EXNMSA
+EXNMSA(2,200) C*8 - names of extra partials for correlated observations
+LNGDA       - I*2 - number of grid points in grid point shape model
+LNFORA      - I*2 - number of coefficients in Fourier shape model
+CTLGA       - C*8 - star catalog name
+NSKYCA      - I*2 - number of terms in star catalog error model
+                    (a multiple of 4)
+LSKYA(80)   - I*2 - L vector for star catalog error model
+N9A         - I*2 - actual dimension of LPSRCA
+LPSRCA(16)  - I*2 - L vector for pulsar parameters
+NMPEXA      - I*2 - number of exo-planets
+NAA         - I*2 - actual last dimension of NPLEXA and LPEXA
+NBA         - I*2 - actual first dimention of LPEXA (bounded by NCNMXA)
+NPLEXA(10)  - I*2 - planet numbers of exo-planets
+LPEXA(30,10)- I*2 - L vectors for exo-planets
+T0SITA(2)   - R*A - reference epochs for site positions
+
+--------------------------  Type 4 record  ----------------------------
+ 
+NCODEA      - I*2 - observation type code, see IOBS card description in
+                    PRMRED; zero here means type 3 record (or possibly
+                    end of file) next
+IHRA        - I*2 - hour of observation (WWV)
+IMINA       - I*2 - minute of observation (WWV)
+SECA        - R*4 - second of observation (WWV)
+RESLTA(2)   - R*A - observed values, or range and maximum codelength
+ERRORA(2)   - R*4 - error bars for RESLTA, not including overrides from
+                    DLTRED cards
+ATUTSA      - R*A - A.1 - observation time (UTC or UT2 depending on
+                    value of ITIMA)
+UTUTSA      - R*4 - UT1 - observation time (UTC or UT2 depending on
+                    value of ITIMA)
+CLAMPA      - C*2 - obsolete for most, set to blank; event number for
+                    transit/occultation observations (I*2)
+LIMBA(2)    - C*2 - code for which edge of planet observed for transit
+                    across meridian (see LMBCOR)
+OBSRVA      - C*2 - observers initials for optical observations; site
+                    number for transit/occultation observations (I*2)
+IMNTHA      - I*2 - month of observation (WWV)
+IDAYA       - I*2 - day of observation (WWV)
+IYEARA      - I*2 - last 2 digits of year of observation (WWV); century
+                    is coded by ITIMA in type 3 record
+JDSA        - I*4 - Julian day number of observation
+JDA         - I*4 - Julian day number of observation after conversion
+                    to CT
+CTATA       - R*A - CT - AT
+CTRECA      - R*A - CT fraction of a day for observation, goes with JDA
+NSAVA       - I*2 - actual dimension of SAVA
+SAVA(100)   - R*A - various saved quantities, see OBSRED
+NUM1A       - I*2 - actual second dimensions of DERIVA and DVXA
+NUMPRA      - I*2 - actual first dimension of DERIVA (200 max for
+                    modules older than PEP732)
+DERIVA(296,2) R*A - sigma (including overrides by DLTRED cards),
+                    residual and observable partials
+ILDT1A      - I*2 - pointer into DT array for preceeding epoch for
+                    A1-UT1 or ET-UT2
+ILDT2A      - I*2 - pointer into DT array for following epoch for
+                    A1-UT1 or ET-UT2
+ILDT3A      - I*2 - pointer into DT array for preceeding x-wobble point
+ILDT4A      - I*2 - pointer into DT array for following x-wobble point
+ILDT5A      - I*2 - pointer into DT array for preceeding y-wobble point
+ILDT6A      - I*2 - pointer into DT array for following y-wobble point
+NXPA        - I*2 - actual first dimension of DVXA
+DVXA(200,2) - R*A - partials for correlated observable, analogous to
+                    DERIVA
+NCALA       - I*2 - actual dimensions of CALA, SCALA and ICALA
+CALA(100)   - R*4 - various calibrations and corrections, see PROPCO
+SCALA(100)  - R*4 - sigmas for CALA
+ICALA(100)  - I*2 - ranks of calibrations
+SUMCRA(2)   - R*4 - sum of corrections applied to delay and rate
+LNSHBA      - I*2 - actual dimension of LSHOBA
+LXSHPA      - I*2 - pointer into DERIVA array for start of grid model
+                    partials
+LSHOBA(4)   - I*2 - indices of grid points bracketing this observation

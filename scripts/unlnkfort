@@ -1,0 +1,14 @@
+#!/bin/csh
+# Move a list of obslibs from Fortran units 60, 61, etc.
+if (-d $1/newdata) then
+    set peppath=$1
+    shift
+else
+    echo No path for unlnkfort, assuming home.
+    set peppath=$HOME
+endif
+set unit=60
+foreach name ($*)
+	mv $peppath/fort.$unit $peppath/newdata/$name.obslib
+	@ unit++
+	end

@@ -1,0 +1,293 @@
+#!/bin/sh
+echo PEPINT - INTEGRATE A BODY OR SET OF BODIES - $1
+# Syntax:   pepint <name> [-ipert <n>] [-iter <ext>] [-pep <pgm>]
+#		[-jd0 <date>] [-jd1 <date>] [-jd2 <date>] [-jpert <n>] [-noind]
+#		[-nopart] [-run <ident>] [-path <path>] [-long] [-short]
+#		[-var1 <value>] [-nprm1 <value>] [-nplnt <n>]
+#		[-ic/-ss/-bod/-har <stuff>/-pic <n>/-cic/-cbod] [-lock <n>]
+#		[-insprm <blah>] [-insert <blah>] [-f10 <file>] [-notrg]
+# defaults:     ('-----' means no default)
+# name:		# first part of file name - $ppath/pepin/<name>.peprun
+  f10=''	# name of file to link as fort.10 (and suppress nbody loop)
+  iter=lock5	# file extension of I.C.'s to use
+  jd1=2440001	# earliest point of integration
+  jd0=2440001	# starting epoch of integration (none if 0)
+  jd2=2462900	# date to end integration
+  ipert=90	# set to 0 to skip input nbody, 91 for nbody.temp, 92 for moon
+  insert=''	# additional arbitrary string to insert in run stream (BODRED)
+  insprm=''	# arbitrary string to insert for PRMRED
+  jpert=0	# set nonzero to use perturbing sat tape
+  lock=0	# parameter number that must be tied in some way
+  nplnt=0	# link integs in newephem for all but nplnt if not 0
+#	defaults for nplnt if name=mrcryint,etc. NO links to newephem if -noind
+  long='$NO'	# '' = use integration past 2020 ("-long"), '$NO' = don't
+# noind:  	# suppress reading of indirect partials from tape in newephem
+# nopart:	# suppress integrating partial derivatives
+# notrg:	# suppress target bodies, i.e., indirect partials terms
+  pep=pep	# version of PEP to execute
+  ppath="/Users/fanzhini/alt"	# path to input files: data/ ephem/ pepin/
+#if [ "$HOST" != titan -a "$HOST" != mars ]; then ppath="/home/chandler/alt"; fi
+  var1=0	# some value to specify
+  nprm1=1	# a parameter number to go with var1
+  ptype='-'	# type of parameter used for partials test
+# runnum:	# optional override for normal next run number
+  short='$NO'	# '' = use integration only to 2000 ("-short"), '$NO' = don't
+# End of description
+  nojd1="/ REMOVE IF NO JD1/d"
+  npic=''	# planet whose IC partial is checked (not integrated body)
+  ind='/1ST ITER ONLY/d'
+other=''
+foo=name
+for i
+do
+	case $i in
+## SPECIAL
+	-bod*) ptype=BOD; foo=other ;;
+	-cbod*) ptype=CBOD; foo=other ;;
+	-cic*) ptype=CIC; foo=other ;;
+	-f10) foo=f10 ;;
+	-har*) htype='-----'; ptype=HAR; foo=htype ;;
+	-ic*) ptype=IC; foo=other ;;
+	-insp*) foo=insprm ;;
+	-inse*) foo=insert ;;
+	-ip*) foo=ipert ;;
+	-iter) foo=iter ;;
+	-jd0) foo=jd0 ;;
+	-jd1) foo=jd1; nojd1="" ;;
+	-jd2) foo=jd2 ;;
+	-jp*) foo=jpert ;;
+	-lock) foo=lock ;;
+	-long) long=''; short='$NO'; foo=other ;;
+	-noind) foo=other; ind='' ;;
+	-nop*) foo=other; nopart='s/\$ END OF INTEGRATED PARTIALS/ KI=0,6*-1,90*0  $NO PARTIALS INTEGRATED/g' ;;
+	-notrg) foo=other; notrg='/\$ TARGET BODIES/d' ;;
+	-npl*) foo=nplnt ;;
+	-nprm1) foo=nprm1 ;;
+	-path) foo=ppath ;;
+	-pep) foo=pep ;;
+	-pic) npic='-----'; ptype=PIC; foo=npic ;;
+	-run*) foo=runnum ;;
+	-short) short=''; long='$NO'; foo=other ;;
+	-ss*) ptype=SS; foo=other ;;
+	-var1) foo=var1 ;;
+#
+	-[a-z]*) foo=other ; badopt=$i ;;
+	*) eval "$foo=\$i" ;;
+	esac
+	done
+if [ "$badopt" != '' ]
+then
+	echo "$0: $badopt not recognized"
+	exit
+fi
+if [ "$other" != '' ]
+then
+	echo "$0: value $other not allowed"
+	exit
+fi
+if [ "$name" = "" ]
+then
+	sed '/^# End of description/q' $0
+	exit
+fi
+if [ "$ppath" = "~" ]
+then
+	ppath="$HOME"
+fi
+## SPECIAL
+for i in ipert iter jd0 jd2 jpert var1 htype
+#
+do
+	eval "foo=\$$i"
+	if test "$foo" = "-----"
+	then
+		echo -n "$i: "
+		read $i
+		eval "foo=\$$i"
+		case $foo in
+			!) exit 1 ;;
+			\?) sed -n "/$i: /p
+				/ $i=/p" $0 ; echo -n "$i: " ; read $i ;;
+		esac
+	fi
+done
+#
+rm -f fort.*
+## SPECIAL
+if [ -f $ppath/halt ]
+then
+	exit
+fi
+if [ "$runnum" = "" ]
+then
+	runnum=`runnum int`
+	echo New run number is $runnum.
+fi
+if [ $ipert != 0 ]
+then
+	version=nbody740
+	if [ $iter = mod ]
+	then
+		version=nbody750
+	elif [ $iter = mod2 ]
+	then
+		version=nbody752
+	elif [ $iter = mod3 ]
+	then
+		version=nbody753
+	elif [ $iter = mod4 ]
+	then
+		version=nbody754
+	elif [ $iter = mod5 ]
+	then
+		version=nbody755
+	fi
+	if [ "$long" = "" ]
+	then
+		nbdy=$version.2100
+	elif [ "$short" = "" ]
+	then
+		nbdy=$version.2000
+	else
+		nbdy=$version.2020
+	fi
+	if [ $ipert = 91 ]
+	then
+		nbdy=nbody.temp
+	elif [ $ipert = 92 ]
+	then
+		nbdy=moon.allpart
+	fi
+	ln -s $ppath/ephem/$nbdy fort.$ipert
+	if [ $ipert = 92 ]
+	then
+		ipert="0,IPERT2=$ipert"
+	fi
+fi
+if [ $jpert != 0 ]
+then
+	ln -s $ppath/ephem/sbody.e3 fort.$jpert
+fi
+if [ $lock != 0 ]
+then
+	rlock="s/?LOCK/$lock/g"
+else
+	rlock="/?LOCK/d"
+fi
+if [ $nplnt = 0 ]
+then
+	case $name in
+	mrcryint) nplnt=1;;
+	venusint) nplnt=2;;
+	embryint) nplnt=3;;
+	marsint) nplnt=4;;
+	jupint) nplnt=5;;
+	satrnint) nplnt=6;;
+	uranint) nplnt=7;;
+	neptint) nplnt=8;;
+	moonint) nplnt=10;;
+	moonintc) nplnt=10;;
+	moonintx) nplnt=10;;
+	esac
+fi
+if [ $nplnt != 0 -a "$ind" != "" ]
+then
+	for i in 1 2 3 4 5 6 7 8
+	do
+		if [ $i != $nplnt ]
+		then
+			cx1=mercury;cx2=venus;cx3=embary;cx4=mars;cx5=jupiter
+			cx6=saturn;cx7=uranus;cx8=neptune
+			eval "inint=\$cx$i"
+			ln -s $ppath/newephem/$inint.allpart fort.1$i
+		fi
+	done
+	if [ 10 != $nplnt ]
+	then
+		ln -s $ppath/newephem/moon.allpart fort.20
+	fi
+fi
+nprmx=$nprm1
+if [ $ptype = CBOD -o $ptype = BOD ]
+then
+	cx1=07;cx2=08;cx3=09;cx4=10;cx5=11;cx6=12;cx7=13;cx8=14;cx9=15
+	cx10=16;cx11=17;cx12=18;cx13=19;cx14=20;cx15=21;cx16=22
+	cx17=23;cx18=24;cx19=25;cx20=26;cx21=27;cx22=28;cx23=29;cx24=30
+	eval "nprmx=\$cx$nprm1"
+elif [ $ptype = CIC -o $ptype = IC -o $ptype = PIC ]
+then
+	nprmx=0$nprm1
+elif [ $ptype = HAR ]
+then
+	cx3=ZH;cx4=CH;cx5=SH
+	eval "harvar=\$cx$htype"
+	if [ $htype = 3 ]
+	then
+		cx1=2;cx2=3;cx3=4;cx4=5;cx5=6;cx6=7;cx7=8;cx8=9;cx9=10
+	else
+		cx1='2,1';cx2='2,2';cx3='3,1';cx4='3,2';cx5='3,3';cx6='4,1'
+		cx7='4,2';cx8='4,3';cx9='4,4';cx10='5,1';cx11='5,2'
+		cx12='5,3';cx13='5,4';cx14='5,5'
+	fi
+	eval "tess=\$cx$nprm1"
+
+fi
+nonmoon='s/ NONMOON-//'
+if [ $ptype = SS ]
+then
+	if [ $nprm1 = 11 -o $nprm1 = 14 -o $nprm1 = 34 -o $nprm1 = 35 -o $nprm1 = 36 -o $nprm1 = 37 -o $nprm1 = 38 -o $nprm1 = 40 -o $nprm1 = 49 -o $nprm1 = 50 ]
+	then
+		nonmoon='/ SKIP IF NONMOON-/d'
+	fi
+fi
+if [ "$f10" == '' ]
+then
+	nbloop=''
+else
+    nbloop='1,/   END OF NBODY LOOP/d'
+    ln -s $ppath/$f10 fort.10
+fi
+if [ `grep -c 'moved to 2455001' $ppath/pepin/embary.$iter` == 1 -a $jd0 == 2440001 ]
+then
+	jd0=2455001
+fi
+(echo "export HOME; HOME=$ppath"
+sed -n "/\/SPECIAL/,/\/GO/p" < $ppath/pepin/$name.peprun | sed "/\/SPECIAL/d
+/\/GO/d
+s=?PATH=$ppath=g") | sh
+sed "/\/SPECIAL/,/\/GO/d
+s/?RUNNUM/$runnum/g
+s/?INSERT/$insert/g
+s/?INSPRM/$insprm/g
+s/?IPERT/$ipert/g
+s/?JPERT/$jpert/g
+s/?ITER/$iter/g
+s=?PATH=$ppath=g
+$nojd1
+$ind
+$nopart
+$notrg
+$rlock
+$nonmoon
+$nbloop
+s/ NPL NOT $npic-//
+s/ TYPE NOT $ptype-//
+/ SKIP IF NPL NOT /d
+/ SKIP IF TYPE NOT /d
+s/ SKIP IF//g
+s/?HARVAR/$harvar/g
+s/?HTYPE/$htype/g
+s/?TESS/$tess/g
+s/?NPIC/$npic/g
+s/?PTYPE/$ptype/g
+s/?NPRM1/$nprm1/g
+s/?NPRMX/$nprmx/g
+s/?VAR1/$var1/g
+s/?JD2/$jd2/g
+s/?JD1/$jd1/g
+s/?JD0/$jd0/g" < $ppath/pepin/$name.peprun | $pep >pep.out
+if [ -f fort.95 ]
+then
+	mv fort.95 pep.msgs
+	echo 'see pep.msgs'
+fi

@@ -1,0 +1,6 @@
+C           SPOTS ON OBSERVED BODIES
+      COMMON/SPTCRD/ SPOT(u_mxspt),SPCORD(3,u_mxspt),LSPCRD(3,u_mxspt),
+     1 NSPLNT(u_mxspt),NUMSPT
+      REAL*10 SPCORD
+      CHARACTER*4 SPOT
+      INTEGER*2 LSPCRD,NSPLNT,NUMSPT

@@ -1,0 +1,9 @@
+C           ALTERNATE ARRAYS FOR VARIABLE TABULAR INTERVAL
+      REAL*10 SPOVLY(90*i_mxeqn),SPRB(6,8,3),DSPRB(6,4,3,i_mxeqn-1),
+     1 HC1(6),HC2(6)
+      INTEGER*4 IORDER(6),JORDER(6),NUMPRT(6)
+      EQUIVALENCE (SATPRB(1,1,1),SPOVLY(1),SPRB(1,1,1)),
+     1 (SPOVLY(145),DSPRB(1,1,1,1)),(SPOVLY(72*i_mxeqn+73),HC1(1)),
+     2 (SPOVLY(72*i_mxeqn+79),HC2(1)),(SPOVLY(72*i_mxeqn+85),IORDER(1)),
+     3 (SPOVLY(72*i_mxeqn+88),JORDER(1)),
+     4 (SPOVLY(72*i_mxeqn+91),NUMPRT(1))

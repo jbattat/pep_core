@@ -1,0 +1,173 @@
+      SUBROUTINE HSTGRM(PLMODE,Y,N,K)
+C   SUBROUTINE HSTGRM - J.F.CHANDLER - 1978 OCTOBER
+C        PRINT HISTOGRAM OF DATA IN ARRAY Y
+      IMPLICIT NONE
+      INTEGER*4 PLMODE,N,K
+      REAL*4 Y(K,N)
+C
+C  PLMODE TYPE OF 'PLOTTING'
+C           0 IMMEDIATE
+C           1 1ST OF ONEAXE
+C           2 CONTINUING ONEAXE
+C           3 FINISH ONEAXE
+C  Y      DATA ARRAY R*4
+C  K,N    SIZE OF ARRAY I*4
+C
+C        COMMONS
+      include 'inodtabc.inc'
+      include 'graphs.inc'
+      include 'pltlab.inc'
+      include 'sortv.inc'
+      REAL*8 AL,AU
+      EQUIVALENCE (AL,SMINY),(AU,SMAXY)
+C
+C        LOCAL
+      CHARACTER*1 LBUF(100),LBFS(100), BLNK/' '/,STAR/'*'/,STRK/'|'/
+      INTEGER*2 IBX(60)
+      INTEGER*4 NBXMX/55/, LLB/100/, I,IL,IU,IMX,J,NPTS,NBX,IDIV,II,
+     . JT,NCUM,IB
+      REAL*8 DVT(10)/ .1D0, .2D0, 3*.5D0, 5*1D0 /
+      REAL*8 ARNG,CONV
+      REAL CONVI,SUM,SUMSQ,YI,RMS,GAUC,X,Y1,DY,GSCL,GAUD(60),PMX,
+     . DIV,DIVN,DVC,SUMDY
+      REAL ROOT2/1.414213/
+C
+      GAUC(X)=0.5*ERF((X-SUM)/RMS/ROOT2)
+C
+      IF(PLMODE-2) 10,80,140
+   10 NBX=NBOX
+      IF(NBX.GT.NBXMX) NBX=NBXMX
+      CALL SQALE(PLMODE,Y,N,K,0.,EXTRMY,SMINY,NBX)
+      IL=0
+      IU=0
+      ARNG=AU-AL
+      IF(ARNG.LE.0.) GOTO 500
+      IF(NBX.GT.1) GOTO 60
+      NBX=2
+      IF(SZBOX.LE.0.) GOTO 60
+      NBX=ARNG/SZBOX+0.5
+      IF(NBX.GT.NBXMX) NBX=NBXMX
+   60 CONTINUE
+      CONV=NBX/ARNG
+      DO 70 J=1,NBX
+   70 IBX(J)=0
+      NPTS=0
+      SUM=0.
+      SUMSQ=0.
+C        BUILD HISTOGRAM
+   80 DO 120 I=1,N
+      YI=Y(1,I)
+      IF(YI.LT.AL) THEN
+C OUT OF BOUNDS ON BOTTOM
+         IL=IL+1
+         YI=AL
+         IF(.NOT.OUTIN) GOTO 120
+      ELSE IF(YI.GT.AU) THEN
+C OUT OF BOUNDS ON TOP
+         IU=IU+1
+         YI=AU
+         IF(.NOT.OUTIN) GOTO 120
+      ELSE
+         NPTS=NPTS+1
+         SUM=SUM+YI
+         SUMSQ=SUMSQ+YI*YI
+      ENDIF
+      J=(YI-AL)*CONV
+      J=MIN0(J+1,NBX)
+      IBX(J)=IBX(J)+1
+  120 CONTINUE
+      IF(PLMODE.GT.0) RETURN
+C
+C        GET STATISTICS ON HISTOGRAM
+  140 CONTINUE
+      IMX=0
+      DO J=1,NBX
+         IF(IBX(J).GT.IMX) IMX=IBX(J)
+      END DO
+      IF(IMX.EQ.0) THEN
+         WRITE(PRINT,150) N,NBX
+  150    FORMAT(' *** NO HISTOGRAM.',I7,' POINTS IN',I3,' EMPTY BINS.')
+         RETURN
+      ENDIF
+C        PRINT HEADER INFO
+      CONVI=(LLB-1.)/IMX
+      PMX=IMX/FLOAT(N)
+      DIV=PMX*10.
+      I=1
+      DO WHILE (DIV.LE.1.)
+         DIV=DIV*10.
+         I=I+1
+      END DO
+      IDIV=DIV+.99999
+      DIV=DVT(IDIV)/1D1**I
+      WRITE(PRINT,170) N,IMX,PMX,DIV
+  170 FORMAT('1  *** HISTOGRAM OF',I7,' POINTS, MAX. BOX HAS',I6,' (=',
+     1 2PF6.2,'%), DIVISIONS AT',F6.2,'%')
+      IF(IL.GT.0.OR.IU.GT.0) WRITE(PRINT,180) IL,IU
+  180 FORMAT('  - - POINTS OUT OF BOUNDS: ',I7,' LOWER,',I7,' UPPER')
+      IF(NPTS.GT.0) THEN
+         SUM=SUM/NPTS
+         RMS=SQRT(SUMSQ/NPTS-SUM**2)
+         X=AL
+         YI=GAUC(X)
+         GSCL=NPTS/(GAUC(SNGL(AU))-YI)
+         SUMDY=0.
+         DO J=1,NBX
+            X=X+1./CONV
+            Y1=GAUC(X)
+            GAUD(J)=(Y1-YI)*GSCL
+            YI=Y1
+            DY=IBX(J)-GAUD(J)
+            IF(J.EQ.1 .AND. OUTIN) DY=DY-IL
+            IF(J.EQ.NBX .AND. OUTIN) DY=DY-IU
+            SUMDY=SUMDY+DY*DY
+         END DO
+         WRITE(PRINT,181) SUM,RMS,((SUMDY/NPTS)/NPTS)/NBX,
+     .    (GAUD(J),IBX(J),J=1,NBX)
+  181    FORMAT(' MATCHED TO A GAUSSIAN WITH MEAN=',1PE10.3,', RMS=',
+     .    E10.3,', WITH MEAN.SQ.DEV=',E10.3/(10(0PF8.1,I5)))
+      ENDIF
+      WRITE(PRINT,182) AL,AU
+  182 FORMAT('0 PLOT RANGE: ',1PD12.4,' TO',D12.4,77X,'N   CUM')
+C        SET UP BLANK LINE
+      DO I=1,LLB
+         LBFS(I)=BLNK
+      END DO
+      DIVN=DIV*N
+      DVC=0.
+  190 II=DVC*CONVI+1.5
+      LBFS(II)=STRK
+      DVC=DVC+DIVN
+      IF(DVC.LT.IMX) GOTO 190
+      WRITE(PRINT,193) LBFS
+  193 FORMAT(13X,100A1)
+      NCUM=0
+      YLAB(LLY+1:LLY+1)=BLNK
+      JT=1
+      DO J=1,NBX
+         DO I=1,LLB
+            LBUF(I)=LBFS(I)
+         END DO
+         II=IBX(J)*CONVI+1.5
+         IF(II.GE.2) THEN
+            DO I=2,II
+               LBUF(I)=STAR
+            END DO
+         ENDIF
+         IB=IBX(J)
+         NCUM=NCUM+IB
+         YI=AL+(J-.5)/CONV
+         WRITE(PRINT,220) YI,YLAB(JT:JT),LBUF,IB,NCUM
+  220    FORMAT(1PE10.2,1X,A1,1X,100A1,2I6)
+         IF(JT.LE.LLY) JT=JT+1
+      END DO
+      DO 250 J=JT,LLY
+      WRITE(PRINT,240) YLAB(J:J)
+  240 FORMAT(11X,A1)
+  250 CONTINUE
+      WRITE(PRINT,220)
+      RETURN
+  500 WRITE(PRINT,510) AL,AU
+  510 FORMAT('-* * NO RANGE OF DEPENDENT VARIABLE: ',1P,2D12.4)
+      RETURN
+      END

@@ -1,0 +1,24 @@
+* PEP installation
+The source code for PEP is contained in two zip files called pepf.zip
+(with all of the subroutines) and pepi.zip (with all other files,
+including this "readme" file).  Both zip files should be unzipped into
+the same directory, which should be called "pep".  To install, change
+to the pep directory and issue the commands "make new" and "make pep".
+If any source files are later modified, the updated PEP can be created
+by issuing just "make pep".
+
+* PEP MINIBOOK - documentation of PEP input controls
+The operation of PEP is controled by an input stream which is described
+in detail in the comments at the beginning of the relevant subroutines.
+The following is a list of the subroutines containing such comments,
+along with a note about the subject matter covered in each subroutine
+or group of subroutines.
+
+input                       input stream control
+perdta                      data set defaults
+prmred                      &nmlst1 input
+bodred,sitred,sptred        bodies, sites, spots
+rbsred,eqnred,phsred        observation bias input
+dltred                      data editing + dummy input
+multin,acmin,filtin,namprm  multi-run, apriori, filter input
+prmtrn                      multi-run, prereduction control

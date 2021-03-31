@@ -1,0 +1,16 @@
+#!/bin/csh
+# Link a list of saved normal equations to Fortran units 60, 61, etc.
+# 1st argument is the path, assumed to have "data" appended
+# the rest are names which must be complete, including extensions.
+if (-d $1/data) then
+    set peppath=$1
+    shift
+else
+    echo No path for lnkfort, assuming home.
+    set peppath=$HOME
+endif
+set unit=60
+foreach name ($*)
+	ln -s $peppath/data/$name fort.$unit
+	@ unit++
+	end

@@ -1,0 +1,18 @@
+#!/bin/csh
+# Link a list of obslibs to Fortran units 40, 41, etc.
+# 1st argument is the path, assumed to have "data" appended
+if (-d $1/data) then
+    set peppath=$1
+    shift
+else
+    echo No path for lnkfort, assuming home.
+    set peppath=$HOME/peptop
+endif
+set unit=40
+foreach name ($*)
+	ln -s $peppath/data/$name.obslib fort.$unit
+	@ unit++
+	end
+@ count=$unit - 40
+echo Linked $count obslibs for input.
+echo unlnkfort $peppath $*>stash

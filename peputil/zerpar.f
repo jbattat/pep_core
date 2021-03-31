@@ -1,0 +1,64 @@
+      SUBROUTINE ZERPAR(TYPE)
+      IMPLICIT NONE
+
+      include 'pepglob.inc'
+
+      INTEGER*4 TYPE
+C           REMOVES PARTIAL DERIVATIVES FROM OBSLIB TAPE RECORDS
+C           TO BE CALLED FOR EACH TYPE 2, 3, AND 4 RECORD BEFORE COPYING
+C           FOR USE WITH SUBROUTINE OBSIO
+C
+C        COMMON
+      include 't2a.inc'
+      include 't3a.inc'
+      INTEGER*4 ZLVECT/5054/
+      include 't4a.inc'
+      INTEGER*2 ILDT(6)
+      EQUIVALENCE (ILDT(1),ILDT1A)
+C
+      INTEGER*4 I
+C
+      GOTO (1000,2000,3000,4000), TYPE
+C
+C           TYPE 1 RECORD
+C              - - DO NOTHING
+C*  START=1000
+ 1000 GOTO 9990
+C
+C           TYPE 2 RECORD
+C              - - ZERO L-VECTORS
+C*  START=2000
+ 2000 DO 2010 I=1,NMPRM+4*NMBOD
+ 2010 LPRMA(I)=0
+      DO 2020 I=1,600
+ 2020 LDTA(I)=0
+      GOTO 9990
+C
+C           TYPE 3 RECORD
+C              - - ZERO MORE L-VECTORS, REMOVE TARGET BODIES
+C*  START=3000
+ 3000 CALL ZFILL(LSCRDA,ZLVECT)
+C           FIX "TRUE" COUNTERS
+      N2A=1
+      N3A=1
+      N4A=1
+      N7A=1
+      N8A=1
+      N9A=1
+      GOTO 9990
+C
+C           TYPE 4 RECORD
+C           - - CLEAR ILDT + GRID LISTS, NUMPAR
+C*  START=4000
+ 4000 DO 4010 I=1,6
+ 4010 ILDT(I)=0
+      DO 4020 I=1,4
+ 4020 LSHOBA(I)=0
+      LNSHBA=0
+      LXSHPA=0
+      NUMPRA=2
+      IF(NXPA.GT.2) NXPA=2
+C
+C*  START=9990
+ 9990 RETURN
+      END

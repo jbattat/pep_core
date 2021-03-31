@@ -1,0 +1,5 @@
+C           DATA SKIPPING CONTROLS                                      =
+      COMMON/SKIP/ DTMIN,DTMAX,NTH,NOPART,NTHBEG
+      REAL*8 DTMIN,DTMAX
+      INTEGER*4 NTH,NTHBEG
+      LOGICAL*4 NOPART

@@ -1,0 +1,290 @@
+#!/bin/sh
+echo PEPOBS - PERFORM O-C RUN OR FORM NORMAL EQUATIONS - $1
+# Syntax:   pepobs <name> [-num <n>] [-iter <name>] [-dt <source>] [-pep <pgm>]
+#		[-iobs <num>] [-merc] [-venus] [-mars] [-jup] [-moon]
+#		[-path <path>] [-jpert <n>] [-long] [-short] [-noint]
+#		[-var1 <value>] [-nprm1 <value>] [-nprmx <value>]
+#		[-var2 <value>] [-nprm2 <value>] [-sol <oldsol>] [-ppr]
+#		[-qcop / -pcop <value>] [-input <name>] [-lock <n>]
+#		[-ic/-ss/-bod/-har <x>/-cic/-cbod/-sit/-spt/-emb/-bias/-embic/-pic/pbod <n>]
+# defaults:     ('-----' means no default)
+# name:		# first part of file name - $ppath/pepin/<name>.peprun
+  body='.'	# text string for planet, if specified
+  dt=pep	# part of name of ut1 and wob files, e.g., ut1xxx.data
+  earth='/ EARTH-ONLY:/,/ END EARTH-ONLY/d'
+  input=natdum	# 1st part of name of input obslib to be allocated in /SPECIAL/
+  iobs=0	# unit number of input obs cards, if any
+  int=''	# '' = do integration first, if set up. '$NO' = don't
+  iter=lock5	# group of include files
+  jpert=0	# perturbing small-body data set
+  jup='/ JUPITER-ONLY:/,/ END JUPITER-ONLY/d'
+  lock=0	# parameter number that must be tied in some way
+  long='$NO'	# '' = use integration past 2020 ("-long"), '$NO' = don't
+  mars='/ MARS-ONLY:/,/ END MARS-ONLY/d'
+  merc='/ MERCURY-ONLY:/,/ END MERCURY-ONLY/d'
+  moon='/ MOON-ONLY:/,/ END MOON-ONLY/d'
+  num='-----'	# number of input obslibs
+  oldsol=''	# restore saved solution sol.XXX in this run
+  pcop=1	# redo partials. set to -3 to copy partials
+  pep=pep	# version of PEP to execute
+  ppath="~/alt4"	# path to input files: data/ ephem/ pepin/
+#if [ "$HOST" != titan -a "$HOST" != mars ]; then ppath="/home/chandler/alt"; fi
+  ppr='/RESTORE PPR SOLUTION/d' # normally don't include prereduced solution
+  nprm1=1	# a parameter number to go with var1
+  nprmx=1	# a variant of nprm1 to count from 7 with leading zeroes
+  cbodtst='$NO'	# '' = test cross parameter partial, '$NO' = don't
+  cictst='$NO'	# '' = test cross IC partial, '$NO' = don't
+  embtst='$NO'	# '' = test emb parm partial, '$NO' = don't
+  eictst='$NO'	# '' = test emb IC partial, '$NO' = don't
+  ictst='$NO'	# '' = test IC partial, '$NO' = don't
+  bodtst='$NO'	# '' = test body parameter partial, '$NO' = don't
+  hartst='$NO'	# '' = test harmonic coeff partial, '$NO' = don't
+  sstst='$NO'	# '' = test solar-sys partial, '$NO' = don't
+  ptype=''	# type of parameter used for partials test
+# runnum:	# optional override for normal next run number
+  short='$NO'	# '' = use integration only to 2000 ("-short"), '$NO' = don't
+  test=1ST	# normal operation. otherwise do solution on second pass
+  var1=0	# some value to specify
+  var2=0	# another value to specify
+  nprm2=1	# a parameter number to go with var2
+  venus='/ VENUS-ONLY:/,/ END VENUS-ONLY/d'
+# End of description
+  npic=''	# planet whose IC partial is checked (not integrated body)
+other=''
+foo=name
+for i
+do
+	case $i in
+## SPECIAL
+	-2nd) test=2ND; foo=other ;;
+	-bias) ptype=BIAS; int='$NO'; foo=other ;;
+	-bod*) bodtst=''; ptype=BOD; foo=other ;;
+	-cbod*) cbodtst=''; ptype=CBOD; foo=other ;;
+	-cic*) cictst=''; ptype=CIC; foo=other ;;
+	-dt) foo=dt ;;
+	-earth) foo=other; body=EARTH; earth='' ;;
+	-emb) embtst=''; ptype=EMB; foo=other ;;
+	-embic) eictst=''; ptype=PIC; foo=other; npic=3 ;;
+	-har*) hartst='-----'; ptype=HAR; foo=hartst ;;
+	-ic*) ictst=''; ptype=IC; foo=other ;;
+	-input) foo=input ;;
+	-iobs) foo=iobs ;;
+	-iter) foo=iter ;;
+	-jpert) foo=jpert ;;
+	-jup*) foo=other; body=JUPITER; jup='' ;;
+	-lock) foo=lock ;;
+	-long) long=''; short='$NO'; foo=other ;;
+	-mars) foo=other; body=MARS; mars='' ;;
+	-merc*) foo=other; body=MERCURY; merc='' ;;
+	-moon) foo=other; body=MOON; moon='' ;;
+	-noint) int='$NO'; foo=other ;;
+	-nprm1) foo=nprm1 ;;
+	-nprmx) foo=nprmx ;;
+	-nprm2) foo=nprm2 ;;
+	-num*) foo=num ;;
+	-path) foo=ppath ;;
+	-pcop) foo=pcop ;;
+	-pep) foo=pep ;;
+	-pic) npic='-----'; ptype=PIC; foo=npic ;;
+	-pbod) npic='-----'; ptype=PBOD; foo=npic ;;
+	-ppr) foo=other; ppr='' ;;
+	-qcop) foo=other; pcop=-3 ;;
+	-run*) foo=runnum ;;
+	-short) short=''; long='$NO'; foo=other ;;
+	-sol) foo=oldsol ;;
+	-sit) crd=SITE; ptype=SITE; int='$NO'; foo=other ;;
+	-spt) crd=SPOT; ptype=SPOT; int='$NO'; foo=other ;;
+	-ss*) sstst=''; ptype=SS; foo=other ;;
+	-var1) foo=var1 ;;
+	-var2) foo=var2 ;;
+	-ven*) foo=other; body=VENUS; venus='' ;;
+#
+	-[a-z]*) foo=other ; badopt=$i ;;
+	*) eval "$foo=\$i" ;;
+	esac
+	done
+if [ "$badopt" != '' ]
+then
+	echo "$0: $badopt not recognized"
+	exit
+fi
+if [ "$other" != '' ]
+then
+	echo "$0: value $other not allowed"
+	exit
+fi
+if [ "$name" = "" ]
+then
+	sed '/^# End of description/q' $0
+	exit
+fi
+if [ "$ppath" = "~" ]
+then
+	ppath="$HOME"
+fi
+## SPECIAL
+for i in iobs iter jpert name num var1 hartst
+#
+do
+	eval "foo=\$$i"
+	if test "$foo" = "-----"
+	then
+		echo -n "$i: "
+		read $i
+		eval "foo=\$$i"
+		case $foo in
+			!) exit 1 ;;
+			\?) sed -n "/$i: /p
+				/ $i=/p" $0 ; echo -n "$i: " ; read $i ;;
+		esac
+	fi
+done
+#
+rm -f fort.*
+## SPECIAL
+if [ -f $ppath/halt -o -f ./halt ]
+then
+	exit
+fi
+if [ "$runnum" = "" ]
+then
+	runnum=`runnum obs`
+	echo New run number is $runnum.
+fi
+if [ "$num" = "0" ]
+then
+	ict80=-1
+	num=1
+else
+	ict80=0
+fi
+ln -s $ppath/ephem/mercury.allpart fort.11
+ln -s $ppath/ephem/venus.allpart fort.12
+ln -s $ppath/ephem/embary.allpart fort.13
+ln -s $ppath/ephem/mars.allpart fort.14
+ln -s $ppath/ephem/jupiter.allpart fort.15
+ln -s $ppath/ephem/saturn.allpart fort.16
+ln -s $ppath/ephem/moon.allpart fort.20
+ln -s $ppath/ephem/moonrot.allpart fort.21
+ln -s $ppath/ephem/ut1$dt.dataut fort.33
+ln -s $ppath/ephem/wob$dt.dataxy fort.34
+ln -s $ppath/ephem/astcom.new fort.37
+version=nbody740
+if [ $iter = mod ]
+then
+	version=nbody750
+elif [ $iter = mod2 ]
+then
+	version=nbody752
+elif [ $iter = mod3 ]
+then
+	version=nbody753
+elif [ $iter = mod4 ]
+then
+	version=nbody754
+elif [ $iter = mod5 ]
+then
+	version=nbody755
+fi
+if [ "$long" = "" ]
+then
+	nbdy=$version.2100
+#	ln -s $ppath/ephem/ctat740.2100 fort.36
+elif [ "$short" = "" ]
+then
+	nbdy=$version.2000
+	ln -s $ppath/ephem/ctatint.new fort.36
+else
+	nbdy=$version.2020
+	ln -s $ppath/ephem/ctat740.2020 fort.36
+fi
+ln -s $ppath/ephem/$nbdy fort.90
+if [ $jpert != 0 ]
+then
+	ln -s $ppath/ephem/sbody.e3 fort.$jpert
+fi
+if [ -f $ppath/data/sol.$oldsol ]
+then
+	ln -s $ppath/data/sol.$oldsol fort.93
+fi
+if [ $lock != 0 ]
+then
+	rlock="s/?LOCK/$lock/g"
+else
+	rlock="/?LOCK/d"
+fi
+nonmoon='s/ NONMOON-//'
+if [ "$ptype" = "SS" ]
+then
+	if [ $nprm1 = 11 -o $nprm1 = 14 -o $nprm1 = 34 -o $nprm1 = 35 -o $nprm1 = 36 -o $nprm1 = 37 -o $nprm1 = 38 -o $nprm1 = 40 -o $nprm1 = 49 -o $nprm1 = 50 ]
+	then
+		nonmoon='/ SKIP IF NONMOON-/d'
+	fi
+fi
+rm -rf pep.out pep.msgs
+(echo "export HOME; HOME=$ppath"
+sed -n "/\/SPECIAL/,/\/GO/p" < $ppath/pepin/$name.peprun | sed "/\/SPECIAL/d
+$merc
+$venus
+$earth
+$moon
+$mars
+$jup
+s/?BODY/$body/g
+s/?INPUT/$input/g
+s/?IOBS/$iobs/g
+s/?RUNNUM/$runnum/g
+/\/GO/d
+s=?PATH=$ppath=g") | sh
+sed "/\/SPECIAL/,/\/GO/d
+$merc
+$venus
+$earth
+$moon
+$mars
+$jup
+$ppr
+$rlock
+$nonmoon
+s/ NPL NOT $npic-//
+s/ TYPE NOT $ptype-//
+s/ TEST NOT $test-//
+/ SKIP IF NPL NOT /d
+/ SKIP IF TYPE NOT /d
+/ SKIP IF TEST NOT /d
+s/ COORD NOT $crd$nprm1-//
+/ SKIP IF COORD NOT /d
+s/ SKIP IF//g
+s/?BODY/$body/g
+s/?DT/$dt/g
+s/?RUNNUM/$runnum/g
+s/?ICT80/$ict80/g
+s/?INPUT/$input/g
+s/?IOBS/$iobs/g
+s/?INT/$int/g
+s/?ITER/$iter/g
+s/?JPERT/$jpert/g
+s/?OLDSOL/$oldsol/g
+s/?PCOP/$pcop/g
+s=?PATH=$ppath=g
+s/?BODTEST/$bodtst/g
+s/?CBODTEST/$cbodtst/g
+s/?CICTEST/$cictst/g
+s/?EMBICTEST/$eictst/g
+s/?EMBTEST/$embtst/g
+s/?HARTEST/ $hartst/g
+s/?ICTEST/$ictst/g
+s/?SSTEST/$sstst/g
+s/?PTYPE/$ptype/g
+s/?NPIC/$npic/g
+s/?NPRM1/$nprm1/g
+s/?NPRMX/$nprmx/g
+s/?NPRM2/$nprm2/g
+s/?NUMOBT/$num/g
+s/?VAR1/$var1/g
+s/?VAR2/$var2/g" < $ppath/pepin/$name.peprun | $pep >pep.out
+if [ -f fort.95 ]
+then
+	mv fort.95 pep.msgs
+	echo 'see pep.msgs'
+fi

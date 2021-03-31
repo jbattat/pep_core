@@ -1,0 +1,236 @@
+                 Format of Saved Normal Equations
+                                                         2001/3/28
+Revisions:
+2009/8/19 - expansion of site arrays, new NSITCR, T0SITE
+2011/4/8  - all R*8 promoted to R*10, new NPRMX and NCNMX
+            (R*10, denoted R*A below, occupies 16 bytes in files and in
+             memory)
+
+The file is unformatted.  The first two records give basic details
+about the file.  Then follow a variable number of header records
+containing parameter values and lists of which parameters are
+adjustable.  Then come one or more groups of records containing
+saved normal equations (or a solution plus covariance) with error
+statistics.
+
+--------------------------  Record 1  ----------------------------
+ 
+TITLE       - C*88- Title, first 8 characters indicate which
+                    routine wrote the tape, last 8 are date
+                    NRMEQSER - series-by-series normal equations
+                    NRMEQTOT - total normal equations
+                    NRMEQMOD - total nrmeqs, with constraints
+                    NRMEQEPH - filtered nrmeqs
+                    NRMEQEMD - filtered nrmeqs, with constraints
+                    SOLUTCOV - saved solution
+                    PPRNRMEQ - prereduced nrmeqs
+
+LNKLVL      - C*4 - Level of PEP (or whatever) used to write file.
+                    Not present on older tapes.
+ 
+--------------------------  Record 2  ----------------------------
+
+NPRMX       - I*4 - dimension of PRMTER and LPRM arrays, now 100
+NCNMX       - I*4 - dimension of COND and LPL arrays, now 30
+PRMTER(100) - R*A - Solar system parameters (masses, etc)
+LPRM(100)   - I*2 - Vector indicating which are adjustable
+ICT(80)     - I*2 - Control integers from originating run
+NPARAM      - I*4 - Number of adjustable parameters
+ITERAT      - I*4 - Iteration number of originating run
+NPAGE       - I*4 - Page number in originating run
+NUMPLN      - I*2 - Number of bodies, aside from Earth/Moon/rotation
+NUMPHR      - I*2 - Number of gravitational/shape models, aside from E/M
+NUMSIT      - I*2 - Number of sites
+NUMSPT      - I*2 - Number of spots
+NUMSTR      - I*2 - Number of sky catalog bias models
+NUMPSR      - I*2 - Number of pulsars
+NUMRBS      - I*2 - Number of radar biases
+NUMEQN      - I*2 - Number of equator/equinox biases (or clocks)
+NUMPHS      - I*2 - Number of phase biases
+NUMDT       - I*2 - number of DT epochs
+NUMDT1      - I*2 - actual dimension of interleaved DT, JDDT, and LDT
+DT(600)     - R*4 - DT parameters (ET-UT2 if JDDT0<0 and NUMDT=NUMDT1,
+                    else A1-UT1 and wobble in DT(I), DT(I+200), and
+                    DT(I+400); older tapes may increment by 100 rather
+                    than 200
+JDDT(600)   - I*4 - dates for DT parameters
+LDT(600)    - I*2 - L vector for DT parameters indicating which have
+                    partials on tape
+IPPR        - I*4 - 1 if these are pre-reduced normal equations
+NPHR1       - I*2 - always 6 (0 on older files)
+NSHP2X      - I*2 - always -1 (1st shape model type on older files)
+NSHAP(6)    - I*2 - shape model types, 1st two reserved for Earth/Moon
+                    (older files omit Earth/Moon and use only 2,4,6)
+JDDT0       - I*4 - DT type flag (see DTCHCK)
+LNKLVL      - C*4 - Level of PEP (or whatever) used to write file.
+NSITCR      - I*4 - actual dimension of SCORD and LSCRD (3 or 6)
+
+---------------------  Planet Records (Numpln+4)  -----------------------
+(Earth, Moon, Earth rotation, Moon rotation, others)
+
+NPLNT       - I*2 - Planet number (negative if rotation or shape)
+NCENTR      - I*2 - Central body number
+JD0         - I*4 - Initial epoch
+COND(30)    - R*A - Initial conditions and other parameters
+LPL(30)     - I*2 - Vector indicating which parameters are adjustable
+APLNT       - C*8 - Planet name
+
+------------------  Shape/Gravity Records (Numphr+2)  --------------------
+(Earth, Moon, others)
+
+(Type selected by NSHAP, but Earth and Moon are always type 0)
+
+Type 0, spherical harmonic gravity or shape:
+NPLNT       - I*2 - Planet number
+NZONE       - I*2 - Order of zonal harmonic model
+NZONE1      - I*2 - Actual dimension of zonals, max(1,NZONE-1)
+ZHAR(N)     - R*A - Zonal coefficients
+LZHAR(N)    - I*2 - Vector indicating which coefficients are adjustable
+NTESS       - I*2 - Order of tesseral harmonics
+NTESS1      - I*2 - Actual dimension of tesserals, max(1,NTESS-1)
+CHAR(N)     - R*A - Tesseral cosine coefficients
+LCHAR(N)    - I*2 - Vector indicating which coefficients are adjustable
+SHAR(N)     - R*A - Tesseral sine coefficients
+LSHAR(N)    - I*2 - Vector indicating which coefficients are adjustable
+
+Type 1, Fourier shape:
+NPLNT       - I*2 - Planet number
+ZHAR(122)   - R*A - Coefficients in groups of 20, plus 2
+LZHAR(122)  - I*2 - Vector indicating which coefficients are adjustable
+
+Type 2: Grid shape:
+NPLNT       - I*2 - Planet number
+NGDPT       - I*4 - Number of grid points
+NGD2        - I*4 - (NGDPT+1)/2
+SCONTM(9)   - R*4 - Control parameters for grid size and spacing
+ZHAR(NGD2)  - R*A - Grid elevations at R*4 grouped two per "coefficient"
+LZHAR(NGDPT)- I*2 - Vector indicating which grid points are adjustable
+
+------------------------------  Sites  ------------------------------
+(One record, including a block for each site)
+
+SITF        - C*8 - Site name
+KSCRD       - I*2 - Type of site coordinates
+T0SITE      - R*A - Reference epoch for coordinates
+SCORD(6)    - R*A - Coordinates, optionally including velocity
+LSCRD(6)    - I*2 - Vector indicating which are adjustable
+
+-------------------------------  Spots  -------------------------------
+(One record, including a block for each spot)
+
+SPOT        - C*4 - Spot name
+NSPLNT      - I*2 - Number of planet
+SPCRD(3)    - R*A - Spot coordinates (spherical polar)
+LSPCRD(3)   - I*2 - Vector indicating which are adjustable
+
+----------------------  star catalog corrections  ----------------------
+(One record, including a block for each catalog)
+
+CTLGNM      - C*8 - Catalog name
+N           - I*4 - Number of coefficients
+NSKYC       - I*2 - Number of coefficients
+SKYCF(N)    - R*A - Catalog bias coefficients
+LSKY(N)     - I*2 - Vector indicating which are adjustable
+
+------------------------------  Pulsars  ------------------------------
+(One record, including a block for each pulsar)
+
+SPTPSR      - C*4 - Name of spot associated with the pulsar
+JDPSR0      - I*4 - Initial epoch of pulse model
+PLSPER      - R*A - Nominal pulsar period
+NTYPSR      - I*2 - Model type (not used)
+PSRCN(16)   - R*A - Pulse model parameters
+LPSRCN(16)  - I*2 - Vector indicating which are adjustable
+
+----------------------------  Radar biases  ----------------------------
+(One record, including a block for each bias set)
+
+RDBSIT(2)   - C*4 - Receive and send site name
+RDBSER      - C*4 - Series name
+RBIAS(2)    - R*4 - Delay and Doppler biases
+LRBS(2)     - I*2 - Vector indicating which are adjustable
+NPLRBS      - I*2 - Planet number
+
+--------------------------  Equinox/equator  --------------------------
+(One record, including a block for each bias set)
+
+EQNSIT      - C*4 - Site name
+EQNSER      - C*4 - Series name
+DEQNX(3)    - R*4 - Equinox, equator, and latitude biases
+LEQN(3)     - I*2 - Vector indicating which are adjustable
+
+-------------------------  Phase corrections  -------------------------
+(One record, including a block for each correction set)
+
+PHSIT       - C*4 - Site name
+PHSER       - C*4 - Series name
+APHS(9)     - R*4 - Phase corrections
+NCPHS       - I*2 - Number of coefficients to use
+NPLPHS      - I*2 - Planet number
+LPHS(9)     - I*2 - Vector indicating which are adjustable
+
+---------------------------  Series header  ---------------------------
+(Records from here on may be repeated as a group, once for each series,
+in a series-by-series saved normal equations file.)
+
+MEASMT      - I*4 - Number of measurements included, or 0 if end
+NTAPE       - I*4 - Obslib NTAPE if series-by-series, else 0
+NSEQ        - I*4 - Obslib NSEQ if series-by-series, else 0
+ERWGT(2)    - R*4 - Error weighting factors if series-by-series, else 1.
+ERMEAS(3)   - R*A - Statistics: sum, sum abs.val, sum squared residuals
+SUMZNS      - R*A - Accumulated correction to ERMEAS(3) from PPR
+SUMZSM      - R*A - Accumulated correction to ERMEAS(1) from PPR
+IAPRIO      - I*4 - If 1, then a priori matrix will be included
+IVECTK      - I*4 - If 1, then K vector will be included
+
+-------------------------  PPR pointer group  -------------------------
+Only in PPR files.
+
+NPARAM      - I*4 - Total number of parameters
+NCPARM      - I*4 - Number of interesting parameters
+NDPARM      - I*4 - Number of uninteresting parameters
+ZNSQPP      - R*A - Correction to ERMEAS(3) from this prereduction
+IZR4        - I*4 - not used, zero
+IZR4        - I*4 - not used, zero
+ICREST(NC)  - I*2 - Pointers mapping interesting parms to all parms
+IDREST(ND)  - I*2 - Pointers mapping uninteresting parms to all parms
+FACT(NP,2)  - R*A - Parameter nominal values and internal scale factors
+ZSMPP       - R*A - Correction to ERMEAS(1) from this prereduction
+
+------------------------------  K vector  ------------------------------
+(Optional, see series header above)
+
+Follows form of general data record:
+N           - I*4 - Indicator
+V(NSIZE)    - R*A - Vector or row (NSIZE is the number of adjustable
+                    parameters, except in PPR files)
+
+For the K vector, N=-1
+
+--------------------------  Right-hand side  --------------------------
+General form, N=NSIZE (NCPARM if PPR, 2*NPARAM if solution)
+For a solution file, this is the solution vector, plus scale factors.
+
+----------------------  Coefficient matrix rows  ----------------------
+General form, N=row number, must be in order.
+Any skipped row is all zeroes.  The last row is never skipped.
+For a solution file, these are the covariance rows.
+
+------------------------  A priori constraints  ------------------------ 
+(Optional, see series header above)
+If present, consists of right-hand side and coefficient matrix as above.
+For PPR, these have dimension NCPARM, as the total reduced quantities do.
+
+-----------------------  Uninteresting variances  ----------------------
+(Optional, only in PPR files and only if IVECTK>0)
+General form, N=-1, NSIZE=NDPARM.
+Diagonal elements of D-inverse
+
+-------------------------------  Z-bar  -------------------------------
+Only in PPR files.
+General form, N=NSIZE=NDPARM
+Z-bar = D-inv W
+
+-------------------------  F-bar-adjoint rows  -------------------------
+Only in PPR files.
+General form, N=row number up to NDPARM, NSIZE=NCPARM

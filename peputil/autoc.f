@@ -1,0 +1,133 @@
+      SUBROUTINE AUTOC(DATA)
+C         CALCULATE AND DISPLAY AUTOCORRELATION FUNCTION
+C
+C        PARAMETERS
+      REAL*4 DATA(9)
+C
+C         COMMON
+      include 'inodtabc.inc'
+      include 'graphs.inc'
+      include 'misc.inc'
+      include 'pltlab.inc'
+      include 'span.inc'
+C
+C         LOCAL VARIABLES
+      CHARACTER*36 T8/'AUTOCORRELATION FUNCTION FOR SPAN   '/
+      CHARACTER*15 ALABX/'TIME LAG (DAYS)'/, ALABY
+      EQUIVALENCE (T8,ALABY)
+      LOGICAL*4 PRNT, PAP
+      INTEGER*4 DY,HR,IP,IPOINT,ISPAN,KP,KS,KT,MN
+      REAL*4 SC,TLG
+C
+C         STATEMENT FUNCTIONS FOR INDICES TO ARRAYS
+C
+C         POWER SPECTRUM AND AUTOCOR FN
+      KP(ISPAN,IPOINT)=( (ISPAN-1)*(NPOINT+2)+IPOINT )*2-1
+C
+C         SUM OF AUTOCORR
+      KS(IPOINT) = 2*IPOINT
+C
+C         TIME LAG
+      KT(IPOINT)=( NSPAN*(NPOINT+2)+IPOINT )*2-1
+C
+C         FORMATS
+ 1000 FORMAT ('1', '*** AUTOCORRELATION SECTION ***'/)
+ 1001 FORMAT (/' ', 'AUTOCORRELATION FUNCTION FOR SPAN', I4//
+     1  ' ', 27X, 'TIME LAG'/ ' ', 'LAG INDEX', 2X, 'ACF',
+     2  13X, 'DAYS', 2X, 'HRS', 2X, 'MIN', 2X, 'SEC')
+ 1002 FORMAT (' ', I6, 3X, E15.6, I7, I5, I5, F7.2, E17.6)
+ 1003 FORMAT ('+', 52X, 'AVG ACF')
+C
+C         SET PRINT SWITCH
+      PRNT = MOD(IPRINT/8, 2) .EQ. 1
+C
+C         DO TRANSFORM ON POWER SPECTRAL DENSITY
+      IT = KT(1)
+      DO 20 I = 1, NSPAN
+      IP = KP(I, 1)
+      IF(USEF1) GO TO 10
+C           USE TIME ARRAY FOR WORK AREA
+      CALL FOURG(DATA(IP), NPOINT, -1,DATA(IT))
+      GO TO 20
+ 10   CALL FOUR1(DATA(IP), LOG2N, -1)
+ 20   CONTINUE
+C
+C         N INDEXES HIGHEST TIME (LAG) VALUE
+      N = NPOINT/2 + 1
+C
+C         STORE LAG VALUES
+      ILAG= KT(1)
+      ISUM= KS(1)
+      TLG=0.0
+      DO 30 I=1,N
+      DATA(ISUM)=0.0
+      DATA(ILAG)=TLG
+      TLG=TLG+DELTA
+      ISUM= ISUM+ 2
+ 30   ILAG= ILAG+ 2
+C
+C         WRITE HEADING
+      IF(PRNT) WRITE (PRINT, 1000)
+C           SET UP PLOT LABELS
+      LLX=15
+      LLY=15
+      XLAB(1:LLX)=ALABX
+      YLAB(1:LLY)=ALABY
+      NAMOB=0
+      LLT=36
+      CALL MVC(T8,1,LLT,PTITLE,1)
+C
+C         LOOP THRU SPANS
+      DO 60 I = 1, NSPAN
+      ILAG= KT(1)
+      IACF= KP(I, 1)
+      ISUM= KS(1)
+C
+C         FLAG LAST SPAN FOR AVG
+      PAP = (I .EQ. NSPAN) .AND. AVGSPN
+C
+C         WRITE SPAN HEADING
+      IF(PRNT) WRITE (PRINT, 1001) I
+      IF(PRNT.AND.PAP) WRITE (PRINT, 1003)
+C
+C         TITEL AND PLOT SPAN
+      IF(MOD(IPLOT/8, 2) .NE. 1) GO TO 40
+      CALL EBCDI(I,PTITLE(35:36),2)
+      CALL PLOTER(-1,DATA(ILAG),DATA(IACF),N,2)
+C
+C         LOOP THRU POINTS
+ 40   IF(.NOT.PRNT .AND. .NOT.AVGSPN) GO TO 60
+      DO 50 J = 1, N
+      IF(.NOT.PRNT) GO TO 41
+      K = J - 1
+      SC=DATA(ILAG) + 0.1/864E2
+      DY = INT(SC)
+      SC = (SC - DY)*24.0
+      HR = INT(SC)
+      SC = (SC - HR)*60.0
+      MN = INT(SC)
+      SC = (SC - MN)*60.0 - 0.1
+ 41   CONTINUE
+      IF (AVGSPN) DATA(ISUM) = DATA(ISUM) + DATA(IACF)
+      IF (.NOT. PAP) GO TO 42
+      DATA(ISUM) = DATA(ISUM)/NSPAN
+      IF (PRNT) WRITE (PRINT,1002) K,DATA(IACF),DY,HR,MN,SC,DATA(ISUM)
+      GO TO 43
+ 42   CONTINUE
+      IF (PRNT) WRITE (PRINT,1002) K,DATA(IACF),DY,HR,MN,SC
+ 43   CONTINUE
+      ILAG= ILAG+ 2
+      IACF= IACF+ 2
+      ISUM= ISUM+ 2
+ 50   CONTINUE
+ 60   CONTINUE
+C
+C         PLOT AVERAGE AUTOCORR
+      IF(.NOT.AVGSPN) RETURN
+      ISUM= KS(1)
+      ILAG= KT(1)
+      CALL MVC('AVERAGED',1,8,PTITLE,26)
+      LLT=33
+      CALL PLOTER(-1,DATA(ILAG),DATA(ISUM),N,2)
+      RETURN
+      END

@@ -1,0 +1,34 @@
+                          CT-AT tape format
+Revisions:
+2011/4/8  - all R*8 promoted to R*10 (R*10, denoted R*A below, occupies
+            16 bytes in files and in memory)
+
+Tabulation of CT - AT for either the center of the Earth or the E-M
+barycenter.  Values are in seconds.
+
+----------------------------  First record  ----------------------------
+
+NAMCT       - C*8 - characters 'CT - AT ' if Earth (monthly term in),
+                               '  CT-AT ' if E-M barycenter (term out)
+HEDING(9)   - C*8 - 72 character title of PEP run
+DATE        - C*8 - date of integration (characters)
+TITCT(5)    - C*8 - chars ' G.R. PROPER TIME INTEGRATION ...INT    '
+                    or something similar
+
+---------------------------  Second record  ----------------------------
+
+JD1         - I*4 - starting epoch of integration
+JD2         - I*4 - ending epoch of integration
+INTA        - I*4 - tabular interval control for output (like INTBDY)
+NPLX        - I*4 - planet number of body whose proper time is tabulated
+PRMTCT(100) - R*A - planet masses, etc in body/N-body integration used
+ZERO(10)    - R*8 - zeroes for future expansion
+
+----------------------------  Data records  ----------------------------
+
+JDC         - I*4 - Julian day number of record (fract is zero)
+NPR         - I*4 - number of points in this record (up to 100)
+CTATVL(100) - R*A - integrated CT-AT for specified body, NPR tabular
+                    points at INTA intervals
+ZERO(10)    - R*8 - zeroes for future expansion
+

@@ -1,0 +1,9 @@
+C           ALTERNATE ARRAYS FOR VARIABLE TABULAR INTERVAL
+      REAL*10 SPCOVL(90*i_mxeqn),SPRC(6,8,3),DSPRC(6,4,3,i_mxeqn-1),
+     1 GC1(6),GC2(6)
+      INTEGER*4 IORCER(6),JORCER(6),NUMPRC(6)
+      EQUIVALENCE (SATPRC(1,1,1),SPCOVL(1),SPRC(1,1,1)),
+     1 (SPCOVL(145),DSPRC(1,1,1,1)),(SPCOVL(72*i_mxeqn+73),GC1(1)),
+     2 (SPCOVL(72*i_mxeqn+79),GC2(1)),(SPCOVL(72*i_mxeqn+85),IORCER(1)),
+     3 (SPCOVL(72*i_mxeqn+88),JORCER(1)),
+     4 (SPCOVL(72*i_mxeqn+91),NUMPRC(1))
