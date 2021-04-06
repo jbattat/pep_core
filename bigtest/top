@@ -1,0 +1,10 @@
+#!/bin/sh
+rm -f fort.*
+cp top.obstop fort.14
+cp nbody.v452 fort.90
+../pep/pep <top.inp >top.out
+../peputil/abcps >top.abc <<'End of input'
+ &INPUT NAMES=T, LOOK=4, NSERIE=999, NOPRNT=1,
+  OBSLIB=15,
+ &END
+End of input

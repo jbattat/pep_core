@@ -1,0 +1,7 @@
+#!/bin/sh
+rm -f ver.inp
+cp bigtest.verin1 ver.inp
+chmod u+w ver.inp
+echo \  FNAME=\'$1\', \'$2\' \&END >> ver.inp
+../verify/verify <ver.inp
+rm ver.inp

@@ -1,0 +1,14 @@
+#!/bin/sh
+rm -f fort.*
+cp tmn.moon fort.20
+cp tmn.mrot fort.21
+cp tmn.obsllr fort.24
+cp tmn.ntp1 fort.41
+cp tmn.ntp72 fort.42
+cp nbody.v443 fort.90
+../pep/pep <tmn.inp >tmn.out
+../peputil/abcps >tmn.abc <<'End of input'
+ &INPUT NAMES=T, LOOK=4, NSERIE=999, NOPRNT=1,
+  OBSLIB=50,51,52,
+ &END
+End of input

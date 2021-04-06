@@ -1,0 +1,9 @@
+#!/bin/sh
+echo tmi tv1 tv2 tin toc ttr top tfr tmn tpl tfl
+for step in tmi tv1 tv2 tin toc ttr top tfr tmn tpl tfl
+	do
+	echo "Starting $step"
+	./$step
+	echo "Finished $step"
+	./vcomp biglist.$step $step.out >$step.verout
+	done

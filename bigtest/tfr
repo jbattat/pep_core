@@ -1,0 +1,17 @@
+#!/bin/sh
+rm -f fort.*
+cp tfr.ctatint fort.9
+cp tfr.obs fort.40
+cp tfr.obspvmnc fort.41
+cp tfr.obspvmdl fort.42
+cp tfr.int fort.55
+cp tfr.pvm09 fort.62
+cp tfr.pvm13 fort.65
+cp tfr.tsne fort.70
+cp nbody.v311 fort.90
+../pep/pep <tfr.inp >tfr.out
+../peputil/abcps >tfr.abc <<'End of input'
+ &INPUT NAMES=T, LOOK=4, NSERIE=999, NOPRNT=1,
+  OBSLIB=50,51,52,
+ &END
+End of input

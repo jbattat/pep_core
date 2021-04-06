@@ -1,0 +1,10 @@
+#!/bin/sh
+rm -f fort.*
+cp tv1.vko fort.64
+cp nbody.v452 fort.90
+../pep/pep <toc.inp >toc.out
+../peputil/abcps >toc.abc <<'End of input'
+ &INPUT NAMES=T, LOOK=4, NSERIE=999, NOPRNT=1,
+  OBSLIB=31,
+ &END
+End of input

@@ -1,0 +1,14 @@
+#!/bin/sh
+rm -f fort.*
+cp tfl.w0 fort.60
+cp tfl.w0 fort.61
+chmod u+w fort.60 fort.61
+cp tfl.obs fort.50
+cp tfl.smat fort.65
+cp nbody.v311 fort.90
+../pep/pep <tfl.inp >tfl.out
+../peputil/abcps >tfl.abc <<'End of input'
+ &INPUT NAMES=T, LOOK=4, NSERIE=999, NOPRNT=1,
+  OBSLIB=51,
+ &END
+End of input

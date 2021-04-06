@@ -1,0 +1,5 @@
+#!/bin/sh
+rm -f fort.*
+cp tin.obs fort.11
+cp tin.ppr fort.47
+../pep/pep <tin.inp >tin.out

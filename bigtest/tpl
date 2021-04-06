@@ -1,0 +1,11 @@
+#!/bin/sh
+rm -f fort.*
+cp nbody.v443 fort.90
+cp tpl.ut fort.93
+cp tpl.xy fort.94
+../pep/pep <tpl.inp >tpl.out
+../peputil/abcps >tpl.abc <<'End of input'
+ &INPUT NAMES=T, LOOK=4, NSERIE=999, NOPRNT=1,
+  OBSLIB=31,
+ &END
+End of input
