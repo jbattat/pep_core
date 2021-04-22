@@ -3,7 +3,7 @@
 To build:
 
 ```
-$ git clone https://gitlab.com/jbattat/pep_core.git
+$ git clone https://github.com/jbattat/pep_core.git
 $ cd pep_core
 $ make
 ```
