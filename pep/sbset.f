@@ -1389,7 +1389,7 @@ c find target body range of harmonic effect
             nt = Ntrg(ll)
             if(nt.le.30) then
               if(Ntzone(ll).gt.2 .or. Nttess(ll).ge.2) then
-                 hsib = sma*sma*Mass(nt)*Trad(ll)*Trad(ll)
+                 hsib = sma*sma*Masst(ll)*Trad(ll)*Trad(ll)
                  if(hsib.gt.0._10) then
                    hsia =hsib*MAX(ABS(Tchar(ll,2)),ABS(Tshar(ll,2)))
                    hsia =(hsia*hsftr)**(1.0/4.0)

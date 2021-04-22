@@ -5,10 +5,13 @@ c Subroutine JNITL   J.F.Chandler   1977 November 30
 c Set up for elliptic or hyperbolic orbit calculations
 c
 c arguments to JNITL, JLIPT
-      real*10 goose,cond(6),setp(50),y(6),dy(6,6),t,ry,ry2,ry3
+      real*10 goose,cond(9),setp(50),y(6),dy(6,6),t,ry,ry2,ry3
       integer*4 kind,nv
 c        goose - the square root of (g*(mass of body+mass of center))
-c        cond - array of initial conditions
+c        cond - array of initial conditions + optional extras
+c        cond(7)=time derivative of cond(1)
+c        cond(8)=time derivative of cond(5)
+c        cond(9)=mass factor for scaling output
 c        Usage of array 'setp' --- storage for saved quantities from
 c        setting up.  It is effectively equivalenced to the following:
 c      b(3,2),tsv,a,e,anom0,motpi,mu2,secc,cecc,quan2,quan3,quan4,quan5,
@@ -17,8 +20,8 @@ c
 c      quan12(3),quan13(3),quan11,motion,mu,sasc,casc,spci,cpci
 c         19        22      25     26    27  28   29   30   31
 c
-c      sinc,cinc,sper,cper
-c       32   33   34   35
+c      sinc,cinc,sper,cper,a0,a1,per0,per1,pscale
+c       32   33   34   35  36 37  38   39   40
 c
 c        Note: all variables up thru quan5 (setp(18)) are used in all
 c        elliptic calculations, but those from there on are needed only
@@ -28,6 +31,7 @@ c        kind - indicates type of setup,
 c                0 => only want coordinates
 c                1 => also want partials w.r.t. initial conditions
 c                2 => also need sinc,cinc,sper,cper in extended setp
+c                3 => also set up for moving periapse and semimajor axis
 c        y - array for output coordinates
 c        ry,ry2,ry3 - output radial distance, square, and cube
 c        dy - output array of partials
@@ -41,7 +45,7 @@ c
 c local variables
       real*10 anom,anoms,casc,cf,cinc,cpci,cper,qq1,qq2,qq2n,qq4,qq5,
      . qq6,qq7,qq8,qqh,qql,qqs,quan1,sasc,sinc,spci,sper,th
-      integer   i,int,iyb,j,nitr,nv1
+      integer   i,int,iyb,j,nitr,nv1,type
       real*10 motion, ybar(6), absa
       real*4    anom4
 
@@ -100,9 +104,20 @@ c Fill rest of setp array for partials
       setp(33) = cinc
       setp(34) = sper
       setp(35) = cper
+      if(kind.le.2) return
+      setp(36)=setp(8)
+      setp(37)=cond(7)
+      setp(38)=th
+      setp(39)=cond(8)*Convd
+      setp(40)=cond(9)
       return
 
 c - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      entry JLIPTP(t,setp,nv,y,ry,ry2,ry3,dy)
+c same as JLIPT, but with moving periapse and semimajor axis
+      type=1
+      goto 40
+c
       entry JLIPT(t,setp,nv,y,ry,ry2,ry3,dy)
 c Compute elliptic/hyperbolic quantities for time t from initial epoch.
 c Corresponding setp array must already have been set up.
@@ -113,6 +128,8 @@ c      0 do just position
 c     -1 do just velocity, in y(1-3)
 c     -2 do just acceleration, in y(1-3)
 
+      type=0
+   40 continue
 c        Take short cut if same epoch as last time
       if(t.ne.setp(7)) then
          setp(7) = t
@@ -215,7 +232,34 @@ c Save results of solution as hyperbolic sine,cosine
             setp(14) = COSH(qq1)
          endif
 
-c Get radial distance
+c Get radial distance including change of periapse and semimajor axis
+         if(type.eq.1) then
+            setp(8)=setp(36)+t*setp(37)
+            setp(16) = setp(8)*setp(15)
+            th=setp(38)+t*setp(39)
+            sper=SIN(th)
+            cper=COS(th)
+            sasc=setp(28)
+            casc=setp(29)
+            sinc=setp(32)
+            cinc=setp(33)
+            spci=sper*cinc
+            cpci=cper*cinc
+            setp(30)=spci
+            setp(31)=cpci
+            setp(34)=sper
+            setp(35)=cper
+            setp(1) = casc*cper - sasc*spci
+            setp(4) = -casc*sper - sasc*cpci
+            setp(2) = sasc*cper + casc*spci
+            setp(5) = casc*cpci - sasc*sper
+            setp(3) = sper*sinc
+            setp(6) = cper*sinc
+            do i = 1, 3
+               setp(i+18) = setp(i)*setp(8)
+               setp(i+21) = setp(i+3)*setp(25)
+            end do
+         endif
          ry = setp(8)*(1._10 - setp(9)*setp(14))
          ry2= ry*ry
          ry3= ry2*ry

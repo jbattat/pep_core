@@ -20,8 +20,6 @@ c common
       integer*2 kind
       equivalence (Numpar, kind)
       include 'mnsprt.inc'
-      real*10 dxdbet(6,2), dxdgam(6,2)
-      equivalence (Dxdpsi(1,1), dxdbet(1,1)), (Dxdphi(1,1), dxdgam(1,1))
       include 'mtrapx.inc'
       include 'number.inc'
       include 'pemctl.inc'
@@ -33,7 +31,7 @@ c common
       include 'tapdta.inc'
 
 c local 
-      integer i,iflag,j,k,l,lmon,lmrt,m,n,nstart
+      integer i,idiss,iflag,j,k,l,lmon,lmrt,m,n,nstart
       integer*2 lprml,nqlnt
       integer*2 klakmr/0/
  
@@ -99,26 +97,36 @@ c calculate partials w.r.t. libration parameter not on tape
          do k = 1, n
             do i = 1, Mouse
                do j = 1, Index
-                  Derpr(j,i,k) = -dxdbet(j,k)
-                  end do
+                  Derpr(j,i,k) = -Dxdbet(j,k)
                end do
             end do
+         end do
       else if(Lmrx(l).eq.4) then
          do k = 1, n
             do i = 1, Mouse
                do j = 1, Index
-                  Derpr(j,i,k) = -dxdgam(j,k)
-                  end do
+                  Derpr(j,i,k) = -Dxdgam(j,k)
                end do
             end do
+         end do
       else if(Lmrx(l).eq.5) then
          do k = 1, n
             do i = 1, Mouse
                do j = 1, Index
                   Derpr(j,i,k) = -Dxdth(j,k)
-                  end do
                end do
             end do
+         end do
+c partials w.r.t. analytic dissipation coefficients
+      else if(Lmrx(l).eq.8 .or. Lmrx(l).eq.9 .or. Lmrx(l).eq.10) then
+         idiss = Lmrx(l)-7
+         do k = 1, n
+            do i = 1, Mouse
+               do j = 1, Index
+                  Derpr(j,i,k) = -Dxdphi(j,k)*Disstrm(idiss)
+               end do
+            end do
+         end do
       else
          goto 200
       endif

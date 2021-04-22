@@ -25,7 +25,7 @@ c local
          npr=neqtot/6
          write(Kout,270) t-.5_10,((acc(i,k),i=dim-2,dim),k=1,npr)
   270    format(f14.5/(1p3d26.19))
-      else
+      else if(MOD(xprctl,32).gt.0) then
          write(Kout,280) t-.5_10
   280    format(f14.5,' EXTRA PRINT')
       endif

@@ -1,15 +1,7 @@
       subroutine CMPAR2(mocpar)
  
       implicit none
- 
- 
-c*** start of declarations inserted by spag
-      integer   i, i4, ITYPOB, j, j1, j2, jtypob, jut1, jwob, k, l, LEG,
-     .          n, n1, NSCAN, ntapf
- 
-c*** end of declarations inserted by spag
- 
- 
+
 c amuchastegui/ash - april 1970 - subroutine cmpar2
 
 c arguments
@@ -21,6 +13,7 @@ c
 c common
       include 'bdctrl.inc'
       include 'comdat.inc'
+      include 'empcnd.inc'
       include 'eqenox.inc'
       include 'eqnphs.inc'
       real*4    eqnx(3)
@@ -32,7 +25,7 @@ c common
       equivalence (Jpert, i2bod)
       include 'ltrapx.inc'
       include 'mnsprt.inc'
-      integer*4 zmnspr/2320/   !r8=1176,r10=2320
+      integer*4 zmnspr/4080/   !r8=2072,r10=4080
       include 'mtrapx.inc'
       include 'namtim.inc'
       include 'number.inc'
@@ -60,6 +53,9 @@ c common
       include 'stcord.inc'
       include 'tapdta.inc'
       include 'zeroes.inc'
+
+c external functions
+      integer*4 ITYPOB,LEG,NSCAN
 c
 c local
       character*8 blank8/'        '/
@@ -69,6 +65,7 @@ c local
       character*48 gmess/
      . '        NO DATA SET FOR BODY***, STOP IN CMPAR2 '/
       character*4 amper9/'&&&&'/, pound9/'####'/
+      integer i,i4,j,j1,j2,jtypob,jut1,jwob,k,l,n,n1,ntapf
 c
 c           nk1=-1 for first observation of series, used for saved
 c           partials logic.  nk1 set = 0 at end of first call to partl
@@ -257,16 +254,16 @@ c determine if observing site is not on earth
 c
 c determine spot number, partial derivative controls
   500 call ZFILL(Rot, zmnspr)
-      call LVTPRM(Lpsrx, izero2, Mpsrx, 16)
+      call LVTPRM(Lpsrx, izero2, Mpsrx, u_nmpsr)
       if(Spotf.eq.blank .or. Spotf.eq.amper9 .or. Spotf.eq.pound9)
      .    goto 1000
       do k = 1, Numpsr
          if(Spotf.eq.Sptpsr(k)) then
             Nplsr = k
-            do j = 1, 16
+            do j=1,u_nmpsr
                Psrprm(j) = Psrcn(j, k)
             end do
-            call LVTPRM(Lpsrx, Lpsrcn(1,k), Mpsrx, 16)
+            call LVTPRM(Lpsrx, Lpsrcn(1,k), Mpsrx,u_nmpsr)
             Jdps0  = Jdpsr0(k)
             Plsper = Plspr(k)
             Ntyps  = Ntypsr(k)
@@ -317,11 +314,12 @@ c compare from 1st non-blank character in each
             endif
             Nspot = k
          endif
-         call LVTBDY(Lspcdx(1,l), Lspcrd(1,k), Mspcdx(1,l), -3)
-         do j = 1, 3
+         call LVTBDY(Lspcdx(1,l), Lspcrd(1,k), Mspcdx(1,l), -6)
+         do j = 1,6
             Spcdx(j, l) = Spcord(j, k)
             if(Iabs1.le.0 .or. Mspcdx(j,l).le.0) Lspot(j,l)= Lspcdx(j,l)
          end do
+         T0spt(l)=T0spot(k)
  
          if(l.eq.2) goto 1100
          goto 1000
@@ -344,6 +342,27 @@ c offset apollo 15 coordinates if alsep rather than lrrr observed
             Spcdx(2, 2) = Spcdx(2, 2) + 1.4330E-3_10
             Spcdx(3, 2) = Spcdx(3, 2) + 0.7361E-3_10
          endif
+      endif
+
+c set up for analytic dissipation terms in lunar libration
+c note that no calculation is needed if the coefficients are all zero
+c and saved partials are available to be copied
+      if(Nplnt0.eq.10) then
+         if(Mrcond(14).ne.0._10 .or. Mrcond(15).ne.0._10 .or.
+     .    Mrcond(16).ne.0._10) Dodiss=.true.
+         do i=7,u_nmbod
+            if(Lmrx(i).eq.8 .or. Lmrx(i).eq.9 .or. Lmrx(i).eq.10) then
+               if(Iabs1.eq.0) then
+                  Dodiss = .true.
+               else
+                  do j=7,u_nmbod
+                     if(Mmrx(j).eq.Lmrx(i)) goto 1140
+                  end do
+                  Dodiss = .true.
+ 1140             continue
+               endif
+            endif
+         end do
       endif
  
 c check consistency of klans1
@@ -541,6 +560,21 @@ c rewind second satellite or observing site on satellite tape
             endif
          endif
       endif
+c
+c rewind planet tapes used for solar-system barycenter offset
+c (used only for pulsar observations, so there's no overlap with klam)
+      if(Klssm.gt.0) then
+         do i=1,9
+            if(Ssbkl(i).gt.0) then
+               j=Iplss(i)
+               if(j.gt.0 .and. Itrwnd(j).gt.0 .and.
+     .          (Klssb.ne.Klssm .or. Nrewnd.gt.0)) then
+                  rewind j
+                  Itrwnd(j)=0
+               endif
+            endif
+         end do
+      endif            
 c
 c
       return

@@ -208,7 +208,7 @@ c error messages
 
   900 write(messag, 1000) nbdrec, idatin
  1000 format(' END ON RECORD', i2, ' OF DATA SET', i3,
-     .       ', STOP IN BDRRD1 ')
+     .       ', STOP IN BDRD1  ')
       call SUICID(messag, 12)
 
       end

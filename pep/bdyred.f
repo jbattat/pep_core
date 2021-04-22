@@ -41,7 +41,7 @@ c monhar has the same length as ethhar and so uses 'zemhar' for zeroing
       include 'plnhar.inc'
       integer*4 zplnhr/190/   !r8=190,r10=190
       include 'psrstf.inc'
-      integer*4 zpsrst/3142/   !r8=1782,r10=3142
+      integer*4 zpsrst/4582/   !r8=2582,r10=4582
       include 'scoef4.inc'
       real*4 transf(u_stdsz,4,1000/u_stdsz)
       equivalence (Pzhar(1,1),transf(1,1,1))
@@ -217,7 +217,7 @@ c segregate pulsars
             if(i.lt.0) i = 4
             call MVC(Bname, i + 1, 4, Sptpsr(Numpsr), 1)
             Jdpsr0(Numpsr) = Jdb0
-            do i = 1, 16
+            do i = 1, u_nmpsr
                Psrcn(i, Numpsr)  = Bconst(i + 6)
                Lpsrcn(i, Numpsr) = Limb(i)
             end do

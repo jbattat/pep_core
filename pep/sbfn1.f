@@ -628,6 +628,8 @@ c effect of perturbing asteroids or satellites on motion
       sump(Kk) = sump(Kk) + sumast
  
       Fn(1) = Fn(1) + Gamat*sump(Kk)
+      if(Kkp(60).gt.1) write(6,99944) 'ast',fn(1)
+99944 format(a,1p5e15.7)
 c
 c*  start=1200
 c effect of target  body  harmonics on equations of motion
@@ -648,6 +650,11 @@ c equations of motion
      .                               /Rtb2(ll)
                   sumht(ll,Kk)    = sumht(ll,Kk) + Tzhar(ll,i)
      .                               *tzone(Kk,ll,i)
+            if(Kkp(60).gt.1) write(6,99944) 'tleg,tleg1,tslat1,tzhar',
+     .             tleg(i,ll),tleg1(i,ll),tslat1(kk,ll),tzhar(ll,i)
+            if(Kkp(60).gt.1) write(6,99944)
+     .             'tbcor,rpbh,rtb,rtb2,sumht',
+     .             tbcor(kk,ll),rpbh(ll,i),rtb(ll),rtb2(ll),sumht(ll,kk)
 c substract effect of target body harmonic on central body
 c in appropiate orbiter routine (we ignore effect on sun
 c of target body harmonic for sun centered probe)
@@ -696,6 +703,7 @@ c of target body harmonic for sun centered probe)
             Fn(1) = Fn(1) + Gamat*Masst(ll)*sumht(ll,Kk)
          endif
       end do
+      if(Kkp(60).gt.1) write(6,99944) 'trg',fn(1)
 c
 c*  start=1300
       if(Ncentr.gt.0) then
@@ -704,6 +712,7 @@ c effect of the sun on the motion of the satellite or probe
          if(Kp(Ncentr+30).ge.0) then
             sums(Kk) = Ccor3(Kk) - Bcor(Kk)/Rb3
             Fn(1)    = Fn(1) + Gamat*sums(Kk)
+            if(Kkp(60).gt.1) write(6,99944) 'sun',fn(1)
          endif
 c
 c*  start=1400
@@ -746,6 +755,7 @@ c only once per iteration
             end do
          endif
          Fn(1) = Fn(1) - Gamat3*sumhc(Kk)
+         if(Kkp(60).gt.1) write(6,99944) 'cenhar',fn(1)
       endif
 c
 c*  start=1600
@@ -766,6 +776,7 @@ c*  start=1500
 c additional accelerations for sun centered probe
       if(lcentr.le.0) then
          call SOLPRB(k)
+         if(Kkp(60).gt.1) write(6,99944) 'solprb',fn(1)
  
 c additional accelerations for earth satellite
       else if(lcentr.eq.3) then
@@ -802,6 +813,7 @@ c subtract elliptic orbit acceleration
  
 c add central force to other perturbing forces
       Fn(1) = Fn(1) + sum
+      if(Kkp(60).gt.1) write(6,99944) 'cen',fn(1)
       return
 c*  start=3400
 c

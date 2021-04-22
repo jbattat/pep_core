@@ -185,7 +185,7 @@ c for moon spot coordinates
          do j = 1,u_mxspt
             if(Nsplnt(j).ne.10) goto 200
             nspt02 = nspt02 + 1
-            call BCHECK(Lspcrd(1,j),nice,-3)
+            call BCHECK(Lspcrd(1,j),nice,-6)
          end do
 c
 c for moon radar observation biases
@@ -211,7 +211,7 @@ c for sun spot coordinates
                if(Nsplnt(j).ne.0) goto 350
                if(Spot(j).eq.blank) goto 350
                nspt02 = nspt02 + 1
-               call BCHECK(Lspcrd(1,j),nice,-3)
+               call BCHECK(Lspcrd(1,j),nice,-6)
             end do
          endif
 c
@@ -305,7 +305,7 @@ c for planet spot coordinates
                   do i = nspt01,u_mxspt
                      if(Nsplnt(i).ne.Nplnt(j)) goto 480
                      nspt02 = nspt02 + 1
-                     call BCHECK(Lspcrd(1,i),nice,-3)
+                     call BCHECK(Lspcrd(1,i),nice,-6)
                   end do
                endif
             endif
@@ -341,7 +341,7 @@ c for star coordinates
             do i = nspt01,u_mxspt
                if(Nsplnt(i).lt.0) then
                   nspt02 = i
-                  call BCHECK(Lspcrd(1,i),nice,-3)
+                  call BCHECK(Lspcrd(1,i),nice,-6)
                endif
             end do
          endif
@@ -370,7 +370,7 @@ c for star quantities in optical phase corr.common
 c
 c for pulsar parameters
          do i = 1,u_mxpsr
-            call ACHECK(Lpsrcn(1,i),nice,16)
+            call ACHECK(Lpsrcn(1,i),nice,u_nmpsr)
             if(nice.gt.0) then
                nstop = nstop + nice
                write(Iout,60) nice,words,'LPSRCN(.,',i

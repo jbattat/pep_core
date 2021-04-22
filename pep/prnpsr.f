@@ -55,14 +55,14 @@ c common
      .            )
             nnspt = 9999999
             nstop = nstop + 1
-   40       call PAGCHK(60,7,1)
+   40       call PAGCHK(60,9,1)
             write(Iout,60) nnspt,Sptpsr(j),psrsym,Jdpsr0(j),
      .                      Plspr(j),Ntypsr(j),
-     .                      (i,Psrcn(i,j),i = 1,16)
+     .                      (i,Psrcn(i,j),i = 1,u_nmpsr)
    60       format('0SPOT', i4, '. (', a4, ') ', a4, 'JD0=', i8,
      .             '  APPRX. PERIOD=', 1pd22.15, '  NTYPE=',
      .             i2/4('  CON(',i2,')=',1pd22.15))
-            write(Iout,80) (Lpsrcn(i,j),i = 1,16)
+            write(Iout,80) (Lpsrcn(i,j),i = 1,u_nmpsr)
    80       format(' L=', (t10,25I3))
          end do
          return

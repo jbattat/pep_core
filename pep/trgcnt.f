@@ -97,15 +97,19 @@ c gravitational potential harmonic partial derivative controls
          end do
       end do
 c
-c target body partial control vectors for planet observations
       if(Ict(1).gt.0) then
          if(Klanb.gt.0) then
 c
 c target body partial control vectors for probe  observations
             call TRGLIC(Nkisb,Kisb,.false.)
          else if(Nplnt0.gt.0 .and. Nplnt0.ne.10) then
+c target body partial control vectors for planet observations
             call TRGLIC(Nkipl,Kipl,.true.)
+         else if(Nplnt0.eq.10) then
+c target body partial control vectors for moon observations
+            call TRGLIC(Nkimn,Kimn,.true.)
          else if(Nplnt0.eq.-4) then
+c target body partial control vectors for star observations
             call TRGLIC(Nkiem,Kiem,.true.)
          endif
       endif

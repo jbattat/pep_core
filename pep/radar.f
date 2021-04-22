@@ -226,7 +226,12 @@ c calculate factor in relativistic corrections
       if(Reldel.ne.0._10) then
          if(Ncodf.ne.3) then
             ntmdly = 1
-            if(cislun) ntmdly = 2
+            if(cislun) then
+               ntmdly = 2
+            else if(Klan.gt.0 .and. (Nspot.gt.0 .or. Klanb.gt.0)
+     .          .and. Jct(18).gt.0) then
+               ntmdly = 4
+            endif
             Reltrm(1) = Reldel*Gmc2*(1._10 + prmter(42))/2._10
             if(Klanb.gt.0 .or. Reldop.gt.0._10) then
                ndop = 1
@@ -274,12 +279,9 @@ c make sure required parameters were specified
          endif
       endif
       Iwob = 1
-      do i = 7, 30
-         if(Lmrx(i).le.0) goto 100
-         if(Lmrx(i).eq.3 .or. Lmrx(i).eq.4) nlibpr = -2
-      end do
-  100 if(Ilib.gt.0) nlibpr = -nlibpr
-      if(nlibpr.le.-1 .and. Jct(26).eq.0) nlibpr = 0
+      if(Lmrx(7).gt.0) nlibpr = -2
+      if(Ilib.gt.0) nlibpr = -nlibpr
+      if(nlibpr.lt.0 .and. Jct(26).eq.0) nlibpr = 0
 c
 c force calculation of velocities if ctvary partial is to
 c be computed

@@ -63,6 +63,7 @@ c local variables
       character*72 errmsg
 c
 c some setup already done if this is part of n-body integration
+      Corspin=Icnd(0).eq.3
       Knbd=neqns
       if(Knbd.gt.0) goto 100
 
@@ -208,16 +209,16 @@ c be sure solar position is calculated if used
       end do
  
 c zero out harmonic vectors
-         do i = 1, 19
-            Imzone(i) = 0
-            Izone(i) = 0
-         end do
-         do i = 1, 54
-            Imcos(i) = 0
-            Imsin(i) = 0
-            Icos(i) = 0
-            Isin(i) = 0
-         end do
+      do i = 1, 19
+         Imzone(i) = 0
+         Izone(i) = 0
+      end do
+      do i = 1, 54
+         Imcos(i) = 0
+         Imsin(i) = 0
+         Icos(i) = 0
+         Isin(i) = 0
+      end do
  
 c set all initial conditions equal to zero
       do j=Knbd+1,6*i_mxeqn
@@ -251,6 +252,23 @@ c setup for target planet quantities
          i=i+1
       end do
 
+c set up for lunar torques due to planets
+      do i=3,6
+         Npmhar(i)=0
+      end do
+      if(Kmr(84).ge.0) then
+         i=3
+         do j=2,6
+            if(j.ne.3 .and. Km(30+j).ge.0) then
+               Npmhar(i)=j
+               Npmtrg(i)=0
+               do k=1,Numtar
+                  if(Ntrg(k).eq.j) Npmtrg(i)=k
+               end do
+               i=i+1
+            endif
+         end do
+      endif
 c set up for extra print on KOUT
       if(Kout.gt.0 .and. Kkm(7).gt.0) then
          call ZFILL(Relacc,zxprcm)
@@ -475,13 +493,17 @@ c equations for partial derivatives w.r.t. initial conditions
          if(Orbint) j1 = 2
          do j = 1, 6
             X0m(j, j1) = Mrcond(j)
-            if(Corint) X0m(j,j1+1) = Mrcond(j+16)
+            if(Corint) then
+               X0m(j,j1+1) = Mrcond(j+16)
+               if(Corspin .and. j.le.3) X0m(j,j1+1) = 0._10
+            endif
             do i = 1, 6
                Dx0m(i, j, j1) = 0._10
                Dx0m(i, j, j1+1) = 0._10
             end do
             Dx0m(j, j, j1) = 1._10
-            Dx0m(j, j, j1+1) = 1._10
+            if(Corint .and. (j.gt.3 .or. .not.Corspin))
+     .       Dx0m(j, j, j1+1) = 1._10
          end do
          do j = 1, 6
             V0(j + Korb) = X0m(j, j1)
@@ -616,7 +638,7 @@ c usual parameter
 c must be a valid parameter for which we have var'l. eqns.
             if(Kir(i).ne.-3 .and. Kir(i).ne.-4 .and. Kir(i).ne.-6
      .          .and. Kir(i).ne.-7 .and.
-     .       (Kir(i).gt.-11 .or. Kir(i).lt.-18) .and.
+     .       (Kir(i).gt.-11 .or. Kir(i).lt.-19) .and.
      .       (Kir(i).lt.1 .or. Kir(i).gt.50)) goto 170
             Icrtrl(kount) = Kir(i)
             Iparmr = Iparmr + 1
@@ -977,13 +999,61 @@ c form rigid body inertia tensor and its inverse
             Amantl = Awhole
             Bmantl = Bwhole
             Cmantl = Cwhole
+c set plastic deformation terms for constant time delay model
+            if(Kmr(83).eq.0) then
+c conventional value of lunar mean motion
+               W2plas(1)=1.76296E-2_10
+               W2plas(2)=1.76296E-2_10
+               W2plas(3)=-3.52591E-2_10
+            else if(Kmr(83).eq.1) then
+c calculate mean motion from actual mass and conventional semimajor axis
+               W2plas(1)=Gauss**2*Mass(3)/(384399.014_10/aukm)**3 /3._10
+               W2plas(2)=W2plas(1)
+               W2plas(3)=-2._10*W2plas(1)
+            endif
+
             if(Corint) then
+c core inertia tensor
+               do i=1,3
+                  do j=1,3
+                     I0c(i,j)  = 0._10
+                     I0ci(i,j) = 0._10
+                     I0c0(i,j) = 0._10
+                     I0ci0(i,j)= 0._10
+                     Di0cidf(i,j)= 0._10
+                     Di0cidf0(i,j)= 0._10
+                  end do
+               end do
+               I0c(1,1) = Mrcond(24)*(1._10-Mrcond(25))
+               I0c(2,2) = I0c(1,1)
+               I0c(3,3) = Mrcond(24)
+               if(Mrcond(24).gt.0._10) then
+                  I0ci(1,1) = 1._10/I0c(1,1)
+                  I0ci(3,3) = 1._10/I0c(3,3)
+               else
+                  I0ci(1,1) = 1e-10_10
+                  I0ci(3,3) = 1e-10_10
+               endif
+               I0ci(2,2) = I0ci(1,1)
+               Di0cidf(1,1)=I0ci(1,1)/(1._10-Mrcond(25))
+               Di0cidf(2,2)=Di0cidf(1,1)
+c if core is flattened, the core moments in the core frame need to be
+c recalculated every step from the constant values in the mantle frame
+c (but only if the Euler angles are being integrated)
+               I0c0(1,1)=I0c(1,1)
+               I0c0(2,2)=I0c(2,2)
+               I0c0(3,3)=I0c(3,3)
+               I0ci0(1,1)=I0ci(1,1)
+               I0ci0(2,2)=I0ci(2,2)
+               I0ci0(3,3)=I0ci(3,3)
+               Di0cidf0(1,1)=Di0cidf(1,1)
+               Di0cidf0(2,2)=Di0cidf(1,1)
 c substitute mantle inertia tensor for whole moon version
-               Amantl = Awhole - Mrcond(24)
+               Amantl = Awhole - I0c(1,1)
                if(Amantl.le.0._10 .or. Mrcond(24).lt.0._10) call SUICID(
      .   'UNPHYSICAL LUNAR CORE MOMENT OF INERTIA, STOP MORSET',13)
-               Bmantl = Bwhole - Mrcond(24)
-               Cmantl = Cwhole - Mrcond(24)
+               Bmantl = Bwhole - I0c(2,2)
+               Cmantl = Cwhole - I0c(3,3)
                Mma    = Mmoon/Amantl
                Mmb    = Mmoon/Bmantl
                Mmc    = Mmoon/Cmantl
@@ -994,23 +1064,9 @@ c substitute mantle inertia tensor for whole moon version
                I0i(2,2)= 1._10/Bmantl
                I0i(3,3)= 1._10/Cmantl
 c substitute mantle ratios for whole moon versions
-               Mirat(1)=Mirat(1)*Awhole/Amantl
-               Mirat(2)=Mirat(2)*Bwhole/Bmantl
-               Mirat(3)=Mirat(3)*Cwhole/Cmantl
-c core inertia tensor
-               do i=1,3
-                  do j=1,3
-                     I0c(i,j)  = 0._10
-                     I0ci(i,j) = 0._10
-                  end do
-               end do
-               I0c(1,1) = Mrcond(24)
-               I0c(2,2) = Mrcond(24)
-               I0c(3,3) = Mrcond(24)
-               I0ci(1,1) = 1e-10_10
-               if(Mrcond(24).gt.0._10) I0ci(1,1) = 1._10/Mrcond(24)
-               I0ci(2,2) = I0ci(1,1)
-               I0ci(3,3) = I0ci(1,1)
+               Mirat(1)=(Cmantl-Bmantl)/Amantl
+               Mirat(2)=(Cmantl-Amantl)/Bmantl
+               Mirat(3)=(Bmantl-Amantl)/Cmantl
             endif
          endif
 c

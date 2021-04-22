@@ -31,10 +31,10 @@ c common
  
 c data from n-body numerical integration to be written on tape
       common/WRKCOM/ Merc1(6,10),Venpl1(6,5,8),Moon1(6,40),Mrot1(6,40),
-     .        Merc2(6,10),Venpl2(6,5,8),Moon2(6,40),
+     .        Merc2(6,10),Venpl2(6,5,8),Moon2(6,40),Mcor1(6,40),
      .        Nutat1(2,40),Librt1(3,40),Nutat2(2,40),
      .        Librt2(3,40)
-      real*10 Merc1,Merc2,Venpl1,Venpl2,Moon1,Moon2,Mrot1
+      real*10 Merc1,Merc2,Venpl1,Venpl2,Moon1,Moon2,Mrot1,Mcor1
       real*4  Nutat1,Nutat2,Librt1,Librt2
 
 c local
@@ -45,6 +45,9 @@ c local
       data ivl,mvl/6,3/
  
       if(Ntab.ge.0) goto 300
+      if(Kout.gt.0 .and. MOD(Intxpr/64,2).eq.1) write(Kout,50)
+   50 format(4x,'JED',17x,'X',25x,'Y',25x,'Z',24x,
+     . 'DX/DT',21x, 'DY/DT',21x,'DZ/DT')
       Ntab = 1
       Mtab = 1
       mvl  = 6
@@ -65,6 +68,7 @@ c local
          do i = 1, 6
             Moon1(i,1) = X0m(i,1)
             Mrot1(i,1) = X0m(i,2)
+            Mcor1(i,1) = X0m(i,3)
          end do
          if(ABS(Mrot1(3,1)).gt.Twopi) Mrot1(3,1)=MOD(Mrot1(3,1),Twopi)
 c insert libration initial conditions as well
@@ -110,14 +114,25 @@ c print out tabular point data
                   write(Iout,120) juldat,(Merc1(i,Mtab),i = 1,6)
   120             format(f12.3,3F20.16,2p,3F20.16)
                   Line = Line+1
+                  if(Kout.gt.0 .and. MOD(Intxpr/64,2).eq.1)
+     .             write(Kout,125) juldat,(Merc1(i,Mtab),i = 1,6)
+  125             format(f12.3,1p6e26.19)
                else if(igo.le.nb) then
                   write(Iout,130) (Venpl1(i,Ntab,igo),i = 1,6)
   130             format(12x,0p3F20.16,2p3F20.16)
                   Line = Line+1
+                  if(Kout.gt.0 .and. MOD(Intxpr/64,2).eq.1)
+     .             write(Kout,135) (Venpl1(i,Ntab,igo),i = 1,6)
+  135             format(12x,1p6e26.19)
                else if(Jmoon.gt.0) then
                   write(Iout,130) (Moon1(i,Ntabr),i=1,6),
      .             (Mrot1(i,Ntabr),i=1,6)
                   Line = Line+2
+                  if(Kout.gt.0 .and. MOD(Intxpr/64,2).eq.1) then
+                     write(Kout,135) (Moon1(i,Ntabr),i=1,6),
+     .                (Mrot1(i,Ntabr),i=1,6)
+                     if(Corint) write(Kout,135) (Mcor1(i,Ntabr),i=1,6)
+                  endif
                endif
             end do
          endif
@@ -134,6 +149,7 @@ c insert integration results into tabular point
             l=l+1
             Moon1(i,Ntabr)=Y(l,3)
             Mrot1(i,Ntabr)=Y(l+6,3)
+            Mcor1(i,Ntabr)=Y(l+12,3)
          end do
          if(ABS(Mrot1(3,Ntabr)).gt.Twopi) Mrot1(3,Ntabr)=
      .    MOD(Mrot1(3,Ntabr),Twopi)

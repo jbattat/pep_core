@@ -32,7 +32,7 @@ c local
             endif
          end do
 
-         do i = 1, 3
+         do i = 1,6
             if(Mscrd(i,k).gt.0) Nsav = Nsav + 1
          end do
    50 end do

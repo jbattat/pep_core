@@ -42,6 +42,8 @@ c common
       include 'ltrapobs.inc'
       real*10 tmdly, dop
       equivalence (Deriv(2,1),tmdly),(Deriv(2,2),dop)
+      include 'namtim.inc'
+      include 'number.inc'
       include 'obscrd.inc'
       include 'kobequiv.inc'
       include 'param.inc'
@@ -53,7 +55,7 @@ c local
       equivalence (qr(1,1),a1),(qr(2,1),b1),(qr(1,2),a2),(qr(2,2),b2),
      1 (dqr(1,1),da1),(dqr(2,1),db1),(dqr(1,2),da2),(dqr(2,2),db2)
       real*10 dop1,dop2,dop3,dop4,dop5,dop6,drsc3m,dxp,re3m(2),rs1m2,
-     . rs2m2,rsc3m,rsc3m2,tmp,tmq,u,umv,vs1m2,vs2m2,x,ymx
+     . rs2m2,rsc3m,rsc3m2,tmp,tmq,u,umv,vs1m2,vs2m2,x,ymx,qcr(2,2)
       integer i,jj
 
 c external functions
@@ -149,7 +151,7 @@ c
          end do
          if(ntmdly.le.0) return
          Raddum(1) = 2._10*LOG((a2/b2)*(a1/b1))
-         if(ntmdly.gt.1) then
+         if(MOD(ntmdly/2,2).eq.1) then
 c calculate delay due to earth
             do jj=1,2
                tmp = 0._10
@@ -164,6 +166,18 @@ c calculate delay due to earth
      .                  *LOG(((tmp+Rsitp(2))/(tmp-Rsitp(2)))
      .                  *((tmq+Rsitp(1))/(tmq-Rsitp(1))))
          endif
+         if(MOD(ntmdly/4,2).eq.1) then
+c calculate delay due to planet
+            tmq = SQRT(DOT(Xsbpl,Xsbpl))
+            do i=1,2
+               tmp = SQRT(DOT(Xsitec(1,i),Xsitec(1,i))) + tmq
+               qcr(1,i)=tmp+Rsitp(i)
+               qcr(2,i)=tmp-Rsitp(i)
+            end do
+            Raddum(1)=Raddum(1)+2._10*Mass(Nplnt(Klan))*
+     .       LOG((qcr(1,2)/qcr(2,2))*(qcr(1,1)/qcr(2,1)))
+         endif
+
          tmdly = tmdly + Raddum(1)*Reltrm(1)
 
          if(mod(Jct(6)/2048,2).eq.1) then

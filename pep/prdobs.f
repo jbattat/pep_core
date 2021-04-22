@@ -1,17 +1,7 @@
       subroutine PRDOBS(nrmprd,itype)
  
       implicit none
- 
- 
-c*** start of declarations inserted by spag
-      real*10 fdedit,freq1,frq2,tdlt
-      integer   i,ijend,itype,ITYPOB,j,jbcc,jdedit,jterat,
-     .          match,natch,nbkfor,np,npaga,nrmprd,nseq1,
-     .          ntape1
- 
-c*** end of declarations inserted by spag
- 
- 
+
 c           subr. prdobs - j.f.chandler - 1983 feb
 c     read obslibs and iobcon for nrmict and prdict.
 c     handle logic for input (and output) tapes, overriding errors,
@@ -36,7 +26,7 @@ c        common
       include 'inodta.inc'
       include 'loadid.inc'
       include 'ktrap.inc'
-      integer*2 numobs,mspcx1(3),mspcx2(3),imdt(6)
+      integer*2 numobs,mspcx1(6),mspcx2(6),imdt(6)
       equivalence (Num2,numobs),(Mspcrd(1,1),mspcx1),
      .            (Mspcrd(1,2),mspcx2),(imdt(1),Imdt1)
       include 'namobs.inc'
@@ -45,8 +35,9 @@ c        common
       include 'prdmov.inc'
       include 'wrkcompr.inc'
       character*8 scnam(2),sitf8(2),pname
+      real*10 spcdxx(6,2)
       equivalence (scnam(1),Nmobst(1,1)),(sitf8(1),Sitf(1,1)),
-     .            (pname,Plnnam)
+     .            (pname,Plnnam),(spcdxx(1,1),Spcdx(1))
       include 'zeroes.inc'
       character*4 czer4,lnklvm
       character*8 czer8
@@ -60,7 +51,9 @@ c data from records of data set iobcon
       character*4 site1,ser1,site2,spot1,spot2
       real*4 acctm1,fdev1
       real*4    erwgt1(2),secc(2),erobsc(2)
-      real*10 fdysc1(2)
+      real*10 fdysc1(2),fdedit,freq1,frq2,tdlt
+      integer   i,ijend,itype,j,jbcc,jdedit,jterat,
+     .          match,natch,nbkfor,np,npaga,nrmprd,nseq1,ntape1
  
       character*8 blank8/'        '/
       character*4 blank
@@ -69,7 +62,9 @@ c data from records of data set iobcon
       integer*2 i2d,i2e,i2f,m2p,mmpex1,mmpex2
       integer*2 n16/16/,n6/6/
       real*10 jd2000/2451545._10/
- 
+c external functions
+      integer*4 ITYPOB
+
       if(nrmprd.lt.0) then
          if(itype.eq.1) then
 c
@@ -81,7 +76,7 @@ c write first two records of output observation library tape
      .          Mrcnd9,Mprm,Mem,Mmn,Mer,Mmr,Mumdt,
      .          Mumdt1,(Jddtm(i),i=1,Mumdt1),
      .          (Dtm(i),i=1,Mumdt1),(Mdt(i),i=1,Mumdt1),
-     .          Nlabel,(Label(j),j=1,Nlabel),Jddtm0,Lnklvl,n6,
+     .          Nlabel,(Label(j),j=1,Nlabel),Jddtm0,Lnklvl,n6,n6,
      .          izero,izero,izero,izero,izero,izero,
      .          izero,izero
                Itrwnd(Iabs2) = 1
@@ -118,7 +113,7 @@ c write first record of observation series
      .          mspcx2,Freq2,Memmn,np,(Exnams(1,j),Exnams(2,j),j=1,np),
      .          Mngd,Mnfour,Ctlgm,m2p,(Msky(i),i=1,m2p),n16,Mpsrx,
      .          Mmpex,mmpex1,mmpex2,(Mplex(j),(Mpex(i,j),i=1,mmpex2),
-     .          j=1,mmpex1),T0st1,
+     .          j=1,mmpex1),T0st1,T0sp1,
      .         izero,izero,izero,izero,izero,izero,izero,izero
  
                if(Ncodf.le.0) then
@@ -192,7 +187,7 @@ c read first two records of input observation library tape
      . (Mer(i),i=1,Ncnmo),(Mmr(i),i=1,Ncnmo),
      . Mumdt,Mumdt1,(Jddtm(i),i=1,Mumdt1),
      . (Dtm(i),i=1,Mumdt1),(Mdt(i),i=1,Mumdt1),Nlabel,
-     . (Label(j),j=1,Nlabel),Jddtm0,lnklvm,Msitcr
+     . (Label(j),j=1,Nlabel),Jddtm0,lnklvm,Msitcr,Msptcr
       if(Nprmo.gt.u_nmprm .or. Ncnmo.gt.u_nmbod) call SUICID(
      . 'BAD NUMBER OF PARAMETERS, STOP IN PRDOBS',10)
 c in principle, should set default parameter values if the input tape has
@@ -214,6 +209,7 @@ c smaller set of defined parameters
       if(Nlabel.le.0) Nlabel = 1
       if(Ntape.lt.0 .and. Ict(3).gt.1) Ntape = -Ntape
       if(Msitcr.ne.6) Msitcr=3
+      if(Msptcr.ne.6) Msptcr=3
  
       call PAGCHK(60,4,0)
       write(Iout,400) Iabs1,Title,lnklvm,Ntape,jterat,npaga,
@@ -234,8 +230,7 @@ c*  start=3000
 c           read first record of observation series
   500 if(ijend.le.0) then
          call ZFILL(Nsite1,2*50)
-         call ZFILL(Mpl,2*1054)
-         call ZFILL(Msc,2*1490)
+         call ZFILL(Mpl,2*2558)
          read(Iabs1,end=600) Nseq,Ncodf,Nplnt0,Sitf(1,1),Sitf(2,1),
      .    Series,Sitf(1,2),Sitf(2,2),Spota,Ugta,Acctim,Fdev,Freq,Itime,
      .    Nrewnd,npaga,Plnnam,Ncentb,Jdpp0,(Ppcond(i),i=1,Ncnmo),
@@ -243,7 +238,8 @@ c           read first record of observation series
      .    (Msb(i),i=1,Ncnmo),
      .    ((Mscrd(i,j),i=1,Msitcr),j=1,2),i2d,Rbs,Mrbs,i2d,Eqn,Meqn,
      .    Ncph,Pas,Mphs,Nobcon,(Obscon(i),i=1,Nobcon),
-     .    ((Scoord(i,j),i=1,Msitcr),j=1,2),Ksite,Spcdx,mspcx1,
+     .    ((Scoord(i,j),i=1,Msitcr),j=1,2),Ksite,
+     .    (Spcdx(i),i=1,Msptcr),(mspcx1(i),i=1,Msptcr),
      .    Mczone,Mczon1,(Mczhar(i),i=1,Mczon1),Mctess,Mctes1,
      .    (Mcchar(i),i=1,Mctes1),(Mcshar(i),i=1,Mctes1),Mumtar,Mumtr1,
      .    (Mtrg(i),(Mtbod(j,i),j=1,Ncnmo),Mtzone(i),(Mtzhar(j,i),j=1,4),
@@ -251,22 +247,33 @@ c           read first record of observation series
      .    Mcobs1,Mcobs2,(Nmobst(1,j),Nmobst(2,j),(Msc(i,j),i=1,Mcobs2),
      .    Jevv0(j),(Vvcone(i,j),i=1,Mcobs2),j=1,Mcobs1),Mszone,Mszon1,
      .    (Mszhar(i),i=1,Mszon1),Mstess,Mstes1,(Mschar(i),i=1,Mstes1),
-     .    (Msshar(i),i=1,Mstes1),Nplnt2,Spota2,Spcdx2,mspcx2,Freq2,
+     .    (Msshar(i),i=1,Mstes1),Nplnt2,Spota2,
+     .    (Spcdx2(i),i=1,Msptcr),(mspcx2(i),i=1,Msptcr),Freq2,
      .    Memmn,Next,(Exnams(1,j),Exnams(2,j),j=1,Next),Mngd,Mnfour,
      .    Ctlgm,Mskyc,(Msky(i),i=1,Mskyc),i2d,(Mpsrx(i),i=1,i2d),
-     .    Mmpex,i2e,i2f,(Mplex(j),(Mpex(i,j),i=1,i2f),j=1,i2e),T0st1
+     .    Mmpex,i2e,i2f,(Mplex(j),(Mpex(i,j),i=1,i2f),j=1,i2e),T0st1,
+     .    T0sp1
  
          if(Spota2.eq.czer4) Spota2=blank
          if(Ctlgm.eq.czer8) Ctlgm=blank8
          if(Mskyc.le.1) Mskyc    = 0
          if(Nlabel.le.1) Next    = 0
-c fill in site velocity if missing
+c fill in site and spot velocity if missing
          if(Msitcr.lt.6) then
             do j=1,2
                T0st1(j)=jd2000
                do i=Msitcr+1,6
                   Mscrd(i,j)=0
                   Scoord(i,j)=0._10
+               end do
+            end do
+         endif
+         if(Msptcr.lt.6) then
+            do j=1,2
+               T0sp1(j)=jd2000
+               do i=Msptcr+1,6
+                  Mspcrd(i,j)=0
+                  spcdxx(i,j)=0._10
                end do
             end do
          endif

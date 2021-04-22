@@ -318,12 +318,12 @@ c maybe nplnt0=-4 should already mean klap=19???
 c
 c spot coordinates
          call PRDVCT(Nspot, Nsptp1(Klap), Nsptp2(Klap), Lspcrd(1,Nspot),
-     .               Mspcrd, Lspt1, Lspt2, -3)
+     .               Mspcrd, Lspt1, Lspt2, -6)
 c
 c second spot coordinates
          if(Nspot2.gt.0 .and. Nplnt2.eq.Nplnt0) then
             Jfk = Lspt1(Nspot2) - 1
-            call PRDBDY(Lspcrd(1,Nspot2), Mspcrd(1,2), -3)
+            call PRDBDY(Lspcrd(1,Nspot2), Mspcrd(1,2), -6)
          endif
 c
 c radar biases
@@ -388,7 +388,7 @@ c
 c partial derivatives w.r.t. pulsar parameters
       if(Nplsr.gt.0) then
          Jfk = Lpsr0(Nplsr)
-         call PRDPRM(Lpsrcn(1,Nplsr), Mpsrx, 16)
+         call PRDPRM(Lpsrcn(1,Nplsr), Mpsrx,u_nmpsr)
       endif
 c
 c test for error

@@ -235,6 +235,8 @@ c put initial time into jd+fract form
                endif
             end do
          endif
+      else if(Nplnt0.eq.-4) then
+         Cmfct=1._10-Mass(3)
       endif
       return
       end

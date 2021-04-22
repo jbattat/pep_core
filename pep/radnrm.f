@@ -35,7 +35,7 @@ c common
       include 'yvect.inc'
 c
 c local variables
-      real*10 ctv30,dum,tau3t0,tmp
+      real*10 ctv30,dsec,dum,tau3t0,tmp
       integer   i,j,lemctl,lplctl
 c
 c setups
@@ -43,16 +43,23 @@ c setups
       Ututs  = 0.
       Ctat   = 0._10
       Utrec  = 0._10
-      Ctrec  = Sec
+      dsec   = Sec
+      if(Numsav.ge.40 .and. ABS(Save(40)-dsec).lt.1.E-3_10)
+     . dsec = Save(40)
+      Ctrec  = dsec
       Ctrec  = Ihr*3600 + Imin*60 + Ctrec
       Fract  = Ctrec/Secday
       ctv30  = Ctvary*(Jds - Prm97 - 0.5_10 + Fract)**2
       Ctrec  = Ctrec + ctv30*Secday
+      Jd     = Jds
       Fract  = Ctrec/Secday
+      if(Fract.lt.0._10) then
+         Fract=Fract+1._10
+         Jd   =Jd-1
+      endif
       ctrecf = Fract
       lemctl = 1
       lplctl = 1
-      Jd     = Jds
 c
 c
 c c.m. of earth relative to sun
@@ -99,7 +106,7 @@ c correction needed if ctvary is non-zero
 c
             if(Ctvary.ne.0.0_10) then
                tmp    = tmdly/Secday
-               tau3t0 = Jds - Prm97 + Fract - 0.5_10
+               tau3t0 = Jd - Prm97 + Fract - 0.5_10
                tmdly  = tmdly -
      .                  Ctvary*((tmp-ctv30)*(2._10*tau3t0-tmp-ctv30)
      .                  + 2._10*Ctvary*(tau3t0-tmp)**3)*Secday

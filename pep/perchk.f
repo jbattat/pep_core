@@ -238,6 +238,13 @@ c read-only datasets
       Idta(n+2)  = Jct(33)+1
       Namdta(n+2)='JCT(33)+1'
       if(Idta(n+1).gt.0) n=n+2
+      j=Jct(49)
+      j=MOD(j,100)
+      if(j.gt.0) then
+         Idta(n+1)=j
+         Namdta(n+1)='JCT(49)'
+         n=n+1
+      endif
       if(Ict(42).gt.0) then
          Idta(n+1)  = Smat
          Namdta(n+1)='SMAT'

@@ -52,7 +52,7 @@ c
 c compute precession
 c r = julian days from reference epoch
       r = tt - tref
-      t = r/tcntry
+   10 t = r/tcntry
       ttrm(1) = Convds*t
       do i=2,idegree
          ttrm(i) = ttrm(i-1)*t
@@ -88,6 +88,16 @@ c save basic precession matrix before applying bias or small rotations
       end do
 c include frame bias if applicable
       if(Jct(21).eq.2) call FULROT(Prec,bias)
+c
+c if just initializing, then all we needed was the precession matrix
+      if(tt.eq.0._10) then
+         do i=1,3
+            do j=1,3
+               Prec2000(i,j)=Prec(i,j)
+            end do
+         end do
+         return
+      endif
 c
 c calculate matrix from reference eq/eqn to mean ecliptic of date
 c for moon rotation
@@ -414,5 +424,18 @@ c
 c fill common
       Coblq1 = COS(Oblq1)
       Soblq1 = SIN(Oblq1)
-      return
+      if(j2000) then
+         do i=1,3
+            do j=1,i-1
+               Prec2000(i,j)=0._10
+               Prec2000(j,i)=0._10
+            end do
+            Prec2000(i,i)=1._10
+         end do
+         return
+      endif
+c
+c get and save precession matrix to J2000
+      r = 2451545._10 - tref
+      goto 10
       end

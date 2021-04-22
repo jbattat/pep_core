@@ -119,7 +119,6 @@ c calculate interval quantities
 c
 c look for partials needed for integration
 c partials of central body coordinates w.r.t. integrated body
-c or target body i.c. are not needed
 c also, if no tape is available and no elliptic approximations can be made,
 c we skip searching for needed partials
    80    continue

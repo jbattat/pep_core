@@ -28,6 +28,10 @@ c maximum number of input pulsars
       integer u_mxpsr
       parameter (u_mxpsr=10)
 
+c number of pulsar parameters
+      integer u_nmpsr
+      parameter (u_nmpsr=24)
+
 c maximum order of zonal harmonics
       integer u_mxzon
       parameter (u_mxzon=50)

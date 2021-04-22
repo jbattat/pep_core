@@ -44,7 +44,7 @@ c local
       integer*2 npln10/10/, ncnt10/3/
       integer*2 mpln3/-3/, mcntr3/3/
       integer*2 mpln10/-10/, mcnt10/10/
-      integer*2 nsitcr/6/
+      integer*2 nsitcr/6/,nnmpsr,nsptcr/6/
       character*8 nppr/'PPRNRMEQ'/,
      1    embary/' EMBARY '/,erotat/' EROTAT '/,mrotat/' MROTAT '/
  
@@ -63,11 +63,12 @@ c
       if(Jddt0.le.0 .and. Numdt.gt.0) numdt1 = Numdt + 400
       ippr = 0
       if(namhed.eq.nppr) ippr = 1
+      nnmpsr=u_nmpsr
       write(imats) u_nmprm,u_nmbod,prmter,Lprm,Ict,Nparam,Iterat,Npage,
-     .             Numpln,numphr,Numsit,Numspt,Numstr,Numpsr,Numrbs,
-     .             Numeqn,Numphs,Numdt,numdt1,
-     .             (Dt(i),Jddt(i),Ldt(i),i = 1,numdt1),ippr,
-     .             nphr1,nshp2x,nshap,Jddt0,Lnklvl,nsitcr,Izero
+     . Numpln,numphr,Numsit,Numspt,Numstr,Numpsr,Numrbs,
+     . Numeqn,Numphs,Numdt,numdt1,
+     . (Dt(i),Jddt(i),Ldt(i),i = 1,numdt1),ippr,
+     . nphr1,nshp2x,nshap,Jddt0,Lnklvl,nsitcr,nnmpsr,nsptcr,Izero
 c
 c earth-moon barycenter parameters
       write(imats) npln3,ncntr3,Jdem0,Econd,Lem,embary
@@ -151,8 +152,8 @@ c sites
       endif
 c
 c spots
-      if(Numspt.gt.0) write(imats) (Spot(i), Nsplnt(i),
-     .             (Spcord(j,i),j=1,3), (Lspcrd(j,i),j=1,3), i=1,Numspt)
+      if(Numspt.gt.0) write(imats) (Spot(i),Nsplnt(i),T0spot(i),
+     . (Spcord(j,i),j=1,nsptcr),(Lspcrd(j,i),j=1,nsptcr),i=1,Numspt)
 c
 c stars
       if(Numstr.gt.0) then
@@ -166,9 +167,9 @@ c stars
 c
 c pulsar parameters
       if(Numpsr.gt.0) write(imats)
-     .                          (Sptpsr(i), Jdpsr0(i), Plspr(i),
-     .                          Ntypsr(i), (Psrcn(j,i),j=1,16),
-     .                          (Lpsrcn(j,i),j=1,16), i = 1, Numpsr)
+     . (Sptpsr(i), Jdpsr0(i), Plspr(i),
+     . Ntypsr(i), (Psrcn(j,i),j=1,u_nmpsr),
+     . (Lpsrcn(j,i),j=1,u_nmpsr), i = 1, Numpsr)
 c
 c radar biases
       if(Numrbs.gt.0) write(imats)

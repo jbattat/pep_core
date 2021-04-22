@@ -66,6 +66,7 @@ c printout for observing sites
      .       8x,'SITE',3x,'LSCRD',3x,
      .       'RADIUS (KM)  LONGITUDE (DEG)  LATITUDE (DEG) KSCRD')
    40       format(i4,'.',1x,a8,3i2,f15.9,f16.10,f16.10,i3,a1)
+c  1. SSSSSSSS 1 1 1 111.111111111  22.2222222222  33.3333333333  3*
    25       format('0OBSERVING SITES WITH ADJUSTABLE COORDINATES'//
      .       8x,'SITE',5x,'LSCRD',6x,'T0',9x,
      .'RADIUS (KM)  LONGITUDE (DEG)  LATITUDE (DEG) VERT(MM/Y) WEST(MM/Y
@@ -89,6 +90,17 @@ c printout for observing sites
 c
 c printout for spots on observed bodies
 c initialize
+      nsv=0
+      do j=1,Numspt
+         do i=4,6
+            if(Lspcrd(i,j).gt.0 .or. Spcord(i,j).ne.0._10) then
+               nsv=1
+               goto 105
+            endif
+         end do
+      end do
+  105 continue
+
       merspt = 0
       mersps = 0
       mresps = 0
@@ -148,17 +160,31 @@ c check order of spots
 c printout
             call PAGCHK(59,1,0)
             if(j.le.1 .or. Line.le.2) then
-               write(Iout,130)
-  130          format('0OBSERVED SPOTS ON OTHER BODIES'//
+               if(nsv.eq.0) then
+                  write(Iout,130)
+  130             format('0OBSERVED SPOTS ON OTHER BODIES'//
      .                6x,'SPOT  PLANET  NO. LSPCRD',2x,
      .                'RADIUS (KM)  LONGITUDE (DEG) LATITUDE (DEG)')
+               else
+                  write(Iout,135)
+  135             format('0OBSERVED SPOTS ON OTHER BODIES'//
+     .             6x,'SPOT  PLANET  NO.    LSPCRD',6x,'T0',7x,
+     .             'RADIUS (KM)  LONGITUDE (DEG) LATITUDE (DEG)',
+     .            ' VERT(MM/Y) WEST(MM/Y) NRTH(MM/Y)')
+               endif
                Line = Line + 4
             endif
-            write(Iout,140) j,Spot(j),planam,Nsplnt(j),
-     .                       (Lspcrd(i,j),i = 1,3),
-     .                       (Spcord(i,j),i = 1,3),sptch1
-  140       format(i4,'.',1x,1A4,1x,a8,i4,1x,3I2,f14.8,
+            if(nsv.eq.0) then
+               write(Iout,140) j,Spot(j),planam,Nsplnt(j),
+     .          (Lspcrd(i,j),i = 1,3),(Spcord(i,j),i = 1,3),sptch1
+  140          format(i4,'.',1x,1A4,1x,a8,i4,1x,3I2,f14.8,
      .             f16.10,f15.10,1x,a4)
+            else
+               write(Iout,145) j,Spot(j),planam,Nsplnt(j),
+     .          (Lspcrd(i,j),i=1,6),T0spot(j),(Spcord(i,j),i=1,6),sptch1
+  145          format(i4,'.',1x,1A4,1x,a8,i4,1x,6I2,f10.1,f14.8,
+     .             f16.10,f15.10,3f11.5,1x,a4)
+            endif
             if(Mout.gt.0 .and. planam.eq.astrik)
      .          write (Mout,160) j,Spot(j),planam,Nsplnt(j),
      .                            (Lspcrd(i,j),i = 1,3),sptch1

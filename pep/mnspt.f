@@ -35,6 +35,7 @@ c array dimensions
       include 'globdefs.inc'
 
 c commons
+      include 'argfun.inc'
       include 'comdateq.inc'
       include 'coord.inc'
       include 'empcnd.inc'
@@ -48,8 +49,6 @@ c commons
       real*10 dxdisg(6,2),dxdrho(6,2),dxdtau(6,2)
       equivalence (Dxdpsi(1,1),dxdisg(1,1)),(Dxdth(1,1),dxdrho(1,1)),
      .            (Dxdphi(1,1),dxdtau(1,1))
-      real*10 dxdbet(6,2),dxdgam(6,2)
-      equivalence (Dxdpsi(1,1),dxdbet(1,1)),(Dxdphi(1,1),dxdgam(1,1))
       real*4    librat(2,3),tau,rho,dtau,drho
       equivalence (librat(1,1),tau),(librat(1,2),rho),
      .            (librat(2,1),dtau),(librat(2,2),drho)
@@ -78,7 +77,7 @@ c
 c local
       real*10 anomx,asc,clony,cphi,cpsi,cth,ctvcor,danom,dasc,dper,
      . dphi,dphidt,dpsi,dpsidt,dsig,dtausg,dth,dthdt,
-     . dxdbt1,frt,per,per1,phi,psi,qq,qv,slony,sigma,sphi,spsi,sth,
+     . frt,per,per1,phi,psi,qq,qv,slony,sigma,sphi,spsi,sth,
      . tausig,theta,tt,x(6),xms(3),ysptmp(3)
       integer*4 i,ii,int,int1,j,jdt,jnt,nlibpr
       real*10 DOT
@@ -97,15 +96,26 @@ c remove any ctvary correction
  
 c if(mnspt1.gt.0) goto 40
       mnspt1 = 1
- 
+
+c set up for analytic dissipation terms
+      if(Dodiss) then
+         call FUNARG(jdt+(frt-0.5_10))
+         Disstrm(1) = COS(Lp*Twopi)
+         Disstrm(2) = COS(2._10*(L-D)*Twopi)
+         Disstrm(3) = COS(2._10*(F-L)*Twopi)
+         Disssum    = DOT(Disstrm,Mrcond(14))
+      endif
+
       if(nlibpr.eq.0) then
 c
 c interpolation of libration from nbody or moon tape
          if(meqinc.eq.0._10) meqinc = 0.0268587_10
          call MNLIB(jdt,frt,librat,nvel)
-c
-c series for libration
-      else if(nlibpr.ge.0) then
+         if(Dodiss) then
+            tau = tau + Disssum
+            librat(1,3) = librat(1,3) + meqinc*Disssum
+         endif
+      else if(nlibpr.gt.0) then
 c
 c libration read from tape
          call ROTCRD(jdt,frt,x,nvel,10,1)
@@ -124,6 +134,11 @@ c get rot from euler angles
             dpsi  = x(4)
             dth   = x(5)
             dphi  = x(6)
+c add analytic correction for dissipation
+            if(Dodiss) then
+               phi = phi + Disssum
+            endif
+
             cpsi  = COS(psi)
             spsi  = SIN(psi)
             cth   = COS(theta)
@@ -145,6 +160,10 @@ c get rot from euler angles
             librat(1,1) = x(1)
             librat(1,2) = x(2)
             librat(1,3) = meqinc*x(1) - x(3)
+            if(Dodiss) then
+               librat(1,1) = librat(1,1) + Disssum
+               librat(1,3) = librat(1,3) + meqinc*Disssum
+            endif
             if(nvel.gt.0) then
                librat(2,1) = x(4)
                librat(2,2) = x(5)
@@ -152,7 +171,13 @@ c get rot from euler angles
             endif
          endif
       else
+c
+c series for libration
          call DLIBRA(jdt,frt,librat,meqinc,nvel,beta,gamma)
+         if(Dodiss) then
+            librat(1,1) = librat(1,1) + Disssum
+            librat(1,3) = librat(1,3) + meqinc*Disssum
+         endif
       endif
 c
 c     the a matrix is no longer calculated in mnspt, but rather in
@@ -278,6 +303,30 @@ c with respect to spot latitude
      .                        *Dydphi(2,n) + Rot(3,i)*Dydphi(3,n)
          end do
       endif
+c
+c with respect to spot upward velocity
+      if(Lspot(4,n).gt.0 .or. Jct(11).gt.0) then
+         call PRODCT(Rot,Dydv(1,1,n),Dxspcd(1,4,n),-3,3,1)
+         do i=1,3
+            Dxspcd(i,4,n)=Dxspcd(i,4,n)*Dtspt(n)/Aultsc
+         end do
+      endif
+c
+c with respect to spot westward velocity
+      if(Lspot(5,n).gt.0 .or. Jct(11).gt.0) then
+         call PRODCT(Rot,Dydv(1,2,n),Dxspcd(1,5,n),-3,3,1)
+         do i=1,3
+            Dxspcd(i,5,n)=Dxspcd(i,5,n)*Dtspt(n)/Aultsc
+         end do
+      endif
+c
+c with respect to spot northward velocity
+      if(Lspot(6,n).gt.0 .or. Jct(11).gt.0) then
+         call PRODCT(Rot,Dydv(1,3,n),Dxspcd(1,6,n),-3,3,1)
+         do i=1,3
+            Dxspcd(i,6,n)=Dxspcd(i,6,n)*Dtspt(n)/Aultsc
+         end do
+      endif
       if(Kmr(100).ge.0) then
  
          if(nvel.le.0) then
@@ -319,7 +368,6 @@ c partial of u w.r.t. phi
 c
 c determine partial derivatives of rot w.r.t.
 c psi, theta, phi
-         if(iabs(nlibpr).le.1) goto 400
          call PRODCT(dudpsi,A,dmdpsi,3,3,3)
          call PRODCT(dudth,A,dmdth,3,3,3)
          call PRODCT(dudphi,A,dmdphi,3,3,3)
@@ -398,12 +446,10 @@ c           and gamma if series calculation used
       if(nlibpr.lt.0) then
          call DLIBP1(nvel,dlibrt,ibet,igam)
          do i = 1, 3
-            dxdbt1 = dxdisg(i,n)*isgbet + dxdrho(i,n)
-     .               *rhobet + dxdtau(i,n)*taubet + Dxdi(i,n)*ibet
-            dxdgam(i,n) = dxdisg(i,n)*isggam + dxdrho(i,n)
-     .                     *rhogam + dxdtau(i,n)*taugam + Dxdi(i,n)
-     .                     *igam
-            dxdbet(i,n) = dxdbt1
+            Dxdbet(i,n) = dxdisg(i,n)*isgbet + dxdrho(i,n)*rhobet +
+     .       dxdtau(i,n)*taubet + Dxdi(i,n)*ibet
+            Dxdgam(i,n) = dxdisg(i,n)*isggam + dxdrho(i,n)*rhogam +
+     .                      dxdtau(i,n)*taugam + Dxdi(i,n)*igam
          end do
       endif
 c
@@ -559,18 +605,15 @@ c           and gamma if series calculation used
                if(nlibpr.eq.-2) then
                   do i = 4, 6
                      ii     = i - 3
-                     dxdbt1 = dxdisg(i,n)*isgbet + dxdrho(i,n)
+                     Dxdbet(i,n) = dxdisg(i,n)*isgbet + dxdrho(i,n)
      .                        *rhobet + dxdtau(i,n)*taubet + Dxdi(i,n)
      .                        *ibet + disgbt*dxdisg(ii,n)
      .                        + drhobt*dxdrho(ii,n)
      .                        + dtaubt*dxdtau(ii,n)
-                     dxdgam(i,n) = Dxdi(i,n)*igam + dxdisg(i,n)
-     .                              *isggam + dxdrho(i,n)
-     .                              *rhogam + dxdtau(i,n)
-     .                              *taugam + disggm*dxdisg(ii,n)
-     .                              + drhogm*dxdrho(ii,n)
+                     Dxdgam(i,n) = Dxdi(i,n)*igam + dxdisg(i,n)*isggam
+     .                + dxdrho(i,n)*rhogam + dxdtau(i,n)*taugam
+     .                + disggm*dxdisg(ii,n) + drhogm*dxdrho(ii,n)
      .                              + dtaugm*dxdtau(ii,n)
-                     dxdbet(i,n) = dxdbt1
                   end do
                endif
             endif

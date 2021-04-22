@@ -40,7 +40,7 @@ c
 c
       include 'morstf.inc'
 c use summh for both He and Hs, sump for both Dhedx and Dhsdx
-      real*10 summh(3,2),sump(3,3,2)
+      real*10 summh(3,6),sump(3,3,6)
       equivalence (He,summh),(Dhedx,sump)
       include 'nutces.inc'
       include 'output.inc'
@@ -48,21 +48,13 @@ c use summh for both He and Hs, sump for both Dhedx and Dhsdx
 
 c
 c quantities internal to this routine
-      real*10 slat,clat,slat1(3),clatr,rh1,rh(19),slng(19,3),
-     .          clng(19,3),lng1(3),leg(19),leg1(19),leg2(19),
-     .          gleg(54),gleg1(54),gleg2(54),zone(3,19,0:2),
-     .          tess1(3,54,0:2),tess2(3,54,0:2),snh1(54),snh2(54),di2,
+      real*10 slat,clat,slat1(3),clatr,rh1,rh(19),slng(19,6),
+     .          clng(19,6),lng1(3),leg(19),leg1(19),leg2(19),
+     .          gleg(54),gleg1(54),gleg2(54),zone(3,19,0:6),
+     .          tess1(3,54,0:6),tess2(3,54,0:6),snh1(54),snh2(54),di2,
      .          djh,sumt,clap2(3,3),slap2(3,3),
-     .          sumpt,dcnm
-      real*10 ezone(3,19),szone(3,19),eslng(19),eclng(19),
-     .          sslng(19),sclng(19),tesse1(3,54),tesse2(3,54),
-     .          tesss1(3,54),tesss2(3,54)
-      equivalence (zone(1,1,1),ezone),(zone(1,1,2),szone),
-     . (slng(1,1),eslng),(slng(1,2),sslng),
-     . (clng(1,1),eclng),(clng(1,2),sclng),
-     . (tess1(1,1,1),tesse1),(tess1(1,1,2),tesss1),
-     . (tess2(1,1,1),tesse2),(tess2(1,1,2),tesss2)
-      real*10 cor(3),r,r2,ddw1dq,ddw2dq,ddw3dq
+     .          sumpt,dcnm,gama1
+      real*10 ddw1dq,ddw2dq,ddw3dq
       real*10 a(3),dadx(3,3),x(3),asum(3),dsumh,asun(3),
      .          dadxsm(3,3),dum
       real*10 drrdpsi(3),drrdth(3),drrdphi(3),drr(3,3),drrx(3,3),
@@ -94,7 +86,7 @@ c check if parameter is tesseral cosine harmonic coefficient
                      i1 = i + 1
                      do jh = 1, i1
                         ii = ii + 1
-                        if(Icos(ii).eq.Kkk) go to 100
+                        if(Icos(ii).eq.Kkk) goto 100
                      end do
                   end do
 c
@@ -107,41 +99,42 @@ c check if parameter is tesseral sine harmonic coefficient
                         ii = ii + 1
                         if(Isin(ii).eq.Kkk) then
                            djh    = jh
-                           ddw1dp = -Gamat3*Mma*(Smecor(2)*(eslng(jh)*
-     .                              tesse1(3,ii)+eclng(jh)*tesse2(3,ii)
-     .                              *djh) - Smecor(3)
-     .                              *(eslng(jh)*tesse1(2,ii)+eclng(jh)
-     .                              *tesse2(2,ii)*djh))
-                           ddw2dp = -Gamat3*Mmb*(Smecor(3)*(eslng(jh)*
-     .                              tesse1(1,ii)+eclng(jh)*tesse2(1,ii)
-     .                              *djh) - Smecor(1)
-     .                              *(eslng(jh)*tesse1(3,ii)+eclng(jh)
-     .                              *tesse2(3,ii)*djh))
-                           ddw3dp = -Gamat3*Mmc*(Smecor(1)*(eslng(jh)*
-     .                              tesse1(2,ii)+eclng(jh)*tesse2(2,ii)
-     .                              *djh) - Smecor(2)
-     .                              *(eslng(jh)*tesse1(1,ii)+eclng(jh)
-     .                              *tesse2(1,ii)*djh))
-                           if(Kmr(81).ge.1) then
-                              ddw1dp = ddw1dp -
-     .                                 Gamat*Mma*(Smcor(2)*(sslng(jh)
-     .                                 *tesss1(3,ii)+sclng(jh)
-     .                                 *tesss2(3,ii)*djh) - Smcor(3)
-     .                                 *(sslng(jh)*tesss1(2,ii)
-     .                                 +sclng(jh)*tesss2(2,ii)*djh))
-                              ddw2dp = ddw2dp -
-     .                                 Gamat*Mmb*(Smcor(3)*(sslng(jh)
-     .                                 *tesss1(1,ii)+sclng(jh)
-     .                                 *tesss2(1,ii)*djh) - Smcor(1)
-     .                                 *(sslng(jh)*tesss1(3,ii)
-     .                                 +sclng(jh)*tesss2(3,ii)*djh))
-                              ddw3dp = ddw3dp -
-     .                                 Gamat*Mmc*(Smcor(1)*(sslng(jh)
-     .                                 *tesss1(2,ii)+sclng(jh)
-     .                                 *tesss2(2,ii)*djh) - Smcor(2)
-     .                                 *(sslng(jh)*tesss1(1,ii)
-     .                                 +sclng(jh)*tesss2(1,ii)*djh))
-                           endif
+                           ddw1dp = 0._10
+                           ddw2dp = 0._10
+                           ddw3dp = 0._10
+                           do is=1,6
+                              if(is.eq.1) then
+c effect of earth
+                                 gama1=Gamat3
+                              else if(is.eq.2) then
+c effect of sun
+                                 if(Kmr(81).lt.1) goto 5
+                                 gama1=Gamat
+                              else
+c effect of planets
+                                 if(Kmr(84).lt.1 .or. Npmhar(is).eq.0)
+     .                            return
+                                 gama1=Gamat*Mass(Npmhar(is))
+                              endif
+                              ddw1dp = ddw1dp - gama1*Mma*(Spcor(2,is)*(
+     .                         slng(jh,is)*tess1(3,ii,is)+
+     .                         clng(jh,is)*tess2(3,ii,is)*djh)
+     .                         - Spcor(3,is)*(
+     .                         slng(jh,is)*tess1(2,ii,is)+
+     .                         clng(jh,is)*tess2(2,ii,is)*djh))
+                              ddw2dp = ddw2dp - gama1*Mmb*(Spcor(3,is)*(
+     .                         slng(jh,is)*tess1(1,ii,is)+
+     .                         clng(jh,is)*tess2(1,ii,is)*djh)
+     .                         - Spcor(1,is)*(
+     .                         slng(jh,is)*tess1(3,ii,is)+
+     .                         clng(jh,is)*tess2(3,ii,is)*djh))
+                              ddw3dp = ddw3dp - gama1*Mmc*(Spcor(1,is)*(
+     .                         slng(jh,is)*tess1(2,ii,is)+
+     .                         clng(jh,is)*tess2(2,ii,is)*djh)
+     .                         - Spcor(2,is)*(
+     .                         slng(jh,is)*tess1(1,ii,is)+
+     .                         clng(jh,is)*tess2(1,ii,is)*djh))
+    5                      end do
                            return
                         endif
                      end do
@@ -150,23 +143,32 @@ c check if parameter is tesseral sine harmonic coefficient
             else
                do i = 1, Nzonp
                   if(Izone(i).eq.Kkk) then
-                     ddw1dp = Gamat3*Mma*(Smecor(2)*ezone(3,i)
-     .                        - Smecor(3)*ezone(2,i))
-                     ddw2dp = Gamat3*Mmb*(Smecor(3)*ezone(1,i)
-     .                        - Smecor(1)*ezone(3,i))
-                     ddw3dp = Gamat3*Mmc*(Smecor(1)*ezone(2,i)
-     .                        - Smecor(2)*ezone(1,i))
-                     if(Kmr(81).ge.1) then
-                        ddw1dp = ddw1dp +
-     .                           Gamat*Mma*(Smcor(2)*szone(3,i) -
-     .                           Smcor(3)*szone(2,i))
-                        ddw2dp = ddw2dp +
-     .                           Gamat*Mmb*(Smcor(3)*szone(1,i) -
-     .                           Smcor(1)*szone(3,i))
-                        ddw3dp = ddw3dp +
-     .                           Gamat*Mmc*(Smcor(1)*szone(2,i) -
-     .                           Smcor(2)*szone(1,i))
-                     endif
+                     ddw1dp = 0._10
+                     ddw2dp = 0._10
+                     ddw3dp = 0._10
+                     do is=1,6
+                        if(is.eq.1) then
+c effect of earth
+                           gama1=Gamat3
+                        else if(is.eq.2) then
+c effect of sun
+                           if(Kmr(81).lt.1) goto 7
+                           gama1=Gamat
+                        else
+c effect of planets
+                           if(Kmr(84).lt.1 .or. Npmhar(is).eq.0) return
+                           gama1=Gamat*Mass(Npmhar(is))
+                        endif
+                        ddw1dp = ddw1dp + gama1*Mma*(
+     .                   Spcor(2,is)*zone(3,i,is) -
+     .                   Spcor(3,is)*zone(2,i,is))
+                        ddw2dp = ddw2dp + gama1*Mmb*(
+     .                   Spcor(3,is)*zone(1,i,is) -
+     .                   Spcor(1,is)*zone(3,i,is))
+                        ddw3dp = ddw3dp + gama1*Mmc*(
+     .                   Spcor(1,is)*zone(2,i,is) -
+     .                   Spcor(2,is)*zone(1,i,is))
+    7                end do
                      return
                   endif
                end do
@@ -341,27 +343,29 @@ c           determine quantities for harmonic terms in rotation
 c
 c           is=1     forcing terms due to earth
 c           is=2     forcing terms due to sun
-c           loop begins at statement 113, ends at 180
+c           is=3-6   forcing terms due to planets
 c
       if(.not.Rotint) return
-      is = 1
-      do i = 1, 3
-         cor(i) = Smecor(i)
-      end do
-      r  = Srem
-      r2 = Srem2
+      do is = 1,6
+         if(is.eq.1) then
+c effect of earth
+         else if(is.eq.2) then
+c effect of sun
+            if(Kmr(81).lt.0) goto 30
+         else
+c effect of planets
+            if(Kmr(84).lt.0 .or. Npmhar(is).eq.0) return
+         endif
 
-      do while(.true.)
- 
 c latitude terms
-         slat = cor(3)/r
+         slat = Spcor(3,is)/Spc(is)
          clat = SQRT(1._10 - slat**2)
          do i = 1, 3
-            slat1(i) = -cor(i)*slat/r
+            slat1(i) = -Spcor(i,is)*slat/Spc(is)
          end do
          slat1(3) = 1._10 + slat1(3)
-         clatr    = clat*r
-         rh1   = r/Mrad
+         clatr    = clat*Spc(is)
+         rh1   = Spc(is)/Mrad
          rh(1) = rh1**2
          if(Ntop.ge.2) then
             do i = 2, Ntop
@@ -371,8 +375,8 @@ c latitude terms
  
 c longitude terms
          if(Ntess.gt.1) then
-            slng(1,is) = cor(2)/clatr
-            clng(1,is) = cor(1)/clatr
+            slng(1,is) = Spcor(2,is)/clatr
+            clng(1,is) = Spcor(1,is)/clatr
             do i = 2, Ntess
                slng(i,is) = slng(i-1,is)*clng(1,is)
      .          + clng(i-1,is)*slng(1,is)
@@ -391,7 +395,7 @@ c zonal harmonic terms for equations of motion
          do jj = 1, 3
             summh(jj,is) = 0._10
             do i = 1, Nzon1
-               zone(jj,i,is) = leg1(i)*slat1(jj)/rh(i)/r2
+               zone(jj,i,is) = leg1(i)*slat1(jj)/rh(i)/Spc2(is)
                summh(jj,is) = summh(jj,is) + Zhar(i)*zone(jj,i,is)
             end do
 c
@@ -403,8 +407,8 @@ c tesseral harmonic terms for equations of motion
                do jh = 1, i1
                   djh = jh
                   ih  = ih + 1
-                  tess1(jj,ih,is) = gleg1(ih)*slat1(jj)/rh(i)/r2
-                  tess2(jj,ih,is) = gleg(ih)*lng1(jj)/rh(i)/r2
+                  tess1(jj,ih,is) = gleg1(ih)*slat1(jj)/rh(i)/Spc2(is)
+                  tess2(jj,ih,is) = gleg(ih)*lng1(jj)/rh(i)/Spc2(is)
                   snh1(ih)= Char(ih)*clng(jh,is) + Shar(ih)*slng(jh,is)
                   snh2(ih)= -Char(ih)*slng(jh,is) + Shar(ih)*clng(jh,is)
                   sumt = sumt + snh1(ih)*tess1(jj,ih,is) +
@@ -418,7 +422,8 @@ c
 c determine harmonic quantitites for partials
 c
          if(Iparmr.gt.1) then
-            if(is.eq.2 .and. Kmr(81).lt.1) return
+            if(is.eq.2 .and. Kmr(81).lt.1) goto 30
+            if(is.eq.3 .and. Kmr(84).lt.1) return
 c
 c determine p(n), p'(n), p(n,h), p'(n,h)
             call LEGND2(slat, clat, Nzone, Ntess, leg, leg1, leg2, gleg,
@@ -433,25 +438,26 @@ c partials of zonal harmonic terms wrt coordinates
      .             *(delta(1,l)*slng(1,is)-delta(2,l)*clng(1,is))
      .             + (delta(2,l)*slng(1,is)+delta(1,l)*clng(1,is))
      .             *(delta(1,jj)*slng(1,is)-delta(2,jj)*clng(1,is)))
-     .             /r2/clat**2
-                  slap2(jj, l) = (3._10*cor(3)*cor(jj)*cor(l)/r2 -
-     .                           delta(3,jj)*cor(l) - delta(3,l)*cor(jj)
-     .                           - delta(jj,l)*cor(3))/r2/r
+     .             /Spc2(is)/clat**2
+                  slap2(jj, l) = (3._10*Spcor(3,is)*Spcor(jj,is)*
+     .             Spcor(l,is)/Spc2(is) - delta(3,jj)*Spcor(l,is)
+     .             - delta(3,l)*Spcor(jj,is)
+     .             - delta(jj,l)*Spcor(3,is))/Spc2(is)/Spc(is)
                   do i = 1, Nzon1
-                     if(i.gt.Nzonp) go to 10
+                     if(i.gt.Nzonp) goto 10
                      di2 = i + 2
                      sump(jj,l,is) = sump(jj,l,is)
-     .                             + (r*leg1(i)*slap2(jj,l) + leg2(i)
-     .                             *slat1(jj)*slat1(l)/r - di2*leg1(i)
-     .                             *slat1(jj)*cor(l)/r2)*Zhar(i)/rh(i)
-     .                             /r2
+     .                + (Spc(is)*leg1(i)*slap2(jj,l) + leg2(i)
+     .                *slat1(jj)*slat1(l)/Spc(is) - di2*leg1(i)
+     .                *slat1(jj)*Spcor(l,is)/Spc2(is))*Zhar(i)/rh(i)
+     .                /Spc2(is)
                   end do
 c
 c partials of tesseral harmonic terms wrt coordinates
    10             if(Ntess.gt.1) then
                      inh = 0
                      do i = 1, Ntes1
-                        if(i.gt.Ntesp) go to 20
+                        if(i.gt.Ntesp) goto 20
                         sumpt = 0._10
                         di2   = i + 2
                         i1    = i + 1
@@ -459,16 +465,17 @@ c partials of tesseral harmonic terms wrt coordinates
                            djh   = ih
                            inh   = inh + 1
                            sumpt = sumpt +
-     .                             (di2*cor(l)/r2*(snh1(inh)*gleg1(inh)
-     .                             *slat1(jj)+djh*snh2(inh)*gleg(inh)
-     .                             *lng1(jj))
-     .                             - (snh1(inh)*(gleg1(inh)*slap2(jj,l)
-     .                             +(gleg2(inh)*slat1(jj)*slat1(l)
-     .                             -djh**2*gleg(inh)*lng1(jj)*lng1(l))
-     .                             /r2)+snh2(inh)
-     .                             *djh*(gleg1(inh)*slat1(jj)*lng1(l)
-     .                             /r2+gleg(inh)*clap2(jj,l)+gleg1(inh)
-     .                             *lng1(jj)*slat1(l)/r2))*r)/rh(i)/r2
+     .                      (di2*Spcor(l,is)/Spc2(is)*(snh1(inh)*
+     .                      gleg1(inh)*slat1(jj)+djh*snh2(inh)*gleg(inh)
+     .                      *lng1(jj))
+     .                      - (snh1(inh)*(gleg1(inh)*slap2(jj,l)
+     .                      +(gleg2(inh)*slat1(jj)*slat1(l)
+     .                      -djh**2*gleg(inh)*lng1(jj)*lng1(l))
+     .                      /Spc2(is))+snh2(inh)
+     .                      *djh*(gleg1(inh)*slat1(jj)*lng1(l)
+     .                      /Spc2(is)+gleg(inh)*clap2(jj,l)+gleg1(inh)
+     .                      *lng1(jj)*slat1(l)/Spc2(is)))*Spc(is))/rh(i)
+     .                      /Spc2(is)
                         end do
                         sump(jj,l,is) = sump(jj,l,is) + sumpt
                      end do
@@ -477,14 +484,8 @@ c partials of tesseral harmonic terms wrt coordinates
    20          end do
             end do
          endif
-         if(is.eq.2 .or. Kmr(81).lt.0) return
-         is = 2
-         do i = 1, 3
-            cor(i) = Smcor(i)
-         end do
-         r  = Srm
-         r2 = Srm2
-      end do
+   30 end do
+      return
 c
 c pick up indirect c22 contribution to beta, gamma, or j2 partial
       entry MORHR2
@@ -497,33 +498,41 @@ c DCNM is the partial of the specified coefficient w.r.t. the
 c  parameter of interest, i.e., either 1 (for the coefficent itself)
 c  or the appropriate partial (for beta, gamma, or J2 indirect terms)
   100 djh    = jh
-      ddw1dq = -Gamat3*Mma*(Smecor(2)*(eclng(jh)*tesse1(3,ii)-eslng(jh)*
-     .         tesse2(3,ii)*djh) - Smecor(3)
-     .         *(eclng(jh)*tesse1(2,ii)-eslng(jh)*tesse2(2,ii)*djh))
-      ddw2dq = -Gamat3*Mmb*(Smecor(3)*(eclng(jh)*tesse1(1,ii)-eslng(jh)*
-     .         tesse2(1,ii)*djh) - Smecor(1)
-     .         *(eclng(jh)*tesse1(3,ii)-eslng(jh)*tesse2(3,ii)*djh))
-      ddw3dq = -Gamat3*Mmc*(Smecor(1)*(eclng(jh)*tesse1(2,ii)-eslng(jh)*
-     .         tesse2(2,ii)*djh) - Smecor(2)
-     .         *(eclng(jh)*tesse1(1,ii)-eslng(jh)*tesse2(1,ii)*djh))
-      if(Kmr(81).ge.1) then
-         ddw1dq = ddw1dq -
-     .            Gamat*Mma*(Smcor(2)*(sclng(jh)*tesss1(3,ii)-sslng(jh)
-     .            *tesss2(3,ii)*djh) - Smcor(3)
-     .            *(sclng(jh)*tesss1(2,ii)-sslng(jh)*tesss2(2,ii)*djh))
-         ddw2dq = ddw2dq -
-     .            Gamat*Mmb*(Smcor(3)*(sclng(jh)*tesss1(1,ii)-sslng(jh)
-     .            *tesss2(1,ii)*djh) - Smcor(1)
-     .            *(sclng(jh)*tesss1(3,ii)-sslng(jh)*tesss2(3,ii)*djh))
-         ddw3dq = ddw3dq -
-     .            Gamat*Mmc*(Smcor(1)*(sclng(jh)*tesss1(2,ii)-sslng(jh)
-     .            *tesss2(2,ii)*djh) - Smcor(2)
-     .            *(sclng(jh)*tesss1(1,ii)-sslng(jh)*tesss2(1,ii)*djh))
-      endif
- 
+      ddw1dq = 0._10
+      ddw2dq = 0._10
+      ddw3dq = 0._10
+      do is=1,6
+         if(is.eq.1) then
+c effect of earth
+            gama1=Gamat3
+         else if(is.eq.2) then
+c effect of sun
+            if(Kmr(81).lt.1) goto 300
+            gama1=Gamat
+         else
+c effect of planets
+            if(Kmr(84).lt.1 .or. Npmhar(is).eq.0) goto 400
+            gama1=Gamat*Mass(Npmhar(is))
+         endif
+         ddw1dq = ddw1dq - gama1*Mma*(
+     .    Spcor(2,is)*(clng(jh,is)*tess1(3,ii,is)-
+     .            slng(jh,is)*tess2(3,ii,is)*djh)
+     .    - Spcor(3,is)*(clng(jh,is)*tess1(2,ii,is)-
+     .              slng(jh,is)*tess2(2,ii,is)*djh))
+         ddw2dq = ddw2dq - gama1*Mmb*(
+     .    Spcor(3,is)*(clng(jh,is)*tess1(1,ii,is)-
+     .            slng(jh,is)*tess2(1,ii,is)*djh)
+     .    - Spcor(1,is)*(clng(jh,is)*tess1(3,ii,is)-
+     .              slng(jh,is)*tess2(3,ii,is)*djh))
+         ddw3dq = ddw3dq - gama1*Mmc*(
+     .    Spcor(1,is)*(clng(jh,is)*tess1(2,ii,is)-
+     .            slng(jh,is)*tess2(2,ii,is)*djh)
+     .    - Spcor(2,is)*(clng(jh,is)*tess1(1,ii,is)-
+     .              slng(jh,is)*tess2(1,ii,is)*djh))
+  300 end do
 c correct for indirect effect of beta, gamma, and J2 on C22
 c or simply include effect of tesseral cosine harmonics other than C22
-      ddw1dp = ddw1dq*dcnm + ddw1dp
+  400 ddw1dp = ddw1dq*dcnm + ddw1dp
       ddw2dp = ddw2dq*dcnm + ddw2dp
       ddw3dp = ddw3dq*dcnm + ddw3dp
 c

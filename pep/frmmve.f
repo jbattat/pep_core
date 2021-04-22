@@ -284,13 +284,13 @@ c find corresponding input pulsar
          do i=1,Numpsr
             if(Sptpsr(i).eq.Sptps1(k)) then
                Nrst=Lpsr0(i)
-               call FRMPRM(rst,Lpsrcn(1,i),Mpsrcn(1,k),16,ntop)
+               call FRMPRM(rst,Lpsrcn(1,i),Mpsrcn(1,k),u_nmpsr,ntop)
                goto 40
             endif
          end do
 c
 c no match
-         call FRMPRM(rst,izero2,Mpsrcn(1,k),16,ntop)
+         call FRMPRM(rst,izero2,Mpsrcn(1,k),u_nmpsr,ntop)
    40 end do
 
   750 return

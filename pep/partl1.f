@@ -820,7 +820,7 @@ c           partial derivatives w.r.t. spot coordinates on observed body
       call PCOPS(m, 'SPCR', Iabs1)
       do while( .true. )
          iflag = 0
-         call PCOPY(l, 3, iflag, 1, Lspcd(1,m), Mspcd(1,m))
+         call PCOPY(l, 6, iflag, 1, Lspcd(1,m), Mspcd(1,m))
          if(iflag.le.0) then
             if(Ncodf.eq.18) then
  
@@ -849,7 +849,7 @@ c it is assummed that no spot is involved for transit or occultation
                call CPARTC(kick)
             endif
          endif
-         if(l.ge.3) then
+         if(l.ge.6) then
             if(m.le.1) goto 1500
             goto 1700
          endif
@@ -972,18 +972,17 @@ c parameters, gravitational potential harmonic coefficients
 c
  1900 if(Numtar.le.0) goto 2500
 c
-c for planet observations
-      if(Klanb.gt.0) then
-c
-c for probe observations
-         Ksprb = Lparsb
-         lt    = 8
-         ll    = 1
-         mm    = 1
-      else
-         if(Mnplnt.ne.0) call TRGPIC(kick)
+      if(Klanb.le.0) then
+c for planet or moon observations
+         call TRGPIC(kick)
          goto 2500
       endif
+c
+c for probe observations
+      Ksprb = Lparsb
+      lt    = 8
+      ll    = 1
+      mm    = 1
  2000 if(ll.gt.Numtar) goto 2500
 c
 c search for start of target planet partials on probe tape

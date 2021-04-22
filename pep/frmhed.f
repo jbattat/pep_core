@@ -68,7 +68,7 @@ c local quantities for header skip
       character*88 ititl
       equivalence (ititl,mcspc)
       integer*2 i2,mudpln,mudphr,mudsit,mudspt,mudstr,mudpsr,
-     .          mudrbs,mudeqn,mudphs,mdphr1,msitcr
+     .          mudrbs,mudeqn,mudphs,mdphr1,msitcr,mnmpsr,msptcr
       data izero/0/
       character*8 prmhdr(4)/'SOLAR SY','STEM PAR','AMETERS ',' '/,
      .          qprm/'PRMTR1 ='/, qmct/'MCT ='/, qdt1/'DT1 ='/,
@@ -101,7 +101,8 @@ c enter here to do nothing but skip header records
      .    mudpln,mudphr,mudsit,mudspt,mudstr,mudpsr,
      .    mudrbs,mudeqn,mudphs,i2,mumdt1,
      .    (r4,i4,i2,i=1,mumdt1),ippr,mdphr1,i2,(i2,i=1,mdphr1),
-     .    i4,lnklvm,msitcr
+     .    i4,lnklvm,msitcr,mnmpsr,msptcr
+         if(mnmpsr.eq.0) mnmpsr=16
 
 c bypass head process
          maxj = mudpln + mudphr + 6
@@ -156,7 +157,8 @@ c initialize mdt vector to zero to prevent problems in frmbdy
      . Mumpln,Mumphr,Mumsit,Mumspt,Mumstr,Mumpsr,Mumrbs,
      . Mumeqn,Mumphs,Mumdt,mumdt1,
      . (Dt1(i),Jddt9(MIN(i,201)),Mdt(i),i=1,mumdt1),ippr,
-     . Mphr1,Mshp2x,(Mshap(i),i=1,Mphr1),jddtm0,lnklvm,msitcr
+     . Mphr1,Mshp2x,(Mshap(i),i=1,Mphr1),jddtm0,lnklvm,msitcr,mnmpsr,
+     . msptcr
       if(nprmx.gt.u_nmprm .or. ncnmx.gt.u_nmbod) call SUICID(
      . 'BAD NUMBER OF PARAMETERS, STOP IN FRMHED',10)
       if(Nprmx.lt.u_nmprm) then
@@ -166,6 +168,7 @@ c initialize mdt vector to zero to prevent problems in frmbdy
       endif
       if(Mumdt.eq.0) Mdt(1) = 0
       call DTCHCK(jddtm0,Mumdt,mumdt1,Dt1,Mdt)
+      if(mnmpsr.eq.0) mnmpsr=16
 c
 c convert i*2 to i*4
       mumdt2 = mumdt1
@@ -283,8 +286,29 @@ c
 c spots
       if(Mumspt.gt.0) then
          nrec = nrec + 1
-         read(imats,end=180) (Spot1(i),Msplnt(i),
+         if(msptcr.lt.6) then
+            read(imats,end=180) (Spot1(i),Msplnt(i),
      .        (Spcrd1(j,i),j=1,3),(Mspcrd(j,i),j=1,3),i=1,Mumspt)
+            do i=1,Mumspt
+               T0sp1(i)=jd2000
+               do j=4,6
+                  Spcrd1(j,i)=0._10
+                  Mspcrd(j,i)=0
+               end do
+            end do
+         else
+            read(imats,end=180) (Spot1(i),Msplnt(i),T0sp1(i),
+     .       (Spcrd1(j,i),j=1,msptcr),(Mspcrd(j,i),j=1,msptcr),
+     .       i=1,Mumspt)
+            do i=1,Mumspt
+               do j=4,6
+                  if(Spcrd1(j,i).ne.0._10.or.Mspcrd(j,i).gt.0) goto 427
+               end do
+            end do
+c no velocities actually specified or to be adjusted
+            msptcr=3
+  427       continue
+         endif
       endif
 c
 c star catalog corrections
@@ -298,8 +322,16 @@ c pulsar parameters
       if(Mumpsr.gt.0) then
          nrec = nrec + 1
          read(imats,end=180) (Sptps1(i),Jdpsr9(i),Plspr1(i),
-     .            Ntyps1(i),(Psrcn1(j,i),j=1,16),(Mpsrcn(j,i),j=1,16),
-     .            i=1,Mumpsr)
+     .    Ntyps1(i),(Psrcn1(j,i),j=1,mnmpsr),(Mpsrcn(j,i),j=1,mnmpsr),
+     .    i=1,Mumpsr)
+         if(mnmpsr.lt.u_nmpsr) then
+            do i=1,Mumpsr
+               do j=mnmpsr+1,u_nmpsr
+                  Psrcn1(j,i)=0._10
+                  mpsrcn(j,i)=0
+               end do
+            end do
+         endif
       endif
 c
 c radar biases
@@ -535,14 +567,25 @@ c*  start=3400
             do i = 1,Mumspt
                if(Line.gt.59 .or. i.le.1) then
                   call PAGCHK(57,4,0)
-                  write(Iout,630)
-  630             format('0',10x,'SPOT COORDINATES'/
+                  if(msptcr.lt.6) then
+                     write(Iout,630)
+  630                format('0',10x,'SPOT COORDINATES'/
      .                   '0SPOT     NSPLNT    MSPCRD      SPCORD')
+                  else
+                     write(Iout,635)
+  635                format('0',10x,'SPOT COORDINATES'/
+     .                '0SPOT     NSPLNT    MSPCRD',7x,'T0',10x,'SPCORD')
+                  endif
                endif
-               write(Iout,640) Spot1(i),Msplnt(i),
-     .                          (Mspcrd(j,i),j=1,3),
-     .                          (Spcrd1(j,i),j=1,3)
-  640          format(1x,a4,4x,i6,3x,3I3,1x,1p,3D25.15)
+               if(msptcr.lt.6) then
+                  write(Iout,640) Spot1(i),Msplnt(i),
+     .             (Mspcrd(j,i),j=1,3),(Spcrd1(j,i),j=1,3)
+  640             format(1x,a4,4x,i6,3x,3I3,1x,1p,3D25.15)
+               else
+                  write(Iout,645) Spot1(i),Msplnt(i),
+     .             (Mspcrd(j,i),j=1,6),T0sp1(i),(Spcrd1(j,i),j=1,6)
+  645             format(1x,a4,4x,i6,3x,6i2,f11.1,3f16.9,3f12.6)
+               endif
                Line = Line + 1
             end do
 c

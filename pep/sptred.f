@@ -36,11 +36,20 @@ c              longitude is angle in right hand coordinate system,
 c              whereas on earth longitude is angle in left hand
 c              coordinate system for observing sites.
 c              for earth spots it is right handed coordinate system
+c spcord(3,k) =latitude of spot (degrees).
 c lspcrd(i,k) =0 spcord(i,j) not adjusted (i=1,3)
 c lspcrd(i,k) =1 spcord(i,j) adjusted in least squares analysis (i=1,3)
+c kspt        =flag indicating type of coordinates
+c            if nsplnt=3 and kspt<0, same logic as for nsplnt<0
+c            otherwise if kspt=-1, convert cylindrical to spherical
+c            otherwise if kspt=-4, convert cartesian to spherical
+c            otherwise if kspt=-5 spot is moving and its position
+c              relative to planet must be supplied in the obslib,
+c              in which case, spcord(1) is set to -5 on return
 c
 c                  v. spot coordinates           (sptred)
 c  for each spot
+c card 1a
 c  columns
 c    1- 4  spot name                                         (1a4)
 c    5- 7  planet number                                     (i3)
@@ -51,21 +60,38 @@ c   25-40  second spot coordinate                            (f16.9)
 c            or 27-44   (f18.11) ##
 c   41-56  third  spot coordinate                            (f16.9)
 c            or 45-62   (f18.11) ##
-c   57-64  not used                                          (blank)
-c            or 63-70 ##
+c   57-58  not used in old format                            (blank)
+c            64 velocity flag: if '6', another card follows  (1x,a1) ##
+c   59-64  not used                                          (blank)
+c            or 65-70 ##
 c   65-70  lsp=1,0  adjust or not the spot coordinates       (3i2)
 c            or 71-76   (3i2) ##
+c   71-72  kspt  type of coordinates                         (i2)
+c            or 77-78   (i2) ##
 c
+c if the second spot card is omitted, then the velocity is assumed to
+c be zero, and the components are not to be adjusted
 c ## if columns 79-80 are '##", use the alternate (new) format
 c
+c card 1b - implemented only in new format
+c note: velocities for pulsars are implemented separately, not here
+c    1- 4  not used, but must be non-blank
+c    5- 8  not used
+c    9-26  upward spot velocity                            (f18.11) ##
+c   27-44  westward spot velocity                          (f18.11) ##
+c   45-62  northward spot velocity                         (f18.11) ##
+c   63-70  reference epoch                                 (f8.0)   ##
+c   71-76  ls= 1  adjust each of three spot velocities     (3i2)    ##
+c          ls= 0  do not adjust 
+c   79-80  should be '##', but will be ignored
 c
 c shared work space in input link
-      common/WRKCOM/ Spcort, Spc, Spott, Lsp, Lspcrt, Nspltt
-      real*10 Spcort(3,u_mxspt)
-      real*10 Spc(3)
+      common/WRKCOM/ Spcort,Spc,T0sp,T0,Spott,Lsp,Lspcrt,Nspltt
+      real*10 Spcort(6,u_mxspt),T0sp(u_mxspt)
+      real*10 Spc(6),T0
       character*4 Spott(u_mxspt)
-      integer*2 Lsp(3),npl
-      integer*2 Lspcrt(3,u_mxspt),Nspltt(u_mxspt)
+      integer*2 Lsp(6),npl
+      integer*2 Lspcrt(6,u_mxspt),Nspltt(u_mxspt)
 
 c external function
       real*10 DOT
@@ -76,6 +102,8 @@ c local variables
       character*4 blank/'    '/,sp
       integer   i, j, l, n, ns
       character*80 card
+      real*10 jd2000/2451545._10/
+      character*1 vflg
  
 c standard spots (all moon)
       character*4 spt0(14)/'SUR1','SUR3','SUR5','SUR6','SUR7','APL2',
@@ -102,7 +130,9 @@ c initialize spot data
          Spott(j)  = blank
          Nsplnt(j) = 0
          Nspltt(j) = 0
-         do i = 1, 3
+         T0spot(j) = 0.0_10
+         T0sp(j)   = 0.0_10
+         do i = 1, 6
             Spcord(i,j) = 0.0_10
             Spcort(i,j) = 0.0_10
             Lspcrd(i,j) = 0
@@ -131,13 +161,25 @@ c read spot data
             read(in0,10) card
    10       format(a80)
             if(card(79:80).eq."##") then
-               read(card,15) sp,npl,Spc,Lsp,ks
-   15          format(1A4,i3,1x,3f18.11,8x,4I2)
+               read(card,15) sp,npl,(Spc(i),i=1,3),vflg,
+     .          (Lsp(i),i=1,3),ks
+   15          format(1A4,i3,1x,3f18.11,1x,a1,6x,4I2)
             else
-               read(card,20) sp,npl,Spc,Lsp,ks
+               read(card,20) sp,npl,(Spc(i),i=1,3),(Lsp(i),i=1,3),ks
    20          format(1A4,i3,1x,3F16.9,8x,4I2)
+               vflg=blank
             endif
             if(sp.eq.blank) goto 100
+            if(vflg.eq.'6') then
+               read(in0,25) (Spc(i),i=4,6),T0,(Lsp(i),i=4,6)
+   25          format(8x,3f18.11,f8.0,3i2)
+            else
+               T0=jd2000
+               do i=4,6
+                  Spc(i)=0.0_10
+                  Lsp(i)=0
+               end do
+            endif
 c
 c see if these are non-spherical coordinates on earth
             if(npl.eq.3 .and. ks.lt.0) then
@@ -223,6 +265,17 @@ c convert cylindrical or cartesian on other planets to spherical
                   Spc(3)=ASIN(Spc(3)/qq)/Convd
                   Spc(1)=qq
                   ks=0
+               else if(ks.eq.-5) then
+                  Spc(1)=-5._10
+                  ks=0
+                  if(Lsp(1).gt.0 .or. Lsp(2).gt.0 .or. Lsp(3).gt.0 .or.
+     .             Lsp(4).gt.0 .or. Lsp(5).gt.0 .or. Lsp(6).gt.0) then
+                     write(Iout,34) Lsp,sp
+   34                format(' ***LSPOT=',6I2,' NOT ALLOWED FOR ',a4,
+     .                ', CANNOT ADJUST COORDINATES OF MOVING S/C',
+     .                t72,'**')
+                     nstop=nstop+1
+                  endif
                endif
             endif
             if(ks.ne.0) then
@@ -232,25 +285,24 @@ c convert cylindrical or cartesian on other planets to spherical
                nstop=nstop+1
             endif
 c
-c search to see if this is standard spot
-            if(Numspt.gt.0) then
-               do i = 1, Numspt
-                  if(sp.eq.Spott(i)) then
-                     ns = i
-                     goto 40
-                  endif
-               end do
-            endif
+c search to see if this spot is already in the list
+            do i = 1, Numspt
+               if(sp.eq.Spott(i)) then
+                  ns = i
+                  goto 40
+               endif
+            end do
             Numspt = Numspt + 1
             if(Numspt.gt.u_mxspt)
      .           call SUICID('TOO MANY INPUT SPOTS, STOP IN SPTRED', 9)
             Spott(Numspt)  = sp
             Nspltt(Numspt) = npl
             ns   = Numspt
-   40       do i = 1, 3
+   40       do i = 1, 6
                Spcort(i,ns) = Spc(i)
                Lspcrt(i,ns) = Lsp(i)
             end do
+            T0sp(ns)=T0
          end do
       endif
 c
@@ -302,12 +354,12 @@ c array dimensions
       include 'sptcrd.inc'
  
 c shared work space in input link
-      common/WRKCOM/ Spcort, Spc, Spott, Lsp, Lspcrt, Nspltt
-      real*10 Spcort(3,u_mxspt)
-      real*10 Spc(3)
+      common/WRKCOM/ Spcort,Spc,T0sp,T0,Spott,Lsp,Lspcrt,Nspltt
+      real*10 Spcort(6,u_mxspt),T0sp(u_mxspt)
+      real*10 Spc(6),T0
       character*4 Spott(u_mxspt)
-      integer*2 Lsp(3)
-      integer*2 Lspcrt(3,u_mxspt),Nspltt(u_mxspt)
+      integer*2 Lsp(6)
+      integer*2 Lspcrt(6,u_mxspt),Nspltt(u_mxspt)
 c
 c
 c   purpose:     to move spot data from its temporary input order to its
@@ -327,7 +379,8 @@ c
             Nsplnt(l) = Nspltt(i)
             Nspltt(i) = -1
             Spot(l)   = Spott(i)
-            do jj = 1, 3
+            T0spot(l) = T0sp(i)
+            do jj = 1, 6
                Spcord(jj,l) = Spcort(jj,i)
                Lspcrd(jj,l) = Lspcrt(jj,i)
             end do

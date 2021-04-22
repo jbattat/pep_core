@@ -14,8 +14,9 @@ c input file on fortran unit 5:
 c 1) title card
 c 2) ntape (8x,i4)
 c 3-n) various formats, depending on the first character.
-c     ' ' - end of series. must be followed by INPUT1 namelist, specifying
-c           next series name and number
+c     ' ' - end of series. must be followed by INPUT1 namelist,
+c           specifying next series name and number,
+c           or else updates for special option with no change of series
 c     '5' - mini-normal-point (one card). must be sorted into series
 c           with same observing site and target and century
 c     'Z' - old normal point format
@@ -24,6 +25,8 @@ c     'SER' - specifies the series name for the next series, cols 5-8
 c     'RSS' - specifies an error component (in ps) to be added in
 c             quadrature to the quoted values from here on, cols 5-8
 C
+C SPECIAL OPTIONS...
+C  UTCCORR = correction to be added to input UTC of observations
       implicit none
 
       include 'pepglob.inc'
@@ -31,9 +34,9 @@ C
 C        COMMON
       include 't1a.inc'
       include 't2a.inc'
-      INTEGER*4 ZT2A/10096/
+      INTEGER*4 ZT2A/10200/
       include 't3a.inc'
-      INTEGER*4 ZT3A/11124/
+      INTEGER*4 ZT3A/11264/
       include 't4a.inc'
       INTEGER*4 ZT4A/18638/
 
@@ -46,21 +49,21 @@ C
      . IENERG,IEOF,IERR,IFREQ,IMNR,INDIC,IPRES,IPULSE,IRES,ISNR,ISPAT,
      . ISPEC,ISPOT,ISTA,ISTAXX,ISTR,ITEMP,ITIME1,ITIME2,IYEAR4,J,LAMDA,
      . LCOLOR,NSHOT,NUMSHT,OBSTYP,RCODE,SEEING,STARID,TYPE,WIND,IDELAY,
-     . IERRPAS,ICSTG,ITERM/6/,IPRINT/8/,IN/5/,IABS2/2/
+     . IERRPAS,ICSTG,IOPT,ITERM/6/,IPRINT/8/,IN/5/,IABS2/2/
 C EXTERNAL FUNCTIONS
       INTEGER*4 JULDAY
 C
       REAL*10 JD,JD0,FRACT,DELAY,GD,ED,RESLT1,FDEVX,PRES,SVFREQ,
-     . TEMP,UTREC,LTVEL/2.99792458E8_10/,DSEC,SHOTSQ
+     . TEMP,UTREC,UTCCORR,LTVEL/2.99792458E8_10/,DSEC,SHOTSQ
       REAL*4 CLKERR,ENERGY,FREQZ,ERRINC/0./
 
       CHARACTER*8 DATE(3),CERGA,SVSITE,MAU1,MAU2/'MAU2MLT'/
       INTEGER*4 STACD(9)/   71110,   71111,   71112,   01910,   70610,
-     .     -1,   56610,   2*1/
+     .     -1,   56610,   99999, 1/
       INTEGER*4 STASOD(9)/     -1,      -1,70802419,78457801,70459501,
-     . 79417701,  3*1/
+     . 79417701,    3*1/
       CHARACTER*8 STN(9)/  'TEXL',  'MLRS',  'MLR2', 'CERGA','ApachePt',
-     . 'MLRO', 'MAU1SLR', 2*' '/
+     . 'MLRO', 'MAU1SLR', '00CM',  ' '/
       EQUIVALENCE (CERGA,STN(4)),(MAU1,STN(7))
 
 C
@@ -68,7 +71,7 @@ C
      . SPOT1,SVSPOT
 C
       NAMELIST /INPUT1/ NSEQA,IABS2,SERA,RITA,ACCTMA,SPOTA,FDEVA,FREQA,
-     1                  SITA
+     1                  SITA,IOPT,UTCCORR
 C
 C INITIALIZATION
       CALL ZFILL(JDGS0A,ZT2A)
@@ -79,6 +82,7 @@ C INITIALIZATION
       ERWGTA(2)=1.
       FDEVA=-300.
       FREQA=4.3178E14_10
+      IOPT=-1
       LNKLVA='PREP'
       NCENTA=3
       NCODFA=1
@@ -88,6 +92,7 @@ C INITIALIZATION
       PNAMA='  MOON  '
       RITA='TEXL    '
       SITA='TEXL    '
+      UTCCORR=0._10
 
       ICSTG=0
       IEOF=-1
@@ -322,7 +327,8 @@ C
 C
 C         COMPUTE QUANTITIES FOR PEP TYPE 4 DATA RECORD
 C
-  350 SECA= DSEC
+  350 IF(UTCCORR.NE.0._10) DSEC=DSEC+UTCCORR
+      SECA= DSEC
       SAVA(40)= DSEC
 C     PEP UNITS OF ATMOSPHERE PARAMETERS ARE DEG KELVIN, MBAR,
 C     AND PERCENT/100
@@ -388,9 +394,12 @@ C         ABNORMAL TERMINATIONS
 C
 C         WRITE ZERO RECORD FOR END OF SERIES
   600 CONTINUE
-C         READ NAMELIST &INPUT1 FOR NEXT SERIES
+C         READ NAMELIST &INPUT1 FOR NEXT SERIES OR SPECIAL OPTIONS
+C         BUT NOT BOTH AT ONCE
 C
+      IOPT=-1
       READ(IN,INPUT1,END=610)
+      IF(IOPT.NE.-1) GOTO 400
       IEOF=0
       GOTO 300
   610 IEOF=1

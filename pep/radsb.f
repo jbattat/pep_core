@@ -53,7 +53,7 @@ c external functions
       real*10 ANCOR,CTATF 
 
 c local
-      real*10 dum,frcns,sendtm,tpvm,zsb(3)
+      real*10 dum,frcns,sendtm,tpvm
       integer   ipct,j,jdpvm,jpct,lemctl,loop1,loop2,
      .          lplctl,lsbctl,nn,nrclc
 c
@@ -121,8 +121,8 @@ c*  start=9900
    20       do j = 1,3
                Xsbsun(j) = Xsb(j)*Aultsc
  
-c save probe w.r.t. planet for occultation test
-               zsb(j) = Xsbsun(j)
+c save probe w.r.t. planet for occultation test and relativity
+               Xsbpl(j) = Xsbsun(j)
             end do
 c
 c if pioneer-venus multiprobe bus, correct antenna
@@ -158,15 +158,17 @@ c dummy radio tracking to a planet
          endif
 c
 c*  start=1400
-c get receive site w.r.t. probe
+c get receive site w.r.t. probe and planet
          do j = 1,3
             Xsitep(j,1) = Xemlsc(j,1) - Xsbsun(j)
+            Xsitec(j,1) = Xemlsc(j,1) - Xplsc(j)
          end do
          if(Nswcns.gt.0) then
             call SOTRP(Jdx,Fract,Xslcns(1,2),0)
             do j = 1,3
-               Xsitep(j,1) = Xsitep(j,1) + (Xslcns(j,2) - Xslcns(j,1))
-     .                        *Aultsc
+               dum = (Xslcns(j,2) - Xslcns(j,1))*Aultsc
+               Xsitep(j,1) = Xsitep(j,1) + dum
+               Xsitec(j,1) = Xsitec(j,1) + dum
             end do
          endif
 c
@@ -219,15 +221,17 @@ c in computing sidereal time, tmdly1 converted to wwv seconds
             go to 300
          endif
  
-c------------------determine  sending  site wrt probe at  send  time---
+c----------determine sending site wrt probe and planet at send time---
          do j = 1,3
             Xsitep(j,2) = Xemlsc(j,2) - Xsbsun(j)
+            Xsitec(j,2) = Xemlsc(j,2) - Xplsc(j)
          end do
          if(Nswcns.gt.0) then
             call SOTRP(Jdy,frcns,Xslcns(1,3),0)
             do j = 1,3
-               Xsitep(j,2) = Xsitep(j,2) + (Xslcns(j,2)-Xslcns(j,3))
-     .                        *Aultsc
+               dum = (Xslcns(j,2)-Xslcns(j,3))*Aultsc
+               Xsitep(j,2) = Xsitep(j,2) + dum
+               Xsitec(j,2) = Xsitec(j,2) + dum
             end do
          endif
 c
@@ -252,7 +256,7 @@ c test for dummy observation below horizon
          call HORIZN(Xsite,Xsitep,nn,Jd)
  
 c test for planetary orbiter occulted by central body
-         if(Ncp0.gt.0) call CNTOCC(zsb,Xsitep,-2,Jd)
+         if(Ncp0.gt.0) call CNTOCC(Xsbpl,Xsitep,-2,Jd)
          if(Jd.le.0) go to 300
       endif
 c

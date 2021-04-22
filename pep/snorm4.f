@@ -36,8 +36,7 @@ c  ier   - returned count of errors
 c
       include 'inodta.inc'
  
-      real*4    btst
-      real*4    blrg(50)
+      real*10 btst,blrg(50)
       integer*2 ilrg(50),jlrg(50)
       character*8 qis/' IS '/, qcont/' (CONT) '/
       character*72 phdr/'THE LOWER DIAGONAL HALF OF THE CORRELATION MATR
@@ -82,7 +81,7 @@ c
          end do
          ihist(nhist + 1) = 0
          do i = 1, 50
-            blrg(i) = 0.0
+            blrg(i) = 0._10
             ilrg(i) = 0
             jlrg(i) = 0
          end do
@@ -147,7 +146,7 @@ c it should always skip this
  
 c find slot for inserting this correlation
                         do ksml = 1, nlsv
-                           if(btst.gt.abs(blrg(ksml))) then
+                           if(btst.gt.ABS(blrg(ksml))) then
  
 c shift lower values (if any)
                               nmov = nlrg - ksml

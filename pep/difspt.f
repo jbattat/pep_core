@@ -1,14 +1,7 @@
       subroutine DIFSPT(mspot, mplnt, ndif, cdf)
  
       implicit none
- 
- 
-c*** start of declarations inserted by spag
-      integer   i
- 
-c*** end of declarations inserted by spag
- 
- 
+
 c subr. difspt - j.f.chandler - 1980 may
 c compare input spot coordinates with saved (see difnom)
 
@@ -26,7 +19,9 @@ c commons
       include 'sptcrd.inc'
       include 'sptcdm.inc'
       include 'wrkcomrs.inc'
- 
+
+c local
+      integer   i
       character*8 sptn/'SPT ****'/
  
       do while( mspot.lt.Mumspt )
@@ -38,8 +33,8 @@ c commons
                sptn(5:8)= Spot(i)
                Nsav     = Lspt1(i) - 1
                call DIFBDY(Spcord(1,i), Spcrd1(1,mspot),
-     .                     Lspcrd(1,i), -3, ndif, cdf, sptn, 'COORD ')
-               go to 100
+     .                     Lspcrd(1,i), -6, ndif, cdf, sptn, 'COORD ')
+               goto 100
             endif
             end do
   100    end do

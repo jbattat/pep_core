@@ -1,4 +1,4 @@
-      subroutine FLURED(jdt,frt,isit)
+      subroutine FLURED(jdu,fru,isit)
 
       implicit none
 
@@ -8,10 +8,11 @@ c read and apply displacement values from an external direct access
 c data set
 
 c arguments
-      integer*4 jdt,isit
-      real*10 frt
-c jdt = JD of desired epoch
-c frt = fraction of a day past midnight of desired epoch
+      integer*4 jdu,isit
+      real*10 fru
+c jdu = JD of desired epoch
+c fru = fraction of a day past midnight of desired epoch
+c jdt,frt are the converted values using the time offset of the data
 c isit= 1 receiving site coordinates determined
 c isit= 2 sending site coordinates determined
 
@@ -27,22 +28,26 @@ c common
 c local
 c tflu= correction vector in meters (UWN)
 c xflu= correction vector in light seconds (XYZ)
-      integer*4 MAXSIT,nperday
-      parameter (MAXSIT=20)
+      integer*4 MAXSIT,nperday,MAXFREQ
+      parameter (MAXSIT=20,MAXFREQ=50)
       integer*4 i,j,k,nsites,jd1(MAXSIT),jd2(MAXSIT),rec1(MAXSIT),
-     . jdr(2),itype,np(2)
+     . jdr(2),jdt,itype,np(2),nf,nfreq(3,2),ifreq,recnt
       character*4 name(MAXSIT),tname
       character*80 title,desc
-      real*4 buf(120,3,3,2)
-      real*10 f2,s,t,tflu(3),xflu(3)
-      integer*4 i12(2),iatm,ihyd,ioce,iprt,it,itsav(2),
+      real*4 buf(240,3,3,2),
+     . accel(MAXFREQ,3,2),phase(MAXFREQ,3,2),coef(MAXFREQ,6,3,2)
+      real*8 ffreq(MAXFREQ,3,2),time,dt,ph,t0/2451545.5d0/,off(MAXSIT)
+      real*10 f2,frt,s,t,tflu(3),xflu(3)
+      integer*4 i12(2),ioce,iatm,ihyd,iprt,it,itsav(2),
      . jflu,jsit,npsave,nr,ns,recno(2)
+      integer*4 iflag(3)
+      equivalence (iflag(1),ioce),(iflag(2),iatm),(iflag(3),ihyd)
       real*10 tab(3,4,2),y1(3,2,2),y2(3,2,2)
       logical*4 nxtrp/.false./
 c
-      integer*4 nspecl/2/
-      character*4 sname(2)/'TEXL','MLR2'/
-      character*4 snamx(2)/'MLRS','MLRS'/
+      integer*4 nspecl/3/
+      character*4 sname(3)/'TEXL','MLR2','MAU2'/
+      character*4 snamx(3)/'MLRS','MLRS','MAU1'/
 c
 c
       jsit  = isit
@@ -50,6 +55,17 @@ c
       ns=i12(jsit)
       if(Nk1.le.0) then
          if(Npage.ne.npsave) nxtrp = .false.
+      endif
+
+c correct for time offset, if any
+      jdt=jdu
+      frt=fru
+      if(off(ns).ne.0d0) then
+         frt=frt-off(ns)
+         if(frt.lt.0._10) then
+            frt=frt+1._10
+            jdt=jdt+1
+         endif
       endif
 
 c is jd within range of table?
@@ -72,19 +88,19 @@ c
 c read data into storage if necessary
       if(recno(jsit).ne.0) then
          t = ((jdt-jdr(jsit))+frt)*nperday
-         if(t.lt.1._10 .or. t.gt.118._10) then
+         if(t.lt.1._10 .or. t.gt.238._10) then
             recno(jsit)=0
          endif
       endif
       if(recno(jsit).eq.0) then
-         recno(jsit)=((jdt-jd1(ns))*nperday)/60 + rec1(ns)
-         if(MOD((jdt-jd1(ns))*nperday,60).eq.0 .and. jdt.gt.jd1(ns))
+         recno(jsit)=((jdt-jd1(ns))*nperday)/120 + rec1(ns)
+         if(MOD((jdt-jd1(ns))*nperday,120).eq.0 .and. jdt.gt.jd1(ns))
      .    recno(jsit)=recno(jsit)-1
          read(jflu,rec=recno(jsit)) jdr(jsit),np(jsit),
-     .    (((buf(j,itype,k,jsit),j=1,60),itype=1,3),k=1,3)
-         if(np(jsit).eq.60 .and. jdr(jsit)+60/nperday.le.jd2(ns))
+     .    (((buf(j,itype,k,jsit),j=1,120),itype=1,3),k=1,3)
+         if(np(jsit).eq.120 .and. jdr(jsit)+120/nperday.le.jd2(ns))
      .    read(jflu,rec=recno(jsit)+1) j,np(jsit),
-     .    (((buf(j,itype,k,jsit),j=61,120),itype=1,3),k=1,3)
+     .    (((buf(j,itype,k,jsit),j=121,240),itype=1,3),k=1,3)
          t = ((jdt-jdr(jsit))+frt)*nperday
          itsav(jsit) = -9999
       endif
@@ -124,6 +140,21 @@ c correction vector in local coordinates (up, west, north) in meters
          tflu(i)= t*(y1(i,2,jsit)+t*t*y2(i,2,jsit)) +
      .    s*(y1(i,1,jsit)+s*s*y2(i,1,jsit))
       end do
+c add harmonic components
+      dt=((jdt-t0)+frt)*864d2
+      do itype=1,3
+         if(iflag(itype).gt.0) then
+            nf=nfreq(itype,jsit)
+            do ifreq=1,nf
+               ph=phase(ifreq,itype,jsit)+dt*(ffreq(ifreq,itype,jsit)+
+     .          0.5d0*accel(ifreq,itype,jsit)*dt)
+               do i=1,3
+                  tflu(i)=tflu(i)+COS(ph)*coef(ifreq,i,itype,jsit)+
+     .             SIN(ph)*coef(ifreq,i+3,itype,jsit)
+               end do
+            end do
+         endif
+      end do
 c transform correction to equatorial system and apply
       do i=1,3
          xflu(i)= (tflu(1)*Dxdrad(i,isit)+
@@ -158,9 +189,10 @@ c initialize
 c
 c read and print header records
       if(Itrwnd(jflu).le.0) then
-         open(jflu, access='DIRECT', recl=2168, status='OLD')
+         open(jflu, access='DIRECT', recl=4328, status='OLD')
          read(jflu,rec=1) title,desc,nsites,nperday,
-     .    (name(i),jd1(i),jd2(i),rec1(i),i=1,nsites)
+     .    (name(i),jd1(i),jd2(i),rec1(i),i=1,nsites),
+     .    (off(i),i=1,nsites)
 
          k=(nsites-1)/4 + 1
          if(Line.gt.58-k) call NEWPG
@@ -170,7 +202,7 @@ c read and print header records
   300    format('0HEADER DATA ON DISPLACEMENT DATA SET',i3,' WITH',i3,
      .    ' SITES AT',i3,' POINTS PER DAY'/
      .    ' TITLE=',a80/(4(1x,a4,i8,'-',i7)))
-         if((60/nperday)*nperday.ne.60) call SUICID(
+         if((120/nperday)*nperday.ne.120) call SUICID(
      .    'INVALID NUMBER OF DISPLACEMENTS/RECORD, STOP IN FLURED  ',14)
          Itrwnd(jflu) = 1
       endif
@@ -195,6 +227,15 @@ c find site in database
          ns=0
 c do send site if different
   330    i12(jsit)=ns
+         if(ns.gt.0) then
+            do itype=1,3
+               recnt=(itype-1)*nsites+1+ns
+               read(jflu,rec=recnt) nf,(ffreq(ifreq,itype,jsit),
+     .          phase(ifreq,itype,jsit),accel(ifreq,itype,jsit),
+     .          (coef(ifreq,i,itype,jsit),i=1,6),ifreq=1,nf)
+               nfreq(itype,jsit)=nf
+            end do
+         endif
          if(Sitf(1).eq.Sitf(2) .or. Sitf(2).eq.' ') return
       end do
       return

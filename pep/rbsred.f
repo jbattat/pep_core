@@ -54,8 +54,11 @@ c   11-14  observation series name                           (1a4)
 c   15-17  planet number                                     (i3)
 c   22-23  lrbs=1,0 time delay bias adjusted or not          (i2)
 c   24-25  lrbs=1,0 doppler    bias adjusted or not          (i2)
+c   26-27  flag, if '##' then use new format, otherwise not
 c   26-37  radar bias in time delay                          (e12.5)
+c            or 28-41   (e14.7) ##
 c   38-49  radar bias in doppler                             (e12.5)
+c            or 42-53   (e14.7) ##
 c  limitation  no more than u_mxrbs radar sites with biases allowed
 c
 c           shared work space in input link
@@ -69,6 +72,7 @@ c           shared work space in input link
       character*4 srarec/'6764'/
       character*4 blank/'    '/, rec, sen, rser
       integer*4 nnrbs,nplcop,i,j,l,n,ns
+      character*80 rcard
 c
 c initialize site data
       do j = 1, u_mxrbs
@@ -110,8 +114,15 @@ c
 c read radar bias cards
          k = m
          do while( .true. )
-            read(in0,20) rec,sen,rser,npl,lrb,rbs
-   20       format(a4,1x,a4,1x,a4,i3,4x,2I2,2E12.5)
+            read(in0,15) rcard
+   15       format(a)
+            if(rcard(26:27).eq.'##') then
+               read(rcard,18) rec,sen,rser,npl,lrb,rbs
+   18          format(a4,1x,a4,1x,a4,i3,4x,2I2,2x,2E14.7)
+            else
+               read(rcard,20) rec,sen,rser,npl,lrb,rbs
+   20          format(a4,1x,a4,1x,a4,i3,4x,2I2,2E12.5)
+            endif
             if(rec.eq.blank) goto 100
 c
 c search to see if standard site and series

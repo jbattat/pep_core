@@ -153,11 +153,9 @@ c set nmedia, neatm, neion for printout only from jcal
       if(Ncodf.gt.20) nddiff = 1
       if(Nsite2.eq.0) nddiff = -1
       Iwob = 1
-      do i = 7, 30
-         if(Lmrx(i).le.0) goto 100
-         if(Lmrx(i).eq.3 .or. Lmrx(i).eq.4) nlibpr = -2
-         end do
-  100 if(Ilib.gt.0) nlibpr = -nlibpr
+      if(Lmrx(7).gt.0) nlibpr = -2
+      if(Ilib.gt.0) nlibpr = -nlibpr
+      if(nlibpr.lt.0 .and. Jct(26).eq.0) nlibpr = 0
 c
 c
 c-----------determine site quantities for both sites--------------------

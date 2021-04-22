@@ -5,9 +5,9 @@
 c m.e.ash    july 1969    subroutine cpartl
 c interpolate for partials of coordinates from tape and calculate
 c partial of observations
-c * * * implicit real*8 * * * *
 c           itype indicates which body's partials to compute:
 c           1-em, 2-mn, 3-pl, 4-sb, 5-sc, 6-pr, 7-er
+c           11-19 are the planets' contributions to the SSBC offset
 c           ngo = 1 calculate partial of coordinates only
 c           ngo = 2 calculate partial of observation as well as partial
 c                   of coordinates
@@ -22,6 +22,8 @@ c array dimensions
       include 'globdefs.inc'
 c
 c        common
+      include 'bddta.inc'
+      include 'cmcke.inc'
       include 'comdateq.inc'
       include 'coord.inc'
       real*10 epitch(3), eroll(3), eyaw(3)
@@ -91,11 +93,12 @@ c local
       real*10 deriv1(296), ddfdl1, ddfdl2, dddr1, deriv2(296)
       real*10 dtmda,dtprds,quan23
       integer i,i1,iprdbg,itype,j,jj,jndex,jvl,k,kick,kk,
-     .        kspra,lxpdbg,m,n,nc2,ngo,nobj
+     .        kspra,lxpdbg,m,n,nc2,ngo,nobj,np
 
 c indices for arrays derem,dermn,derpl,dersb,dersc
       integer*2 iderst(5)/1, 25, 37, 43, 57/
-      character*2 name(6)/'EM','MN','PL','SB','SC','PR'/
+      character*2 name(19)/'EM','MN','PL','SB','SC','PR',4*'--',
+     . 'P1','P2','P3','P4','P5','P6','P7','P8','P9'/
  
       logical*4 doboth
 
@@ -105,7 +108,7 @@ c
 c setup common to all bodies
       iprdbg = mod(Jct(6)/256, 2)
       lxpdbg = Index/3
-      if(itype.gt.0 .and. itype.le.8) then
+      if(itype.gt.0 .and. itype.le.19) then
          Ivze(itype) = 1
          Ntab1 = Nb1(itype)
          Ntab2 = 3
@@ -154,8 +157,8 @@ c partial derivatives of moon position and velocity
             Dermn(j, 1) = TERP14(Pm(1,1), yy(1,2))
             if(doboth) Dermn(j, 2) = TERP14(Pm(1,2), yy(1,Ntab1))
          end do
-         n = 2
-         if(Klan.eq.17) n = 1
+         n = 1
+         if(doboth) n = 2
          call PARTVL(Dermn, n, kick)
          if(iprdbg.ne.0) then
             do j=1,n
@@ -427,6 +430,26 @@ c would have to be an exception here
          end do
          Ivze(1)=1
          if(ngo.eq.1 .or. ngo.eq.3) return
+      else if(itype.ge.11 .and. itype.le.19) then
+
+c partial derivatives of planets contributing to the SSBC offset
+c this logic is invoked only with ngo=1 or 3 and kick=1 or 4
+         np=itype-10
+         do j = 1,3
+            call YCOFT(yy, Planss(j,Kplss(np),1,np),
+     .       i_mxplprt+1,itype,1)
+            Derss(j) = TERPF(Pqss(1,np), yy(1,2))
+         end do
+         if(iprdbg.ne.0) then
+            if(Line+lxpdbg.gt.58) call OBSPAG
+            write(Iout,210) 1,0,kind,name(itype),3,(Derss(i),i=1,3)
+            Line = Line + lxpdbg
+         endif
+         if(ngo.eq.1) return
+         do j=1,3
+            derem(j,1)=derem(j,1) - Derss(j)*Mass(np)/Mascnt
+         end do
+         return
       else
          call SUICID('ILLEGAL ITYPE IN CPARTL ', 6)
       endif

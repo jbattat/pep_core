@@ -58,7 +58,7 @@ c external work area
      .       Fctprb,Fctsit,Fcteqn,Tfr8,Rjr8
       integer*2 Tfi2,Rji2,Pointr
       real*10 fctemb(u_nmbod),fcter(u_nmbod),fctmon(u_nmbod),
-     . fctmr(u_nmbod),fctplb(u_nmbod),fctpsr(16)
+     . fctmr(u_nmbod),fctplb(u_nmbod),fctpsr(u_nmpsr)
       equivalence (Fctbod,fctemb,fcter,fctmon,fctmr,fctplb,fctpsr)
 
 c external functions
@@ -162,7 +162,7 @@ c internal to subroutine adjust
      .          'CON(15) ', 'CON(16) ', 'CON(17) ', 'CON(18) ',
      .          'CON(19) ', 'CON(20) ', 'CON(21) ', 'CON(22) ',
      .          'CON(23) ', 'RELFCT  '/
-      character*4 wrdl2(16)/', 1)', ', 2)', ', 3)', ', 4)', ', 5)',
+      character*4 wrdl2(u_mxpl)/', 1)', ', 2)', ', 3)', ', 4)', ', 5)',
      .          ', 6)', ', 7)', ', 8)', ', 9)', ',10)', ',11)', ',12)',
      .          ',13)', ',14)', ',15)', ',16)'/
       character*8 wrdb(u_nmbod)/'X   (AU)', 'Y   (AU)', 'Z   (AU)',
@@ -747,13 +747,13 @@ c adjustment to star quantities in optical phase corr.common
 c
 c pulsar parameters
       if(Numpsr.gt.0) then
-         do i = 1, 16
+         do i = 1,u_nmpsr
             fctpsr(i) = 1._10
          end do
          do k = 1, Numpsr
             plsr(5:8) = Sptpsr(k)
             call LINCHK
-            do i = 1, 16
+            do i = 1,u_nmpsr
                l = Lpsrcn(i, k)
                if(l.le.0) goto 650
                call ADJAST(Psrcn(l,k), fctpsr(l))

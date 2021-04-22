@@ -1,6 +1,6 @@
 C           PULSAR PARAMETERS IN SAVED NORMAL EQUATIONS
       COMMON/PSRSTM/ PLSPR1(u_mxpsr),JDPSR9(u_mxpsr),SPTPS1(u_mxpsr),
-     1 MPSRCN(16,u_mxpsr),NTYPS1(u_mxpsr),MUMPSR
+     1 MPSRCN(u_nmpsr,u_mxpsr),NTYPS1(u_mxpsr),MUMPSR
       REAL*10 PLSPR1
       CHARACTER*4 SPTPS1
       INTEGER*4 JDPSR9

@@ -100,7 +100,7 @@ c zero mdtx array to avoid problems in lvtbdy called by cmpar1
      . (Merx(i),i=1,Ncnmo),(Mmrx(i),i=1,Ncnmo),Mumdtx,mumdt1,
      . (Jddtm(i),i=1,mumdt1),(Dtm(i),i=1,mumdt1),
      . (Mdtx(i),i=1,mumdt1),nlabel,(Label(i),i=1,nlabel),
-     . jddtm0,lnklvm,Msitcr
+     . jddtm0,lnklvm,Msitcr,Msptcr
       if(Nprmo.gt.u_nmprm .or. Ncnmo.gt.u_nmbod) call SUICID(
      . 'BAD NUMBER OF PARAMETERS, STOP IN OBSRD1',10)
 c in principle, should set default parameter values if the input tape has
@@ -121,6 +121,7 @@ c smaller set of defined parameters
       if(Mumdtx.eq.0) Mdtx(1) = 0
       if((Ntapa(3).lt.0) .and. (Ict(3).gt.1)) Ntapa(3) = -Ntapa(3)
       if(Msitcr.ne.6) Msitcr=3
+      if(Msptcr.ne.6) Msptcr=3
 c
 c printout first two records of input observation library tape
       call NEWPG

@@ -21,10 +21,12 @@ c commons
       equivalence (Zhar,mz2),(Char(2),mc22)
       include 'intstf.inc'
       include 'morstf.inc'
+      real*10 acore,bcore,ccore
+      equivalence (I0c0(1,1),acore),(I0c0(2,2),bcore),(I0c0(3,3),ccore)
       include 'param.inc'
 c
 c quantities local to this routine
-      real*10 a2,b1,bg1,bg2,g1
+      real*10 a2,b1,bg1,bg2,fcc,g1
       integer i,msub
 c
 c derivatives of contants w.r.t. parameters integrated
@@ -53,6 +55,7 @@ c partial w.r.t. J2 is desired.
       g1  = gamma + 1.0_10
       bg1 = 1.0_10 - beta*gamma
       bg2 = (beta*(2.0_10+gamma) - gamma)**2
+      fcc = Mrcond(25)*Mrcond(24)
       do i = 1, i_mxplprt
          Dalpha(i) = 0._10
          Dbeta(i)  = 0._10
@@ -78,14 +81,14 @@ c partials w.r.t. beta
                Dmma(i)   = Dmma(i)*(Awhole/Amantl)**2
                Dmmb(i)   = Dmmb(i)*(Bwhole/Bmantl)**2
                Dmmc(i)   = Dmmc(i)*(Cwhole/Cmantl)**2
-               Dalpha(i) = Dalpha(i)*Awhole/Amantl +
-     .          Dmma(i)*alpha*Mrcond(24)/Mmoon
-               Dbeta(i)  = Bwhole/Bmantl +
-     .          Dmmb(i)*beta*Mrcond(24)/Mmoon
-               Dgamma(i) = Dmmc(i)*gamma*Mrcond(24)/Mmoon
                Dmmam(i)  = Dmma(i)/Mmoon
                Dmmbm(i)  = Dmmb(i)/Mmoon
                Dmmcm(i)  = Dmmc(i)/Mmoon
+               Dalpha(i) = Dalpha(i)*Awhole/Amantl +
+     .          Dmmam(i)*(alpha*acore-fcc)
+               Dbeta(i)  = Bwhole/Bmantl +
+     .          Dmmbm(i)*(beta*bcore-fcc)
+               Dgamma(i) = Dmmcm(i)*gamma*ccore
             endif
          else if(Icrtrl(i).eq.-4) then
  
@@ -100,14 +103,14 @@ c partials wrt gamma
                Dmma(i)   = Dmma(i)*(Awhole/Amantl)**2
                Dmmb(i)   = Dmmb(i)*(Bwhole/Bmantl)**2
                Dmmc(i)   = Dmmc(i)*(Cwhole/Cmantl)**2
-               Dalpha(i) = Dalpha(i)*Awhole/Amantl +
-     .          Dmma(i)*alpha*Mrcond(24)/Mmoon
-               Dbeta(i)  = Dmmb(i)*beta*Mrcond(24)/Mmoon
-               Dgamma(i) = Cwhole/Cmantl +
-     .          Dmmc(i)*gamma*Mrcond(24)/Mmoon
                Dmmam(i)  = Dmma(i)/Mmoon
                Dmmbm(i)  = Dmmb(i)/Mmoon
                Dmmcm(i)  = Dmmc(i)/Mmoon
+               Dalpha(i) = Dalpha(i)*Awhole/Amantl +
+     .          Dmmam(i)*(alpha*acore-fcc)
+               Dbeta(i)  = Dmmbm(i)*(beta*bcore-fcc)
+               Dgamma(i) = Cwhole/Cmantl +
+     .          Dmmcm(i)*gamma*ccore
             endif
 
 c partials w.r.t. j2
@@ -121,40 +124,49 @@ c partials w.r.t. j2
                   Dmma(i)   = Dmma(i)*(Awhole/Amantl)**2
                   Dmmb(i)   = Dmmb(i)*(Bwhole/Bmantl)**2
                   Dmmc(i)   = Dmmc(i)*(Cwhole/Cmantl)**2
-                  Dalpha(i) = Dmma(i)*alpha*Mrcond(24)/Mmoon
-                  Dbeta(i)  = Dmmb(i)*beta*Mrcond(24)/Mmoon
-                  Dgamma(i) = Dmmc(i)*gamma*Mrcond(24)/Mmoon
                   Dmmam(i)  = Dmma(i)/Mmoon
                   Dmmbm(i)  = Dmmb(i)/Mmoon
                   Dmmcm(i)  = Dmmc(i)/Mmoon
+                  Dalpha(i) = Dmmam(i)*(alpha*acore-fcc)
+                  Dbeta(i)  = Dmmbm(i)*(beta*bcore-fcc)
+                  Dgamma(i) = Dmmcm(i)*gamma*ccore
                endif
             endif
 
 c partials w.r.t. core moment
          else if(Corint .and. Icrtrl(i).eq.-18) then
-            Dalpha(i) = alpha*Awhole/Amantl**2
-            Dbeta(i)  = beta*Bwhole/Bmantl**2
-            Dgamma(i) = gamma*Cwhole/Cmantl**2
-            Dmma(i)   = Mmoon/Amantl**2
-            Dmmb(i)   = Mmoon/Bmantl**2
-            Dmmc(i)   = Mmoon/Cmantl**2
-            Dmmam(i)  = 1._10/Amantl**2
-            Dmmbm(i)  = 1._10/Bmantl**2
+            Dmmam(i)  = (1._10-Mrcond(25))/Amantl**2
+            Dmmbm(i)  = (1._10-Mrcond(25))/Bmantl**2
             Dmmcm(i)  = 1._10/Cmantl**2
+            Dmma(i)   = Mmoon*Dmmam(i)
+            Dmmb(i)   = Mmoon*Dmmbm(i)
+            Dmmc(i)   = Mmoon*Dmmcm(i)
+            Dalpha(i) = (Cmantl-Bmantl)*Dmmam(i) - Mrcond(25)/Amantl
+            Dbeta(i)  = (Cmantl-Amantl)*Dmmbm(i) - Mrcond(25)/Bmantl
+            Dgamma(i) = gamma*ccore*Dmmcm(i) + gamma/Cmantl
+
+c partials w.r.t. core flattening
+         else if(Corint .and. Icrtrl(i).eq.-19) then
+            Dmmam(i)  = -Mrcond(24)/Amantl**2
+            Dmmbm(i)  = -Mrcond(24)/Bmantl**2
+            Dmma(i)   = Mmoon*Dmmam(i)
+            Dmmb(i)   = Mmoon*Dmmbm(i)
+            Dalpha(i) = (Cmantl-Bmantl)*Dmmam(i) - ccore/Amantl
+            Dbeta(i)  = (Cmantl-Amantl)*Dmmbm(i) - ccore/Bmantl
 
 c partials w.r.t. earth or moon mass
          else if(Corint .and. (Icrtrl(i).eq.3.or.Icrtrl(i).eq.10)) then
             msub=13-Icrtrl(i)
-            Dmma(i) = -Mass(msub)*Mrcond(24)/Amantl**2
-            Dmmb(i) = -Mass(msub)*Mrcond(24)/Bmantl**2
-            Dmmc(i) = -Mass(msub)*Mrcond(24)/Cmantl**2
+            Dmma(i) = -Mass(msub)*acore/Amantl**2
+            Dmmb(i) = -Mass(msub)*bcore/Bmantl**2
+            Dmmc(i) = -Mass(msub)*ccore/Cmantl**2
             msub=Icrtrl(i)
-            Dalpha(i) = -Mrcond(24)/Mass(msub) * alpha*Awhole/Amantl**2
-            Dbeta(i)  = -Mrcond(24)/Mass(msub) * beta*Bwhole/Bmantl**2
-            Dgamma(i) = -Mrcond(24)/Mass(msub) * gamma*Cwhole/Cmantl**2
             Dmmam(i)  = -Awhole/Mass(msub)/Amantl**2
             Dmmbm(i)  = -Bwhole/Mass(msub)/Bmantl**2
             Dmmcm(i)  = -Cwhole/Mass(msub)/Cmantl**2
+            Dalpha(i) = (alpha*acore-fcc)*Dmmam(i)
+            Dbeta(i)  = (beta*bcore-fcc)*Dmmbm(i)
+            Dgamma(i) = Mrcond(24)*gamma*Dmmcm(i)
          endif
       end do
   900 return

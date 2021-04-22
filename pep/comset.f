@@ -30,14 +30,14 @@ c common
       include 'leon.inc'
       integer*4 zleon/2208/   !r8=1136,r10=2208
       include 'ltrapx.inc'
-      integer*4 zltrap/16210/   !r8=11474,r10=16210
+      integer*4 zltrap/16238/   !r8=11502,r10=16238
       include 'namtim.inc'
       include 'obscrd.inc'
       include 'number.inc'
       include 'param.inc'
       include 'plndta.inc'
       include 'stats.inc'
-      integer*4 zstats/908/   !r8=564,r10=908
+      integer*4 zstats/1058/   !r8=666,r10=1058
       include 'timstf.inc'
 c
 c        secday   = 8.64E4_10 number of seconds in a day

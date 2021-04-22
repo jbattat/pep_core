@@ -25,10 +25,10 @@ c commons
       equivalence (i2bod,Jpert)
       include 'lcntrl.inc'
       include 'mnsprt.inc'
-      real*10 spcdxx(3),spcdx2(3)
+      real*10 spcdxx(6),spcdx2(6)
       equivalence (Spcdx(1,1),spcdxx(1)),(Spcdx(1,2),spcdx2(1))
       include 'ltrapx.inc'
-      integer*2 lspcdy(3), lspcy2(3)
+      integer*2 lspcdy(6), lspcy2(6)
       equivalence (Lspcdx(1,1),lspcdy(1)), (Lspcdx(1,2),lspcy2(1))
       include 'mtrapx.inc'
       include 'namtim.inc'
@@ -69,8 +69,8 @@ c local
       character*8 erthnm/' EARTH  '/, star/'  STAR  '/
       character*4 al15/'AL15'/, ap15/'AP15'/
       integer*4 i,itg,j,jtg,jtypob,jut1,jwob,next,npd
-      integer*2 nmpex1,nmpex2
-      integer*2 n16/16/
+      integer*2 nmpex1,nmpex2,npl,kli
+      integer*2 n16
 c external functions
       integer*4 ITYPOB,JBDTST
  
@@ -169,10 +169,63 @@ c a rewound state
       endif
 c
 c read first five records of observing site not on earth tape
-  300 if(Klans1.gt.0 .and. Klans1.lt.u_mxpl+1) then
-         if(Klams1.eq.Klans1 .and. Nrewnd.le.0) goto 400
+  300 if(Klans1.gt.0 .and. Klans1.lt.u_mxpl+1 .and.
+     .    (Klams1.ne.Klans1 .or. Nrewnd.gt.0)) then
          call SCRD1(Lipl(Klans1))
          Lipl(Klans1) = 1
+      endif
+c
+c read first five records of tapes for planets used in computing the
+c solar-system barycenter offset in preference to the n-body tape
+      do i=1,9
+         Ssbkl(i)=0
+      end do
+      if(Nplnt0.eq.-4 .and. Ncodf.eq.18) then
+         Klssb=1
+      else
+         Klssb=0
+      endif
+      if(Klssb.gt.0 .and. (Klssm.ne.Klssb .or. Nrewnd.gt.0)) then
+         do i=1,Numpln
+            if(Nplnt(i).gt.0 .and. Nplnt(i).le.9 .and. Iplnt(i).gt.0)
+     .       then
+c tentatively using this planet for partial derivatives
+c two possible criteria: (1) this planet's ICs are to be estimated, or
+c     (2) this is a giant planet, and any solar-system parameter or
+c     planet orbital element is to be estimated
+c case (1) is a traditional target body. case (2) must now also be one
+               npl=Nplnt(i)
+               Ssbkl(npl)=i
+               do j=1,6
+                  if(Lpl(j,i).gt.0) goto 340
+               end do
+               if(npl.ge.5 .and. npl.le.8) then
+                  do j=1,u_nmprm
+                     if(Lprm(j).gt.0 .and. Lprm(j).le.50) goto 340
+                  end do
+                  do j=1,6
+                     if(Lem(j).gt.0) goto 340
+                     do itg=1,Numpln
+                        if(Lpl(j,itg).gt.0) goto 340
+                     end do
+                  end do
+               endif
+c no relevant partials needed, just use n-body tape for this planet
+               Ssbkl(npl)=0
+            endif
+  340    end do
+         do i=1,9
+            if(Ssbkl(i).gt.0) goto 350
+         end do
+         Klssb=0
+         goto 400
+  350    do npl=1,9
+            if(Ssbkl(npl).gt.0) then
+               kli=Ssbkl(npl)
+               call SSBRD1(npl,kli,Lipl(kli))
+               Lipl(kli)=1
+            endif
+         end do
       endif
 c
 c read first two records of ut1 and wobble data sets if
@@ -192,7 +245,6 @@ c
 c initialize fluid displacement database if desired
       if(Jct(49).gt.0) call FLURD1
 c
-c*  start=400
 c initialize interpolators
       call TRPNIT
 c
@@ -276,6 +328,7 @@ c observation series
       Klams1 = Klans1
       Klams2 = Klans2
       Klamr  = Klanr
+      Klssm  = Klssb
       if(Spotf.eq.ap15 .and. Ncodf.gt.3) Spotf   = al15
       if(Spotf2.eq.ap15 .and. Ncodf.gt.3) Spotf2 = al15
       if(Nplnt0.ne.3) then
@@ -316,6 +369,7 @@ c observation series
          else
             itimo=ctime*10+itime
          endif
+         n16=u_nmpsr
          if(Idumob.ne.1 .or. Ict(3).gt.0) write(Iabs2)
      .    Nseqa(Ntape),Ncoda(Ntape),Nplnt0,Sitf(1),Series,Sitf(2),Spotf,
      .    (Erwgta(i,Ntape),i=1,2),acctim,Fdeva(Ntape),Freq,itimo,Nrewnd,
@@ -333,7 +387,7 @@ c observation series
      .    Nplnt2,Spotf2,spcdx2,lspcy2,freq2,Lemmn,next,(Exnams,Exnams,
      .    i=1,next),Lngd,Lnfour,Ctlg,nsky1,(Lsky(i),i=1,nsky1),
      .    n16,Lpsrx,Nmpex,nmpex1,nmpex2,(Nplex(j),(Lpex(i,j),
-     .    i=1,nmpex2),j=1,nmpex1),T0sit,
+     .    i=1,nmpex2),j=1,nmpex1),T0sit,T0spt,
      .    izero,izero,izero,izero,izero,izero,izero,izero
  
       endif
@@ -372,7 +426,7 @@ c printout page heading
   550    format('  KLAN =', i2, ' MPL=', 30I2, 2x, ' NSITE=', 2I3,
      .    ' MSCRD=', 12I2, ' MRBS=', 2I2/
      .    '  KLANB=', i2, ' MSB=', 30I2, 2x, ' NSPOT=', i3,
-     .    ' NSPOT2=', i3, ' MSPCD=', 6I2, ' MEQN=', 3I2/
+     .    ' NSPOT2=', i3, ' MSPCD=', 12I1, ' MEQN=', 3I2/
      .    ' KLANS1=', i3, ' MPHS=', 9I1, ' NSKY=', i3, ' SERIES=',A4)
          Line = Line + 3
       endif

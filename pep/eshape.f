@@ -30,8 +30,9 @@ c common
       include 'sitcrd.inc'
 
 c local
-      real*10 crds1,h1,latr,latr0,q2,q3,q4,qq,rc1,rs1,fltc,flts,velfct
-      integer*4 i,jdlast(2),k,ngo,niter,npspot,nlast
+      real*10 crds1,h1,latr,latr0,q2,q3,q4,qq,rc1,rs1,fltc,flts,velfct,
+     . clat,slat,clon,slon
+      integer*4 i,jdlast,k,ngo,niter,npspot,nlast,klast
 c
 c           ksite(n)   =-2  for geodetic coordinates on earth
 c           ksite(n)   =-1  for cylindrical polar coords.on earth
@@ -41,8 +42,8 @@ c
 c           setup for observing site coordinates
       velfct=1E-6_10/Ltvel/365.25_10
       nlast=n
+      jdlast=-999
       do i = 1,nlast
-         jdlast(i)=-999
          ngo = 1
          Longr(i) = Coords(2,i)*Convd
          if(Ksite(i).lt.-1) then
@@ -171,10 +172,14 @@ c prepare velocities of site quantities
       end do
 c
 c setup for spot coordinates on observed body
-      if(Nspot.le.0) goto 400
+      if(Nspot.le.0 .or. Spcdx(1,1).eq.-5._10) goto 400
       k = 1
       npspot = Nplnt0
       if(Nplsr.gt.0) then
+         if(Spcdx(4,k).ne.0._10 .or. Spcdx(5,k).ne.0._10 .or.
+     .    Spcdx(6,k).ne.0._10) call SUICID(
+     .    'PULSAR PROPER MOTION IMPLIED BY SPOT CARD, STOP IN ESHAPE   '
+     .    ,15)
          Deltc(1)=Spcdx(3,k)*Convd
          Cdeltc=COS(Deltc(1))
          Sdeltc=SIN(Deltc(1))
@@ -188,19 +193,49 @@ c setup for spot coordinates on observed body
   300 qq = Spcdx(1,k)/Ltvel
       if(npspot.lt.0) qq = 1.0_10
       latr = Spcdx(3,k)*Convd
-      Yspcd(3,k) = qq*SIN(latr)
-      qq   = qq*COS(latr)
+      slat = SIN(latr)
+      clat = COS(latr)
+      Yspcd(3,k) = qq*slat
+      qq   = qq*clat
       latr = Spcdx(2,k)*Convd
-      Yspcd(2,k)  = qq*SIN(latr)
-      Yspcd(1,k)  = qq*COS(latr)
+      slon = SIN(latr)
+      clon = COS(latr)
+      Yspcd(2,k)  = qq*slon
+      Yspcd(1,k)  = qq*clon
       Rspot(k)    = SQRT(Yspcd(1,k)**2 + Yspcd(2,k)**2 + Yspcd(3,k)**2)
-      Dydphi(1,k) = -Yspcd(3,k)*COS(latr)
-      Dydphi(2,k) = -Yspcd(3,k)*SIN(latr)
+      Dydphi(1,k) = -Yspcd(3,k)*clon
+      Dydphi(2,k) = -Yspcd(3,k)*slon
       Dydphi(3,k) = qq
+
+      Dydv(1,1,k) = clat*clon
+      Dydv(2,1,k) = clat*slon
+      Dydv(3,1,k) = slat
+      Dydv(1,2,k) = slon
+      Dydv(2,2,k) = -clon
+      Dydv(3,2,k) = 0._10
+      Dydv(1,3,k) = -slat*clon
+      Dydv(2,3,k) = -slat*slon
+      Dydv(3,3,k) = clat
+
+      Rspot0(k)=Rspot(k)
+      do i=1,3
+         Yspcd0(i,k)=Yspcd(i,k)
+      end do
+
+      Sptect(k)= Spcdx(4,k).ne.0._10 .or. Spcdx(5,k).ne.0._10 .or.
+     . Spcdx(6,k).ne.0._10
+c prepare velocities of site quantities
+      if(Sptect(k)) then
+         Drspot(k)=Spcdx(4,k)
+         call PRODCT(Spcdx(4,k),Dydv(1,1,k),Dyspcd(1,k),1,-3,3)
+      endif
+      klast=k
       if(k.eq.2) return
   400 if(Nspot2.gt.0) then
          k = 2
          npspot = Nplnt2
+         if(Spcdx(1,2).eq.-5._10) call SUICID(
+     .    'MOVING SPACECRAFT NOT ALLOWED FOR 2ND SPOT, STOP ESHAPE ',14)
          goto 300
       endif
  
@@ -212,23 +247,32 @@ c update plate motion to a specified epoch
 c arguments
 c jd - Julian day number
 
+      if(jd.eq.jdlast) return
+      jdlast=jd
       do i=1,nlast
-         if(jd.ne.jdlast(i)) then
-            jdlast(i)=jd
-            Dtsit(i)=(jd-T0sit(i))*velfct
-            if(Tecton(i)) then
-               Rc(i)   =Rc0(i)+Dtsit(i)*Drc(i)
-               Rs(i)   =Rs0(i)+Dtsit(i)*Drs(i)
-               Cnrm(i) =Cnrm0(i)+Dtsit(i)*Dcnrm(i)
-               Snrm(i) =Snrm0(i)+Dtsit(i)*Dsnrm(i)
-               Rsite(i)=Rsite0(i)+Dtsit(i)*Drsite(i)
-               Longr(i)=Longr0(i)+Dtsit(i)*Dlongr(i)
-               Xb0(1,i)=Xb00(1,i)+Dtsit(i)*Dxb0(1,i)
-               Xb0(2,i)=Xb00(2,i)+Dtsit(i)*Dxb0(2,i)
-               Clong(i)=Clong0(i)+Dtsit(i)*Dclong(i)
-               Slong(i)=Slong0(i)+Dtsit(i)*Dslong(i)
-               Shgt(i)=Shgt0(i)+Dtsit(i)*Dshgt(i)
-            endif
+         Dtsit(i)=(jd-T0sit(i))*velfct
+         if(Tecton(i)) then
+            Rc(i)   =Rc0(i)+Dtsit(i)*Drc(i)
+            Rs(i)   =Rs0(i)+Dtsit(i)*Drs(i)
+            Cnrm(i) =Cnrm0(i)+Dtsit(i)*Dcnrm(i)
+            Snrm(i) =Snrm0(i)+Dtsit(i)*Dsnrm(i)
+            Rsite(i)=Rsite0(i)+Dtsit(i)*Drsite(i)
+            Longr(i)=Longr0(i)+Dtsit(i)*Dlongr(i)
+            Xb0(1,i)=Xb00(1,i)+Dtsit(i)*Dxb0(1,i)
+            Xb0(2,i)=Xb00(2,i)+Dtsit(i)*Dxb0(2,i)
+            Clong(i)=Clong0(i)+Dtsit(i)*Dclong(i)
+            Slong(i)=Slong0(i)+Dtsit(i)*Dslong(i)
+            Shgt(i)=Shgt0(i)+Dtsit(i)*Dshgt(i)
+         endif
+      end do
+c update spots
+      do k=1,klast
+         Dtspt(k)=(jd-T0spt(k))*velfct
+         if(Sptect(k)) then
+            Rspot(k) =Rspot0(k)+Dtspt(k)*Drspot(k)
+            do i=1,3
+               Yspcd(i,k)=Yspcd0(i,k)+Dtspt(k)*Dyspcd(i,k)
+            end do
          endif
       end do
       return

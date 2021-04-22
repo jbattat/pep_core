@@ -1,18 +1,13 @@
       subroutine RBSPUN(ncard)
  
       implicit none
- 
- 
-c*** start of declarations inserted by spag
-      integer   i, istr, j, k, ncard
- 
-c*** end of declarations inserted by spag
- 
- 
+
 c
 c k.m.becker   june 1968   subroutine rbspun
 c punch adjusted radar observation biases
 c
+c parameters
+      integer*4 ncard
 
 c array dimensions
       include 'globdefs.inc'
@@ -20,7 +15,10 @@ c
 c common
       include 'inodta.inc'
       include 'rdbias.inc'
- 
+
+c local
+      integer*4 i,istr,j,k
+
       if(Numrbs.le.0) return
       istr = 0
       do j = 1, Numrbs
@@ -35,7 +33,7 @@ c common
                write(Ipunch,20) (Rdbsit(i,j),i = 1,2),Rdbser(j),
      .                           Nplrbs(j),(Lrbs(i,j),i = 1,2),
      .                           (Rbias(i,j),i = 1,2)
-   20          format(a4,1x,a4,1x,a4,i3,4x,2I2,1p,2E12.5)
+   20          format(a4,1x,a4,1x,a4,i3,4x,2I2,'##',1p2E14.7)
                ncard = ncard + 1
                goto 100
             endif

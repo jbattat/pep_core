@@ -354,7 +354,7 @@ c pulsar parameters
          call MVC(Sptpsr(j), 1, 4, plsr, 5)
          temp = con1
          nd   = 1
-         do i = 1, 16
+         do i=1,u_nmpsr
             l = Lpsrcn(i, j)
             if(l.le.0) goto 450
             k = k + 1

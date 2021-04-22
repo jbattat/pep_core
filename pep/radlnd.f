@@ -85,6 +85,9 @@ c tmdly1, the first guess, was generated in radctl
 c
 c spot on planet
          call SPOTCD(Jdx,Fract,mnspt1,nvel,Nplnt0,dum1,dum1,1)
+         do j=1,3
+            Xsbpl(j)=Xspcd(j,1)
+         end do
 c
 c------------------obtain lander wrt receiv.site at refl. time----------
          call PLTRP(1,Jdx,Fract,0,lplctl)
@@ -97,17 +100,19 @@ c*  start=9910
          do j = 1,3
             Xplsc(j)  = Xp(j)*Aultsc
             Xsbsun(j) = Xspcd(j,1) + Xplsc(j)
-            end do
+         end do
 c
 c*  start=1400
          do j = 1,3
             Xsitep(j,1) = Xemlsc(j,1) - Xsbsun(j)
+            Xsitec(j,1) = Xemlsc(j,1) - Xplsc(j)
          end do
          if(Nswcns.gt.0) then
             call SOTRP(Jdx,Fract,Xslcns(1,2),0)
             do j = 1,3
-               Xsitep(j,1) = Xsitep(j,1)
-     .                        + (Xslcns(j,2) - Xslcns(j,1))*Aultsc
+               dum = (Xslcns(j,2) - Xslcns(j,1))*Aultsc
+               Xsitep(j,1) = Xsitep(j,1) + dum
+               Xsitec(j,1) = Xsitec(j,1) + dum
             end do
          endif
 c
@@ -142,15 +147,17 @@ c iteration to determine sending site position
             goto 9990
          endif
 c
-c------------------determine  sending  site wrt lander at  send  time---
+c------------determine sending site wrt lander and planet at send time---
          do j = 1,3
             Xsitep(j,2) = Xemlsc(j,2) - Xsbsun(j)
+            Xsitec(j,2) = Xemlsc(j,2) - Xplsc(j)
          end do
          if(Nswcns.gt.0) then
             call SOTRP(Jdy,frcns,Xslcns(1,3),0)
             do j = 1,3
-               Xsitep(j,2) = Xsitep(j,2)
-     .            + (Xslcns(j,2) - Xslcns(j,3))*Aultsc
+               dum = (Xslcns(j,2) - Xslcns(j,3))*Aultsc
+               Xsitep(j,2) = Xsitep(j,2) + dum
+               Xsitec(j,2) = Xsitec(j,2) + dum
             end do
          endif
 c

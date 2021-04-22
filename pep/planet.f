@@ -17,6 +17,8 @@ c commons
       include 'aprtbf.inc'
       include 'bdctrl.inc'
       include 'empcnd.inc'
+      real*10 meqinc
+      equivalence (Mrcond(11),meqinc)
       include 'fcntrl.inc'
       include 'inodta.inc'
       include 'namtimq.inc'
@@ -229,13 +231,14 @@ c set up for integration
             if(Ncentr.eq.3) lnut  = 1
             if(Ncentr.eq.10) llib = 1
          endif
-         if(Ncentr.ne.0 .or. Nplnt.gt.30) then
-            do i = 1, i_mxtrg
-               if(Kp(i).gt.0) then
-                  if(Kp(i).eq.3) lnut  = 1
-                  if(Kp(i).eq.10) llib = 1
-               endif
-            end do
+         do i = 1, i_mxtrg
+            if(Kp(i).gt.0) then
+               if(Kp(i).eq.3) lnut  = 1
+               if(Kp(i).eq.10) llib = 1
+            endif
+         end do
+         if(llib.gt.0) then
+            if(meqinc.eq.0._10) meqinc = 0.0268587_10
          endif
          iperts = Ipert
          if(Nbody.gt.0. and. Ict(9).gt.0) Ipert = Ibody

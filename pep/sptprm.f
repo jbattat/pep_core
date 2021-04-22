@@ -21,29 +21,31 @@ c external
       real*10 SKALE
 c
 c locals
-      integer   i, nspot
+      integer   i,nspot
       character*4 blanks(4)/4*'    '/
-      character*8 coord(3)/'RAD', 'LONG', 'LAT'/
+      character*8 coord(6)/'RAD','LONG','LAT','UP','WEST','NORTH'/
 c
 c loop thru spots
 c now do loop over all nspot.  no longer need 'data nspot/0/'
-      if(Numspt.gt.0) then
-         do nspot = 1, Numspt
-            if(nplnt.eq.Nsplnt(nspot)) then
+      do nspot = 1, Numspt
+         if(nplnt.eq.Nsplnt(nspot)) then
 c
 c loop thru coordinates
-               do i = 1, 3
-                  if(Lspcrd(i,nspot).ne.0) then
-                     k = k + 1
-                     call MVC(Spot(nspot),1,4,names(1,k),1)
-                     call MVC(blanks,1,4,names(1,k),5)
-                     names(2,k) = coord(i)
-                     iskale(k)  = SKALE(71 + i/2)
-                     xnom(k)    = Spcord(i,nspot)/iskale(k)
-                  endif
-               end do
-            endif
-         end do
-      endif
+            do i = 1,6
+               if(Lspcrd(i,nspot).ne.0) then
+                  k = k + 1
+                  call MVC(Spot(nspot),1,4,names(1,k),1)
+                  call MVC(blanks,1,4,names(1,k),5)
+                  names(2,k) = coord(i)
+                  if(i.le.3) then
+                     iskale(k)=SKALE(71 + i/2)
+                  else
+                     iskale(k)=1._10
+                  endif 
+                  xnom(k)= Spcord(i,nspot)/iskale(k)
+               endif
+            end do
+         endif
+      end do
       return
       end

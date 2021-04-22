@@ -1,4 +1,4 @@
-      subroutine SPOTCD(jda,frect,mnspt1,nvel,npl,ctuts,atuts,n)
+      subroutine SPOTCD(jda,frect,mnspt1,nvel,npl,ctutsx,atutsx,n)
  
       implicit none
 c
@@ -6,7 +6,7 @@ c m.ash   oct 1971   subroutine spotcd
 c calculate observed spot coordinates
 c
 c arguments
-      real*10 frect,ctuts,atuts
+      real*10 frect,ctutsx,atutsx
       integer*4 jda,mnspt1,nvel,n
       integer*2 npl
 
@@ -23,6 +23,9 @@ c commons
       real*10 dmrtlb(3,3)
       include 'number.inc'
       include 'nutprc.inc'
+      include 'obscrd.inc'
+      real*10 sbepoch,sbstate(6)
+      equivalence (Save(56),sbepoch),(Save(57),sbstate(1))
       include 'param.inc'
       include 'prtpr9.inc'
 
@@ -30,9 +33,10 @@ c external functions
       real*10 A1UT1
 
 c local
-      real*10 alp,csidtm,ctvcor,del,fract,
-     . psi,sidtm,sidtm0,ssidtm,utsec,ututs
-      integer*4 i,ict66,ii,ioff,iprot,itstb,j,jd,nvp
+      real*10 alp,csidtm,ctvcor,del,fract,psi,sidtm,sidtm0,ssidtm,
+     . temp(6),utsec,ututsx
+      integer*4 i,ict66,ii,ioff,iprot,itstb,j,jdm,nvp
+      real*10 jd2000/2451545._10/
 c
 c           modifications for planetary rotations by w. decampli  8/73
 c
@@ -44,25 +48,31 @@ c           set up printout flags
       iprot = mod(ict66/256,2)
  
 c any ctvary correction should not be applied to rotation
-      ctvcor = Ctvary*(jda - Prm97 - 0.5_10 + frect)**2
-      call TIMINC(jda,frect,jd,fract,-ctvcor)
+      if(Spcdx(1,n).ne.-5._10) then
+         ctvcor = Ctvary*(jda - Prm97 - 0.5_10 + frect)**2
+         call TIMINC(jda,frect,jdm,fract,-ctvcor)
+      else
+c but it does apply to a moving spacecraft
+         jdm=jda
+         fract=frect
+      endif
  
 c calculate rotation matrix for earth
       if(npl.eq.3) then
          if(mnspt1.le.0) then
             mnspt1 = 1
-            call MNREED(jd)
-            if(jd.le.0) return
+            call MNREED(jdm)
+            if(jdm.le.0) return
             Kindnp = 0
-            ututs  = atuts - A1UT1(jd,fract + ctuts/Secday)
-            call SIDTIM(jd,ctuts-ututs,sidtm0,Sidvel,Dera)
-            call PRCNUT(jd,fract)
+            ututsx = atutsx - A1UT1(jdm,fract + ctutsx/Secday)
+            call SIDTIM(jdm,ctutsx-ututsx,sidtm0,Sidvel,Dera)
+            call PRCNUT(jdm,fract)
             do i = 1,3
                Rot(3,i) = Nutpr(3,i)
             end do
             sidtm0 = sidtm0 + Dgst
          end if
-         utsec  = fract*Secday - ctuts + ututs
+         utsec  = fract*Secday - ctutsx + ututsx
          sidtm  = sidtm0 + Sidvel*utsec
          csidtm = COS(sidtm)
          ssidtm = SIN(sidtm)
@@ -81,7 +91,7 @@ c calculate rotation matrix for moon
 c
       else if(npl.lt.0) then
 c See if any proper motion
-         Stime=(jd-Jdps0)+fract
+         Stime=(jdm-Jdps0)+fract
          if(Nplsr.gt.0 .and.(Alphc(2).ne.0._10 .or. Deltc(2).ne.0._10))
      .    then
             alp  = Alphc(1) + Alphc(2)*Stime
@@ -110,10 +120,28 @@ c calculate rotation matrix for sun
          goto 700
       else
  
+         if(Spcdx(1,n).eq.-5._10) then
+c coordinates of spot are supplied externally in the obslib
+c interpolate from the supplied reference epoch
+            Stime = (jdm-jd2000) + (fract-0.5_10)
+            Stime = Stime*secday - 3.90e-4_10 - sbepoch
+            do i=1,3
+               Xspcd(i,n) = (sbstate(i) + sbstate(i+3)*Stime)/Ltvel
+               Xspcd(i+3,n) = sbstate(i+3)/Ltvel
+            end do
+            if(Jct(13).ne.1) then
+c convert J2000 coordinates into our reference frame
+               do i=1,6
+                  temp(i)=Xspcd(i,n)
+               end do
+               call PRODCT(Prec2000,temp,Xspcd(1,n),-3,3,2)
+            endif
+            goto 400
+c
 c calculate rotation matrix for planet
-         if(mod(ict66,2).eq.0 .or. npl.ne.4) then
+         else if(mod(ict66,2).eq.0 .or. npl.ne.4) then
  
-            Stime = (jd - Pcom(1)) + (fract - 0.5_10)
+            Stime = (jdm - Pcom(1)) + (fract - 0.5_10)
             if(mnspt1.le.0) then
                mnspt1 = 1
                if(Alphc(2).eq.0._10) then
@@ -153,7 +181,7 @@ c calculate spot position
          else
  
 c nvel must be passed to spotpl for generality
-            call SPOTPL(jd,fract,n,ict66,0,nvel)
+            call SPOTPL(jdm,fract,n,ict66,0,nvel)
          end if
          goto 200
       end if
@@ -196,6 +224,30 @@ c with respect to spot latitude
          if(Lspot(3,n).gt.0) then
             call PRODCT(Rot,Dydphi(1,n),Dxspcd(1,3,n),-3,3,1)
          end if
+c
+c with respect to spot upward velocity
+         if(Lspot(4,n).gt.0) then
+            call PRODCT(Rot,Dydv(1,1,n),Dxspcd(1,4,n),-3,3,1)
+            do i=1,3
+               Dxspcd(i,4,n)=Dxspcd(i,4,n)*Dtspt(n)/Aultsc
+            end do
+         endif
+c
+c with respect to spot westward velocity
+         if(Lspot(5,n).gt.0) then
+            call PRODCT(Rot,Dydv(1,2,n),Dxspcd(1,5,n),-3,3,1)
+            do i=1,3
+               Dxspcd(i,5,n)=Dxspcd(i,5,n)*Dtspt(n)/Aultsc
+            end do
+         endif
+c
+c with respect to spot northward velocity
+         if(Lspot(6,n).gt.0) then
+            call PRODCT(Rot,Dydv(1,3,n),Dxspcd(1,6,n),-3,3,1)
+            do i=1,3
+               Dxspcd(i,6,n)=Dxspcd(i,6,n)*Dtspt(n)/Aultsc
+            end do
+         endif
 
       else
 c
@@ -241,6 +293,8 @@ c
 c calculate time derivative of planet rotation matrix
       else if(npl.eq.0) then
          goto 700
+      else if(Spcdx(1,n).eq.-5._10) then
+         goto 400
       else
          Omegsc = Omegm/Secday
       end if
@@ -279,7 +333,7 @@ c*  start=2000
 c print appropriate coordinates
   400 if(mod(Jct(6)/itstb,2).ne.0) then
          if(Line.gt.58) call OBSPAG
-         write(Iout,450) jd,fract,nvp,n,
+         write(Iout,450) jdm,fract,nvp,n,
      .                    (Xspcd(i+ioff,n),i = 1,3)
   450    format(' SPOTCD:    JD.F=',i7,f13.12,' NV=',i2,'  N=',
      .          i2,'  X=',1p,3D23.15)

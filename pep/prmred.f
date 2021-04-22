@@ -785,9 +785,9 @@ c ICT(5) = 3 Same as ICT(5)=2, iterat=1 except go to compar link
 c            first to generate an observation library tape
 c ICT(5) = 4 Restore solution from dataset jmat plus zbar and
 c            fbar-adjoint from partially prereduced normal equations
-c            on imat0.  Enables computation of adjusts but not sigmas
-c            for "reduced away" parameters; uncertainty of predict
-c            cannot be calculated.
+c            on imat0.  Enables computation of adjusts and sigmas for
+c            "reduced away" parameters, but not covariances; uncertainty
+c            of predict cannot be calculated.
 c
 c ICT(6) =   Number of least squares analysis iterations during which
 c            perturbing planet data set is to be updated with just
@@ -1215,6 +1215,10 @@ c JCT(17):  controls Lorentz contraction calculation for observing and
 c           observed bodies
 c           0: (default) apply contraction
 c           1: omit contraction
+c
+c JCT(18):  controls calculation of contributions to Shapiro delay
+c           0: (default) omit contribution due to planet
+c           1: include planet contribution
 c
 c JCT(20):  binary coded control determines whether PEP stops or
 c           continues after certain errors.  0 --> continue,
@@ -1878,6 +1882,8 @@ c KKBDY(70)   copy of JCT(13), not independently settable
 c
 c KKBDY(71) = 0 do not print accelerations
 c KKBDY(71) = 1 print accelerations every tabular point on Kout, if any
+c KKBDY(71) = 64 print high-precision coordinates on Kout, if any
+c KKBDY(71) = 192 same as 64, but suppress printing of libration angles
 c
 c KKBDY(80)=0 do not include asteroid ring in n-body integration
 c KKBDY(80)=1 effect of asteroid ring included in n-body integration

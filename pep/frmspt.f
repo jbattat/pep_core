@@ -47,14 +47,13 @@ c commons
                endif
                if(Spot(i).eq.Spot1(mspot)) then
                   Nrst = Lspt1(i) - 1
-                  call FRMBDY(rst,Lspcrd(1,i),Mspcrd(1,mspot),-3,
-     .                        ntop)
+                  call FRMBDY(rst,Lspcrd(1,i),Mspcrd(1,mspot),-6,ntop)
                   goto 100
                endif
    20       end do
          endif
  
-         do i = 1, 3
+         do i = 1,6
             if(Mspcrd(i,mspot).gt.0) Nsav = Nsav + 1
          end do
   100 end do

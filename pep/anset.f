@@ -161,7 +161,7 @@ c for moon spot coordinates
          if(Nsplnt(j).ne.10) goto 300
          Nsptm2   = Nsptm2 + 1
          Lspt1(j) = Nparam + 1
-         call BCHECK(Lspcrd(1,j),nice,-3)
+         call BCHECK(Lspcrd(1,j),nice,-6)
          Lspt2(j) = Nparam
       end do
 c
@@ -196,7 +196,7 @@ c for sun spot coordinates
             if(Spot(j).eq.blank) goto 600
             Nspts2   = Nspts2 + 1
             Lspt1(j) = Nparam + 1
-            call BCHECK(Lspcrd(1,j),nice,-3)
+            call BCHECK(Lspcrd(1,j),nice,-6)
             Lspt2(j) = Nparam
          end do
       endif
@@ -307,7 +307,7 @@ c for planet spot coordinates
                   if(Nsplnt(i).ne.Nplnt(j)) goto 850
                   Nsptp2(j) = Nsptp2(j) + 1
                   Lspt1(i)  = Nparam + 1
-                  call BCHECK(Lspcrd(1,i),nice,-3)
+                  call BCHECK(Lspcrd(1,i),nice,-6)
                   Lspt2(i) = Nparam
                   Lpl2(j)  = Nparam
                end do
@@ -358,7 +358,7 @@ c for star coordinates
             Lspt1(i) = Nparam + 1
             if(Nsplnt(i).lt.0) then
                Nstar2 = i
-               call BCHECK(Lspcrd(1,i),nice,-3)
+               call BCHECK(Lspcrd(1,i),nice,-6)
             endif
             Lspt2(i) = Nparam
          end do
@@ -395,7 +395,7 @@ c
 c for pulsar parameters
       do i = 1,u_mxpsr
          Lpsr0(i) = Nparam
-         call ACHECK(Lpsrcn(1,i),nice,16)
+         call ACHECK(Lpsrcn(1,i),nice,u_nmpsr)
          if(nice.gt.0) then
             nstop = nstop + nice
             write(Iout,960) nice,words,i

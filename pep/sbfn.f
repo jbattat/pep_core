@@ -97,6 +97,8 @@ c     gamat3= gama3*(1+prmter(32)*(s-t0))
 c
       Fn(1) = 0._10
       Fn(2) = 0._10
+      if(Kkp(60).gt.1)
+     . write(6,99333) k,j,s-2440000.5_10
 c
 c - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 c
@@ -155,6 +157,9 @@ c
 c determine elliptic orbit coordinates for encke's method
                Tlpt = s - Tlpt0
                call ELIPT(Kp1,Tlpt)
+               if(Kkp(60).gt.1) write(6,99332) (Ylpt(i),i=1,3),
+     .          (Y(i,j),i=1,3)
+99332          format('YLPT',1p3e24.17/'Y',3e12.4)
             endif
 c
 c determine central body relative to sun
@@ -830,5 +835,8 @@ c evaluate right side of equation
          Fn(1) = Y(k + 3, j)
       endif
       SBFN = Fn(1)
+      if(Kkp(60).gt.0)
+     . write(6,99333) k,j,s-2440000.5_10,Fn(1)
+99333 format('k,j,s,fn',2i3,f11.4,1p6d22.15)
       return
       end

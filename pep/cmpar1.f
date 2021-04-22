@@ -17,12 +17,8 @@ c common
       include 'lcntrl.inc'
       include 'leon.inc'
       include 'mnsprt.inc'
-      real*10 spcdx2(3)
-      equivalence (spcdx2(1),Spcdx(1,2))
       include 'ltrapx.inc'
       include 'mtrapx.inc'
-      integer*2 mspcy2(3),mspcdy(3)
-      equivalence (mspcdy(1),Mspcdx(1,1)),(mspcy2(1),Mspcdx(1,2))
       include 'namtim.inc'
       include 'number.inc'
       include 'obscrd.inc'
@@ -42,7 +38,7 @@ c common
  
 c temproary storage
       common/YVECT/ Uucond(u_nmbod),Vvcond(u_nmbod),Vvcone(u_nmbod,2),
-     . Spcdxx(3),Nmobst(2,2),Uname(2),Rbsu(2),Eqnu(3),Phsu(9),Jevv0(2)
+     . Spcdxx(6,2),Nmobst(2,2),Uname(2),Rbsu(2),Eqnu(3),Phsu(9),Jevv0(2)
       character*4 Nmobst, Uname
       real*10 Uucond,Vvcond,Vvcone,Spcdxx
       real*4    Rbsu,Eqnu,Phsu
@@ -58,7 +54,7 @@ c local
       integer*4 lhprct(8)/1,2,3,4,5,6,22,23/
       character*8 namobs/' PLNOBS '/
       integer*2 ncentu, nrbius, neqnux
-      integer*2 mcobs1, mcobs2, ntest, i2d,i2e,i2f, nsitcr/6/
+      integer*2 mcobs1, mcobs2, ntest, i2d,i2e,i2f, nsitcr/6/,nsptcr/6/
       real*10 jd2000/2451545._10/
       character*8 blank8/'        '/
       character*4 blank
@@ -83,9 +79,8 @@ c test for end of file in obsred
       if(Iiabs1.eq.-1) goto 300
  
 c clear all undefined m-vectors (Mprmx, Memx, Mmnx, Merx, Mmrx, Mplx,
-c Mdtx, Mumdtx, and Msitcr already set)
-      call ZFILL(Mplx,2*1054)
-      call ZFILL(Mscx,2*1490)
+c Mdtx, Mumdtx, Msitcr, and Msptcr already set)
+      call ZFILL(Mplx,2*2558)
  
       read(Iabs1s,end=300) Nseqa(3),Ncoda(3),Nplnta(3),Sita1(3),
      . Sita1(4),Sera(3),Sita2(3),Sita2(4),Spota(3),(Erwgta(i,3),i=1,2),
@@ -95,7 +90,8 @@ c Mdtx, Mumdtx, and Msitcr already set)
      . ((Mscrdx(i,j),i=1,Msitcr),j=1,2),nrbius,Rbsu,
      . Mrbsx,neqnux,Eqnu,Meqnx,Ncphu,Phsu,Mphsx,Nobcon,(Obscon(i),i=1,
      . MAX(1,0+Nobcon)),((Scord1(i,j,3),i=1,Msitcr),j=1,2),
-     . Kscrd1(1,3),Kscrd1(2,3),Spcdxx,mspcdy,
+     . Kscrd1(1,3),Kscrd1(2,3),(Spcdxx(i,1),i=1,Msptcr),
+     . (Mspcdx(i,1),i=1,Msptcr),
      . Mczone,mczon1,(Mczhar(i),i=1,mczon1),Mctess,mctes1,(Mcchar(i),
      . i=1,mctes1),(Mcshar(i),i=1,mctes1),Mumtar,mumtr1,(Mtrg(i),
      . (Mtbod(j,i),j=1,Ncnmo),Mtzone(i),(Mtzhar(j,i),j=1,4),Mttess(i),
@@ -103,11 +99,12 @@ c Mdtx, Mumdtx, and Msitcr already set)
      . mcobs2,(Nmobst(1,j),Nmobst(2,j),(Mscx(i,j),i=1,mcobs2),Jevv0(j),
      . (Vvcone(i,j),i=1,mcobs2),j=1,mcobs1),Mszone,mszon1,(Mszhar(i),
      . i=1,mszon1),Mstess,mstes1,(Mschar(i),i=1,mstes1),(Msshar(i),
-     . i=1,mstes1),Nplta2(3),Spota2(3),spcdx2,mspcy2,Freqa2(3),Memmn,
+     . i=1,mstes1),Nplta2(3),Spota2(3),(Spcdxx(i,2),i=1,Msptcr),
+     . (Mspcdx(i,2),i=1,Msptcr),Freqa2(3),Memmn,
      . next,(exnams,exnams,i=1,MAX(1,0+next)),Mngd,Mnfour,Ctlga(3),
      . Mskyc,(Msky(i),i=1,MAX(1,0+Mskyc)),i2d,(Mpsrx(i),i=1,i2d),
      . Mmpex,i2e,i2f,(Mplex(j),(Mpex(i,j),i=1,i2f),j=1,i2e),
-     . T0st1(1,3),T0st1(2,3)
+     . T0st1(1,3),T0st1(2,3),T0sp1
  
       if(Mumtar.gt.i_mxtrg)
      .     call SUICID('TOO MANY TARGET BODIES ON INPUT OBSLIB, '//
@@ -122,6 +119,16 @@ c fill in site velocity if missing
             do i=Msitcr+1,6
                Mscrdx(i,j)=0
                Scord1(i,j,3)=0._10
+            end do
+         end do
+      endif
+c fill in spot velocity if missing
+      if(Msptcr.lt.6) then
+         do j=1,2
+            T0sp1(j)=jd2000
+            do i=Msptcr+1,6
+               Mspcdx(i,j)=0
+               Spcdxx(i,j)=0._10
             end do
          end do
       endif
@@ -441,8 +448,7 @@ c initialize quantities for this series
  
 c clear all undefined l-vectors (Lprmx, Lemx, Lmnx, Lerx, Lmrx, Ldtx,
 c and Numdtx already set)
-      call ZFILL(Lplx,2*1054)
-      call ZFILL(Lscx,2*1490)
+      call ZFILL(Lplx,2*2558)
  
 c clear freq and site quantities
       call ZFILL(Xsite,zsitcr)
@@ -553,7 +559,7 @@ c write first two records of output observation library tape
      .          Mrcond,Lprmx,Lemx,Lmnx,Lerx,Lmrx,
      .          Numdt,numdt1,(Jddt(i),i=1,numdt1),(Dt(i),i=1,numdt1),
      .          (Ldtx(i),i=1,numdt1),ione,izero(1),
-     .          Jddt0,Lnklvl,nsitcr,izero,izero,izero,
+     .          Jddt0,Lnklvl,nsitcr,nsptcr,izero,izero,izero,
      .          izero,izero,izero,izero,izero
             endif
          endif

@@ -36,7 +36,8 @@ c              for each series
 c          icall   indicates which is the calling routine
 c                   1 - emtrp,  2 - mntrp,  3 - pltrp,  4 - sbtrp,
 c                   5 - sctrp,  6 -(prtrp), 7 -(ertrp), 8 - sotrp,
-c                   9 - ertsnt, 10 - sotrp for mercury
+c                   9 - ertsnt, 10 - sotrp for mercury using n-body,
+c                   11-19 - sotrp for partials
 c          yv      array for interpolation y-vectors
 c          nb11    pointer to left-hand tabular point in yv
 c                  (for objects that may be evaluated at two different
@@ -83,20 +84,27 @@ c          ntb1s   saved value of ntab1, or 9999 if y-vectors not set up
 c          nbtrp   pointer to left bracketing tabular point (relative
 c                  to 2nd or 3rd record, depending on idir)
 c
+c
+c array dimensions
+      include 'globdefs.inc'
+
 c        commons
       include 'fcntrl.inc'
       include 'inodta.inc'
+      include 'stats.inc'
       include 'tabval.inc'
       include 'trpcom.inc'
 
 c local
       real*10 bbintx,dt
-      integer*4 i,idir,ifirst,io,j,jmx,jo,jy,lim1,lim2,n1,n2,n3,nb11,
+      integer*4 i,i4,idir,ifirst,io,j,jmx,jo,jy,lim1,lim2,n1,n2,n3,nb11,
      . nbn,nbo,ndmy,ngo,nmo,nov5,nprec,npto2,ntbss,nvela,nvelr
+      integer*2 npl
 c
 c names of interpolators
       character*2 smsg,
-     1    name(10)/'EM','MN','PL','SB','SC','PR','ER','SO','EO','S1'/
+     1  name(19)/'EM','MN','PL','SB','SC','PR','ER','SO','EO','S1',
+     2           'P1','P2','P3','P4','P5','P6','P7','P8','P9'/
       character*8 sumsg(5)/'.. TAPE ','READING ','FAILURE,',' STOP IN',
      .          ' EVTRP  '/
       equivalence (sumsg,smsg)
@@ -291,6 +299,9 @@ c saved values cannot be re-used. set flag & read tape
       else if(icall.eq.7) then
          call RTREED(jd,fract,ndmy,3)
       else if(icall.ge.8 .and. icall.le.10) then
+      else if(icall.ge.11 .and. icall.le.19) then
+         npl=icall-10
+         call SSREED(jd,npl,Iplss(npl))
       else
          call SUICID('BAD ICALL, STOP IN EVTRP', 6)
       endif

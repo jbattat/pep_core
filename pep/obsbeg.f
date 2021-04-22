@@ -245,7 +245,7 @@ c*   start=300
          plsps = Plsper + Psrprm(6)
          write(Iout,600) Nplsr,Jdps0,plsps,Lpsrx
   600    format('0NPLSR=', i3, ' JD0=', i8, ' PER=', 1pd22.15, '  L=',
-     .          16I3)
+     .          24I3)
          Line = Line + 2
       endif
       if(Nphase.gt.0) then

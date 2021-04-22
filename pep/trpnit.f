@@ -16,7 +16,7 @@ c commons
       include 'bddta.inc'
       include 'trpcom.inc'
  
-      do i = 1, 10
+      do i = 1, 19
          Nvels(i) = 9999
          Ntb1s(i) = 9999
          Nbtrp(i) = 0

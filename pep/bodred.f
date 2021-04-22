@@ -21,6 +21,7 @@ c array dimensions
 c common
       include 'fcntrlx.inc'
       include 'inodta.inc'
+      include 'mnrtlb.inc'
       include 'param.inc'
 
 c body parameters
@@ -545,6 +546,15 @@ c
 c JTYPE specifies the reference frame of input elements.  The default
 c is -1 (1950 mean equinox and equator).  See below for other options.
 c
+c For Moon rotation there is special logic that applies only to the
+c core's angle rates:
+c INCND=0 input rates are Euler angle rates
+c INCND=3 input rates are angular velocity components of the core in
+c         the frame of the mantle (to be converted to "0" if ICND=0)
+c         If ICND=3, then retain these values and integrate only the
+c         core angular velocity, ignoring what would otherwise be the
+c         Euler angles
+c
 c * * * * * obsolete * * * * * see 'INUNIT' and 'INCND' above
 c ICND switches internal to BODRED are
 c ICND =-8 change input position and velocity in km and km/sec to
@@ -951,10 +961,12 @@ c
 c     CON(5) = meqinc, mean inclination of equator to orbit
 c     CON(6) = k2, lunar love number
 c     CON(7) = k2*t or k2/q, lunar dissipation parameter.  see k(83).
+c     CON(8-10) = coefficients of analytic dissipation terms
 c     CON(11-16) = initial conditions of lunar core rotation
 c     CON(17)= core-mantle rotation coupling constant
 c              (solar-mass-AU-squared-per-day)
 c     CON(18)= core moment of inertia (solar-mass-AU-squared)
+c     CON(19)= core flattening (ignored in computing mantle moments)
 c
 c For limited asteroids (SMALL=t)
 c     initial conditions are specified as for other bodies
@@ -977,12 +989,16 @@ c     CON(5)= pulse phase at reference epoch jd0 (cycles)
 c     CON(6)= pulse period - CON1(2) (sec)
 c     CON(7)= pulse period drift rate (sec/sec)
 c     CON(8)= pulse period acceleration (sec/sec**2)
+c     CON(9)= time derivative of dispersion (sec-Hz**2/d)
 c     CON(10)= amplitude of the planet/companion's signature (sec)
 c     CON(11)= planet orbit eccentricity
 c     CON(12)= planet argument of periapse (deg)
 c     CON(13)= planet mean anomaly at JD0 (deg)
 c     CON(14)= planet orbital period (days)
-c
+c     CON(15)= planet orbital inclination (deg)
+c     CON(16)= planet mass (Msun)
+c     CON(17)= time derivative of planet's signature (sec/d)
+c     CON(18)= time derivative of planet's periapse (deg/d)
 c
 c
 c L(1) to L(30) control whether initial conditions COND(1-6) and
@@ -1216,6 +1232,8 @@ c         is included in the equations of motion.
 c  K(83)=-1,0,2 implying, respectively, no lunar elasticity &
 c         dissipation (rigid-body), elas. & constant-time-lag diss.,
 c         elas. & constant-q dissipation model.
+c         1: same as 0, but calculate lunar mean motion from masses
+c  K(84)=-1,0,1 same as K(81), but for planets Venus through Saturn
 c  K(86)  controls lunar harmonics for partials, same as in probes
 c         (but use K(86) of Moon if higher)
 c
@@ -1339,6 +1357,8 @@ c           positions and velocities of same three bodies, and then
 c           relativistic likewise (note newtonian velocity indirect
 c           contribution is always zero)
 c        32 change interval of printout to 100 days
+c        64 reserved for nbody extra print
+c       128 suppress printout of moon libration angles
 c
 c KK(10) =   scale factor for f-format coordinate output in sbout
 c KK(10) = n print (x,y,etc.)*10**n in sbout and sbexp
@@ -1602,7 +1622,7 @@ c - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 c local variables
       integer*2 nplch
       character*8 blank/'        '/
-      real*10 fct,fract,fract0,fract9
+      real*10 dum,fct,fract,fract0,fract9,wct(3)
       integer i,ict66,ictl,iftkm,incnd,incr,indnd,
      . intx,inunit,jx,jcnd,jd09,jdtype,kcnd,
      . latdim,lcnd,londim,m,mcentr,mcnd,mcndi,mean,ngdpts,ntype
@@ -1846,6 +1866,41 @@ c coordinate system epoch is different than initial condition epoch
       endif
       call CHNCNE(nplch, Ncentr, Cond, jd09, fract9, lcnd, jtype,
      .            incnd, Icnd, Jct(13)+1)
+c
+c special logic for lunar core initial conditions
+      if(nplch.eq.-10 .and. incnd.eq.3) then
+         if(Icnd.eq.0) then
+            call MONROT(0,Cond(1),Cond(2),Cond(3),dum,dum,dum)
+            call MNCROT(Con(11),Con(12),Con(13),dum,dum,dum)
+
+c get rotation matrix relating core-fixed to body-fixed
+c multiply a body-fixed vector by mcmrot to get a core-fixed vector
+            call PRODCT(Mcrtlb,Mrotlb,Mcmrot,3,-3,3)
+            call PRODCT(Mcmrot,Con(14),wct,3,3,1)
+
+            Con(14) = (wct(1)*Sphic + wct(2)*Cphic)/Sthetac
+            Con(15) = wct(1)*Cphic - wct(2)*Sphic
+            Con(16) = wct(3) - Con(14)*Cthetac
+            incnd   = 0
+         else if(Icnd.eq.3) then
+         else
+            write(Iout,135) incnd,Icnd
+  135       format(' **** INVALID INCND,ICND',2I3,', ERROR IN BODRED')
+            if(Mout.gt.0) write(Mout,135) incnd,Icnd
+            nstop = nstop + 1
+         endif
+      else if(nplch.eq.-10 .and. incnd.eq.0 .and. Icnd.eq.3) then
+         call MONROT(0,Cond(1),Cond(2),Cond(3),dum,dum,dum)
+         call MNCROT(Con(11),Con(12),Con(13),dum,dum,dum)
+         call PRODCT(Mcrtlb,Mrotlb,Mcmrot,3,-3,3)
+c determine angular velocities in core-fixed frame
+         wct(1) = Con(15)*Cphic + Con(14)*Sphic*Sthetac
+         wct(2) = -Con(15)*Sphic + Con(14)*Cphic*Sthetac
+         wct(3) = Con(14)*Cthetac + Con(16)
+c convert to mantle frame
+         call PRODCT(Mcmrot,wct,Con(14),-3,3,1)
+         incnd=3
+      endif
 
       if(nplch.gt.0) then
 c

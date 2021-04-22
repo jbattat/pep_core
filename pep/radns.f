@@ -55,7 +55,7 @@ c external functions
       real*10 ANCOR,CTATF
 
 c local
-      real*10 dum,frcns,sendtm,zsb(3)
+      real*10 dum,frcns,sendtm
       integer   itype,j,jdcns,lemctl,loop1,loop2,lplctl,lsbctl,nn
 
 c     xslcns(1-6,j) = position and velocity (not used) of the center
@@ -88,7 +88,7 @@ c
          endif
          do j = 1, 3
             Xsbsun(j) = Xsb(j)*Aultsc
-            zsb(j)    = Xsbsun(j)
+            Xsbpl(j)  = Xsbsun(j)
          end do
 c
 c------------------obtain refl. pt. wrt receiv.site at refl. time-------
@@ -107,16 +107,18 @@ c
             end do
          endif
 c
-c------------------calculate receiving site wrt refl. pt. at refl.time--
+c-----------calculate receive site wrt refl. pt. and planet at refl.time--
 c*  start=1400
          do j = 1, 3
             Xsitep(j, 1) = Xemlsc(j, 1) - Xsbsun(j)
+            Xsitec(j, 1) = Xemlsc(j, 1) - Xplsc(j)
          end do
          if(Nswcns.gt.0) then
             call SOTRP(Jdx, Fract, Xslcns(1,2), 0)
             do j = 1, 3
-               Xsitep(j, 1) = Xsitep(j, 1)
-     .                        + (Xslcns(j,2) - Xslcns(j,1))*Aultsc
+               dum = (Xslcns(j,2) - Xslcns(j,1))*Aultsc
+               Xsitep(j, 1) = Xsitep(j, 1) + dum
+               Xsitec(j, 1) = Xsitec(j, 1) + dum
             end do
          endif
 c
@@ -155,15 +157,17 @@ c time,sending site position would be off by 3 centimeters)
             return
          endif
 c
-c------------------determine  sending  site wrt refl. pt. at  send  time
+c------------determine send site wrt refl. pt. and planet at send time
          do j = 1, 3
             Xsitep(j, 2) = Xemlsc(j, 2) - Xsbsun(j)
+            Xsitec(j, 2) = Xemlsc(j, 2) - Xplsc(j)
          end do
          if(Nswcns.gt.0) then
             call SOTRP(jdcns, frcns, Xslcns(1,3), 0)
             do j = 1, 3
-               Xsitep(j, 2) = Xsitep(j, 2)
-     .          + (Xslcns(j,2) - Xslcns(j,3))*Aultsc
+               dum = (Xslcns(j,2) - Xslcns(j,3))*Aultsc
+               Xsitep(j, 2) = Xsitep(j, 2) + dum
+               Xsitec(j, 2) = Xsitec(j, 2) + dum
             end do
          endif
 c
@@ -187,7 +191,7 @@ c test for dummy observation below horizon
          call HORIZN(Xsite, Xsitep, nn, Jd)
 c
 c test for planetary moon occulted by central body
-         call CNTOCC(zsb, Xsitep, -2, Jd)
+         call CNTOCC(Xsbpl, Xsitep, -2, Jd)
          if(Jd.le.0) return
       endif
 c

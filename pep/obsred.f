@@ -91,6 +91,9 @@ c     savb(6) =dstf(7)= xmitter frequency for vlbi observations (hz)
 c                       -or- interstellar freq for psr observations
 c     savb(7) =dstf(8)= topography (2-way elevation in sec) of
 c                       observed point
+c                       -or- 1-way delay attributable to pulsar orbit
+c                       (in sec) to be subtracted from the calculated
+c                       delay from the pulsar system center of mass
 c                       -or- 2nd xmitter frequency for vlbi (hz)
 c     savb(8) =dstf(9)= instantaneous psr pulse period at reception
 c     savb(9-26)are set from nutprc(1-18)
@@ -137,6 +140,8 @@ c     savb(49-51)= receiving station to spacecraft line of sight
 c                  vector in planet rotating frame
 c     savb(52-55)= zenith angles at 1st & 2nd sites of 1st & 2nd
 c                  objects
+c     savb(56)= reference epoch for s/c state vector (sec past J2000)
+c     savb(57-62)= s/c state vector in km, km/s relative to system c-o-m
 c
 c
 c in following, j=1 is for quantity from observation card data set iiobs

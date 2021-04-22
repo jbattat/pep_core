@@ -273,7 +273,7 @@ c find corresponding input pulsar
                Psrcn(6,i) = ppers + Plspr(i)
                pper1s     = Psrcn1(6, k)
                Psrcn1(6,k)= pper1s + Plspr1(k)
-               call DIFPRM(Psrcn(1,i), Psrcn1(1,k), Lpsrcn(1,i), 16,
+               call DIFPRM(Psrcn(1,i), Psrcn1(1,k), Lpsrcn(1,i),u_nmpsr,
      .                     ndif, cdf, plsr, 'CON   ')
                Psrcn(6,i)  = ppers
                Psrcn1(6,k) = pper1s

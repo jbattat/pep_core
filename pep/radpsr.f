@@ -37,8 +37,8 @@ c     drp(7-9) - partial of unit vector to pulsar w.r.t. dalpha
       include 'mnsprt.inc'
       include 'number.inc'
       include 'obscrd.inc'
-      real*10 ctrecf,phobs,freqis
-      equivalence (ctrecf,Dstf),(phobs,Dstf(6)),(freqis,Dstf(7))
+      real*10 Ctrecf,Phobs,Freqis
+      equivalence (Ctrecf,Dstf),(Phobs,Dstf(6)),(Freqis,Dstf(7))
       include 'kobequiv.inc'
       real*4 acctim
       equivalence (acctim, Estf)
@@ -49,10 +49,12 @@ c     drp(7-9) - partial of unit vector to pulsar w.r.t. dalpha
       include 'yvect.inc'
 c
 c local
-      real*10 ca,ddc2,dinv,dpsrdc,dpsrra,dra2,dum,
-     . dxst(3),fbc,frprt,sa,sbcvel,sclf,stmdly,t,tdprlx,
+      real*10 ca,ddc2,dinv,disp,dpsrdc,dpsrra,dra2,dum,
+     . dxst(3),fbc,frprt,psrrelp,sa,sbcvel,sclf,stmdly,t,tdprlx,
      . tfct,tfct1,tfct2,tmdlyb,tmdly3,tp,xedus
-      real*10 vcentr(3)/3*0._10/
+      real*10 vcentr(3),
+     . vc1950(3)/-0.882706_10,-13.488415_10, 5.855212_10/,
+     . vc2000(3)/-0.760127_10,-13.498004_10, 5.850308_10/
       integer*4 i,j,jdbc,jdprt,loop1,nn,np,np1
 c external functions
       real*10 ANCOR,DOT
@@ -91,15 +93,22 @@ c
          do i = 1, 3
             Xrho(i) = Dydphi(i,1)
             Drp(i)  = dpsrra*Xpp(i) + dpsrdc*Xrho(i)
+            if(Jct(13).eq.0) then
+               vcentr(i)=vc1950(i)/Ltvel
+            else
+               vcentr(i)=vc2000(i)/Ltvel
+            endif
          end do
-         sbcvel = DOT(vcentr,Yspcd)
+c ignore sun's peculiar velocity for now
+c        sbcvel = DOT(vcentr,Yspcd)
+        sbcvel = 0._10
       endif
 c
 c*  start=1200
 c
 c determine star coordinates in standard reference frame
 c note: xspcd is not a unit vector here
-      t = (Jd - Jdps0) + ctrecf
+      t = (Jd - Jdps0) + Ctrecf
       do i = 1, 3
          Xspcd(i,1) = Yspcd(i,1) + t*Drp(i)
       end do
@@ -150,20 +159,34 @@ c compute interstellar transmission frequency and dispersion
          end do
       endif
       freqis = Freq*(1._10 - sbcvel + DOT(Xessbc(4,1),Xsitp0))
-      tmdly  = tmdly + Psrprm(4)/freqis**2
+      Freqi2 = 1._10/freqis**2
+      Freqi2t= Freqi2*t
+      disp   = (Psrprm(4)+t*Psrprm(9))*Freqi2
+      tmdly  = tmdly + disp
 c
 c correction to delay for general relativity
       Rs1m = SQRT(DOT(Xemlsc,Xemlsc))
       Rs2m = Rs1m
-      Raddum(1) = -2._10*LOG(1._10 - Tmdly1/Rs1m)
+      Raddum(1) = -2._10*LOG((Rs1m - Tmdly1)/Aultsc)
 c add planet contributions
 c
 c
       tmdly = tmdly + Raddum(1)*Reltrm(1)
+      if(MOD(Jct(6)/2048,2).eq.1) then
+         if(Line.gt.56) call OBSPAG
+         write(Iout,100) Jd,Dstf(1),Raddum(1)*Reltrm(1),disp
+  100    format(1x,'PSRREL: JD.F=',i7,f13.12,' DT=',1pd22.15,' DISP=',
+     .    d22.15)
+         Line = Line + 1
+      endif
 c
 c iterate position of pulsar companion, if any
+c extra delay is conceived as pulsar "topography" passed in dstf(8)
+c to be subtracted from calculated delay
+c NOTE: if the orbit is not defined, but the delay is given in dstf(8),
+c that pre-computed delay is applied
       if(Psrprm(10).gt.0._10 .or. Nmpex.gt.0) then
-         tp = (Jd-Jdps0) + (ctrecf - tmdly/Secday)
+         tp = (Jd-Jdps0) + (Ctrecf - tmdly/Secday)
          np1=1
          if(Psrprm(10).gt.0._10) np1=0
          tmdlyb = 0._10
@@ -178,16 +201,28 @@ c
             if(frprt.lt.0._10) frprt=frprt+1._10
             tmdlyb = 0._10
             do np=np1,Nmpex
-               call JLIPT(Frect,Elptn(1,np),7,Ynpt(1,np),Rynpt(np),
+               call JLIPTP(Frect,Elptn(1,np),7,Ynpt(1,np),Rynpt(np),
      .          Rynpt2(np),Rynpt3(np),Dynpt(1,1,np))
                call TRPLST(jdprt,frprt,0,np,'JLIPT(PSR)',Ynpt(1,np))
-               tmdlyb = tmdlyb + Ynpt(3,np)*Aultsc
-               loop1  = loop1 + 1
-               if(loop1.gt.10)
-     .       call SUICID('MORE THAN 10 BINARY PULSAR ITERATIONS   ',10)
+               tmdlyb = tmdlyb + Ynpt(3,np)*Aultsc*Elptn(40,np)
             end do
+            loop1  = loop1 + 1
+            if(loop1.gt.10)
+     .       call SUICID('MORE THAN 10 BINARY PULSAR ITERATIONS   ',10)
          end do
-         tmdly = tmdly + tmdlyb
+         if(np1.eq.0 .and. Psrprm(15).gt.0._10) then
+            Psrrel=-2._10*LOG((Rynpt(0)-Ynpt(3,0))/Elptn(8,0))
+            psrrelp=Psrrel*Psrprm(16)
+            tmdlyb = tmdlyb + psrrelp*Reltrm(1)
+            Raddum(1) = Raddum(1)+psrrelp
+            if(MOD(Jct(6)/2048,2).eq.1) then
+               if(Line.gt.56) call OBSPAG
+               write(Iout,110) psrrel*Reltrm(1),-tmdlyb
+  110          format(1x,'PSRREL(BIN): DT=',1pe22.15,' TORB=',e22.15)
+               Line = Line + 1
+            endif
+         endif
+         Dstf(8)=-tmdlyb
          Nit(20) = Nit(20) - 1 + loop1
 c set up for partials
          Opv3=1._10
@@ -195,6 +230,7 @@ c set up for partials
             Opv3=Opv3+Ynpt(6,np)*Aultvl
          end do
       endif
+      tmdly=tmdly-Dstf(8)
 c
 c copy pulsar position into xsbsun
       do i = 1, 3

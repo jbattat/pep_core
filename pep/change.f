@@ -1,14 +1,6 @@
       subroutine CHANGE(goose,mass,x,kind)
  
       implicit none
- 
- 
-c*** start of declarations inserted by spag
-      integer   i,j
- 
-c*** end of declarations inserted by spag
- 
- 
 c
 c m.e.ash  april 1965   subroutine change
 c optimized 1977 j.f.chandler
@@ -28,12 +20,13 @@ c elliptic orbit quantities (encke labeled common)
       common /ENCKE/ B(3,2),Tsv,A,E,Anom0,Motpi,Mu2,Secc,Cecc,
      .        Quan2,Quan3,Quan4,Quan5,Quan12(3),Quan13(3),
      .        Quan11,Motion,Mu,Sasc,Casc,Spci,Cpci,Sinc,
-     .        Cinc,Sper,Cper,Vv,Rv,Ry2
+     .        Cinc,Sper,Cper
       real*10 B,Tsv,A,E,Anom0,Motpi,Mu2,Secc,Cecc,Quan2,Quan3,
      . Quan4,Quan5,Quan12,Quan13,Quan11,Motion,Mu,Sasc,
-     . Casc,Spci,Cpci,Sinc,Cinc,Sper,Cper,Vv,Rv,Ry2
+     . Casc,Spci,Cpci,Sinc,Cinc,Sper,Cper
 
-      real*10 DOT,e2,quan1
+      real*10 DOT,e2,quan1,ybar(4),cf,qq4,qq5,qq6,qq7,qq8,vv,rv
+      integer   i,j
  
       if(kind.gt.0) then
          Mu2 = 1.0_10 + mass
@@ -42,21 +35,20 @@ c elliptic orbit quantities (encke labeled common)
       endif
       Mu    = goose*SQRT(Mu2)
       Mu2   = goose*goose*Mu2
-      Ry2   = DOT(x,x)
-      Rylpt2= Ry2
-      Rylpt = SQRT(Ry2)
-      Rylpt3= Ry2*Rylpt
-      Rv    = DOT(x,x(4))
-      Vv    = DOT(x(4),x(4))
+      Rylpt2= DOT(x,x)
+      Rylpt = SQRT(Rylpt2)
+      Rylpt3= Rylpt2*Rylpt
+      rv    = DOT(x,x(4))
+      vv    = DOT(x(4),x(4))
       do i = 1,6
          Ylpt(i) = x(i)
       end do
-      A     = Mu2/(2.0_10*Mu2/Rylpt - Vv)
+      A     = Mu2/(2.0_10*Mu2/Rylpt - vv)
       Quan4 = SQRT(A)
       Motion = Mu/A/Quan4
       Sinc   = Quan4/Mu
       Quan4  = Quan4*Mu
-      Secc   = Rv/Quan4
+      Secc   = rv/Quan4
       Cecc   = 1.0_10 - Rylpt/A
       e2     = Secc**2 + Cecc**2
       E = SQRT(e2)
@@ -105,5 +97,54 @@ c elliptic orbit quantities (encke labeled common)
       endif
       Spci = Sper*Cinc
       Cpci = Cper*Cinc
+c compute partial derivatives
+      ybar(1) = A*(Cecc - E)
+      ybar(2) = Quan3*Secc
+      ybar(3) = Quan4*Secc/Rylpt
+      ybar(4) = Quan5*Cecc/Rylpt
+      cf  = -Mu2/Rylpt3
+      qq4 = Secc/Motion
+      qq5 = A*Cecc/Rylpt
+      qq6 = cf*qq4
+      qq7 = -ybar(4)*Quan11
+      qq8 = cf/Motion
+      do i=1,3
+         j = i+3
+
+c Partials w.r.t. a
+         Dylpt(i,1) = Ylpt(i)/A
+         Dylpt(j,1) = -0.5_10*Ylpt(j)/A
+
+c Partials w.r.t. e
+         Dylpt(i,2) = qq4*Ylpt(j) - Quan12(i) - Quan13(i)*ybar(2)
+         Dylpt(j,2) = qq5*Ylpt(j) + qq6*Ylpt(i) + qq7*B(i,2)
+      end do
+
+c Partials w.r.t. inc (radians)
+      Dylpt(1,3) = Sasc*Ylpt(3)
+      Dylpt(2,3) = -Casc*Ylpt(3)
+      Dylpt(3,3) = Spci*ybar(1) + Cpci*ybar(2)
+      Dylpt(4,3) = Sasc*Ylpt(6)
+      Dylpt(5,3) = -Casc*Ylpt(6)
+      Dylpt(6,3) = Spci*ybar(3) + Cpci*ybar(4)
+
+c Partials w.r.t. asc (radians)
+      Dylpt(1,4) = -Ylpt(2)
+      Dylpt(2,4) = Ylpt(1)
+      Dylpt(3,4) = 0._10
+      Dylpt(4,4) = -Ylpt(5)
+      Dylpt(5,4) = Ylpt(4)
+      Dylpt(6,4) = 0._10
+      do i=1,3
+         j = i+3
+
+c Partials w.r.t. per (radians measured from node)
+         Dylpt(i,5) = B(i,2)*ybar(1) - B(i,1)*ybar(2)
+         Dylpt(j,5) = B(i,2)*ybar(3) - B(i,1)*ybar(4)
+
+c Partials w.r.t. anom0 (radians from periapse)
+         Dylpt(i,6) = Ylpt(j)/Motion
+         Dylpt(j,6) = Ylpt(i)*qq8
+      end do
       return
       end

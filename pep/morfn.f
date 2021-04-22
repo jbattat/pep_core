@@ -42,7 +42,7 @@ c     mcor etc. are equatorial coordinates
 c     smcor etc. are selenodetic coordinates
 c
       include 'morstf.inc'
-      real*10 dhdxes(3,3,2),h(3,2)
+      real*10 dhdxes(3,3,6),h(3,6)
       equivalence (dhdxes(1,1,1),Dhedx),(h(1,1),He)
       include 'orblun.inc'
       include 'output.inc'
@@ -67,25 +67,31 @@ c
 c quantities internal to this routine
       real*10 rpe2(9),rpe3(9),
      .       rpe5(9),rpm2(9),rpm3(9),rpm5(9),plf(3,9)
-      real*10 hxe(3),hxs(3),pterms(9),mmterm
-      equivalence (pterms,Ppsi2)
-      real*10 dydp(6),dycdp(6),temp(3),temq(3),n0(3),fnr(3),dhdc(3,3),
+      real*10 hxe(3),hxs(3),pterms(9),mmterm,hxx(3,6)
+      equivalence (pterms,Ppsi2),(hxe,hxx(1,1)),(hxs,hxx(1,2))
+      real*10 dycdp(6),temp(3),temq(3),n0(3),fnr(3),dhdc(3,3),
      . dcordc(3,3),corpsi(3),corthe(3),corphi(3),ptrmq(3,3),
-     . dfdy(6,3),dfdp(3),n0c(3),fnc(3),dwc(3),cmtrq(3),
-     . mctrq(3),dfdyc(6,3),dfcdy(6,3),dfcdyc(6,3)
+     . dfdy(6,3),dfdp(3),n0c(3),n0ckin(3),fnc(3),dwc(3),cmtrq(3),
+     . dflatdy(3,6),dflatdyc(3,6),dmcmdy(3,3,3),dmcmdyc(3,3,3),
+     . mctrq(3),dfdyc(6,3),dfcdy(6,3),dfcdyc(6,3),dwcsdy(3,6),
+     . dwcsdyc(3,6),ddwdxp(3,3),dndxp(3,3,6)
       equivalence (pterms,ptrmq(1,1)),(dcordc(1,1),corpsi),
      .            (dcordc(1,2),corthe),(dcordc(1,3),corphi)
-      real*10 cor(3),dadx(3,3),dadxj2s(3,3),dadx3(3,3),dadxp(3,3,9),
-     . daij,deldp,delsp,dfdx(6,3),dndx(3,3),
+      real*10 dadx(3,3),dadxj2s(3,3),dadx3(3,3),dadxp(3,3,9),
+     . di0cdy(3,3,3),di0cdyc(3,3,3),di0cidy(3,3,3),di0cidyc(3,3,3),
+     . dkcdy(3,6),dkcdyc(3,6),dfrfldy(3,6),
+     . daij,deldp,delsp,dfdx(6,3),dndx(3,3),flattrq(3),flattrqc(3),
      . dphi,dphic,dpsy,dpsyc,dtheta,dthetac,dw(3),dw1,dw2,dw3,
      . gama1,gdpfc2,gdpfct,gdpomg(3),gdppar(3),gdpprv(3),
-     . gfacte,gfacte2,gfacte5,gfactm,gfactm2,gfactm5,masfct,
+     . gfacte,gfacte2,gfacte5,gfactm,gfactm2,gfactm5,icwc(3),masfct,
      . pepe,pmpm,psum,psumh,st0,sum,sume(3),sumhe(3),sumhm(3),
-     . summ(3),sump(3),sums(3),tde,tdm,
-     . tdmp,tdep,termc,termre,termrm,vary,x(3),xcr(3,3)
+     . summ(3),sump(3),sums(3),tde,tdm,temprot(3,3),temqrot(3,3),
+     . temrrot(3,3),tdmp,tdep,termc,termre,termrm,vary,x(3),xcr(3,3),
+     . wcstar(3),wcicwc(3),dwiwdyc(3,6),dwiwdy(3,6),wxw1(3),kinm(3),
+     . dwrig(3),frfltrq(3)
       equivalence (dw1,dw),(dw2,dw(2)),(dw3,dw(3))
       equivalence (dadx3,dadxp(1,1,3))
-      integer i,icm,icmkkk,ip1,ip2,is,itg,jj,kkk1,kt,l,l1,n1
+      integer i,icm,icmkkk,ip1,ip2,is,itg,jj,kkk1,kkkorb,kt,l,l1,n1
 
 c external functions
       real*10 DOT,DOTN
@@ -192,10 +198,7 @@ c finish symmetric matrix
             end do
 
 c contribution of sun to gravity gradient
-c contrary to description of k(30+ncentr) in general, sun is included in
-c equations for lunar partials whenever it's included in equations of
-c motion
-            if(Km(33).ge.0) then
+            if(Km(33).gt.0) then
                tdm=Gamat*Masse/Rm3
                tde=Gamat*Mass(10)/Re3
                tdmp=Gamat/Rm3
@@ -269,6 +272,19 @@ c save for extra printout
             endif
 
          endif
+
+c determine partial derivatives of libration, which may be needed for
+c orbit calculations as well
+         if(Rotint) then
+            n1 = Iparmr - 1
+            do l1 = 1,n1
+               l = l1*6+Korb
+               do i = 1,Index2
+                  l = l + 1
+                  Dmlib(i,l1) = Y(l,j)
+               end do
+            end do
+         endif
          goto 300
       endif
 
@@ -290,6 +306,12 @@ c (truly only once per step)
             Gamat3 = Gama3*vary
             Gamtem = Gamem*vary
          endif
+c set up for lunar torques due to figure
+         Gamtrq(1)=Gamat3
+         Gamtrq(2)=Gamat
+         do is=3,6
+            if(Npmhar(is).gt.0) Gamtrq(is)=Gamat*Mass(Npmhar(is))
+         end do
 c
 c determine perturbing planet coordinates
          if(Knbd.eq.0) then
@@ -394,7 +416,7 @@ c determine angular velocities in body-fixed frame
          W3 = dpsy*Ctheta + dphi
 c
 c call monrot to print out classical libration elements
-         if(Kout.ne.0) then
+         if(Kout.ne.0 .and. MOD(Kkm(7)/128,2).eq.0) then
             if(Fract.eq.0._10) then
                if(j.ne.1) then
                   call ECLPRC(Jd,Fract,1)
@@ -407,23 +429,39 @@ c store jd temporarily in /precmn/ for monrot printout
             endif
          endif
          if(Corint) then
-            call MNCROT(Y(Krot+1,j),Y(Krot+2,j),Y(Krot+3,j),
-     .       Y(Krot+4,j),Y(Krot+5,j),Y(Krot+6,j))
-            dpsyc  = Y(Krot+4,j)
-            dthetac= Y(Krot+5,j)
-            dphic  = Y(Krot+6,j)
+            if(Corspin) then
+               wcstar(1) = Y(Krot+4,j)
+               wcstar(2) = Y(Krot+5,j)
+               wcstar(3) = Y(Krot+6,j)
+            else
+               call MNCROT(Y(Krot+1,j),Y(Krot+2,j),Y(Krot+3,j),
+     .          Y(Krot+4,j),Y(Krot+5,j),Y(Krot+6,j))
+               dpsyc  = Y(Krot+4,j)
+               dthetac= Y(Krot+5,j)
+               dphic  = Y(Krot+6,j)
 
 c get rotation matrix relating core-fixed to body-fixed
 c multiply a body-fixed vector by mcmrot to get a core-fixed vector
-            call PRODCT(Mcrtlb,Mrotlb,Mcmrot,3,-3,3)
+               call PRODCT(Mcrtlb,Mrotlb,Mcmrot,3,-3,3)
+c calculate inertia tensor if necessary
+               if(Mrcond(25).ne.0._10) then
+                  call PRODCT(I0ci0,Mcmrot,temprot,3,-3,3)
+                  call PRODCT(Mcmrot,temprot,I0ci,3,3,3)
+                  call PRODCT(I0c0,Mcmrot,temprot,3,-3,3)
+                  call PRODCT(Mcmrot,temprot,I0c,3,3,3)
+                  call PRODCT(Di0cidf0,Mcmrot,temprot,3,-3,3)
+                  call PRODCT(Mcmrot,temprot,Di0cidf,3,3,3)
+               endif
 c
 c determine angular velocities in core-fixed frame
-            Wc(1) = dthetac*Cphic + dpsyc*Sphic*Sthetac
-            Wc(2) = -dthetac*Sphic + dpsyc*Cphic*Sthetac
-            Wc(3) = dpsyc*Cthetac + dphic
-            if(Kkm(61).gt.0.or.ABS(dpsyc).gt.1e-2_10)
-     .       write(6,44401) s,j,Wc,dpsyc,dthetac,dphic,Mcmrot
-44401       format(' T,j,Wc,dth,rot=',f16.6,i3,2x1p3e24.17/(3e20.13))
+               Wc(1) = dthetac*Cphic + dpsyc*Sphic*Sthetac
+               Wc(2) = -dthetac*Sphic + dpsyc*Cphic*Sthetac
+               Wc(3) = dpsyc*Cthetac + dphic
+               if(Kkm(61).gt.0.or.(Kkm(61).ge.0.and.
+     .          ABS(dpsyc).gt.1e-2_10))
+     .          write(6,44401) s,j,Wc,dpsyc,dthetac,dphic,Mcmrot
+44401          format(' T,j,Wc,dth,rot=',f16.6,i3,2x1p3e24.17/(3e20.13))
+            endif
          endif
       endif
 c
@@ -479,7 +517,7 @@ c 1-3 for newtonian, but need 1-6 for relativity
       endif
 c
 c determine perturbing planets relative to earth and moon
-      if(Orbint) then
+      if(Orbint .or. Kmr(81).ge.0) then
          do l = 1,9
             if(l.ne.3) then
                if(Km(l+30).ge.0) then
@@ -511,11 +549,27 @@ c determine selenodetic coordinates
          do i = 1,3
             Smecor(i) = -Smecor(i)
             Smcor(i)  = -Smcor(i)
+            Mpcor(i,1)= -Mecor(i)
+            Mpcor(i,2)= -Mcor(i)
          end do
-         Srm2  = DOT(Smcor,Smcor)
-         Srm   = SQRT(Srm2)
-         Srem2 = DOT(Smecor,Smecor)
-         Srem  = SQRT(Srem2)
+         Srm2  = Rm2
+         Srm   = Rm
+         Srm5  = Rm5
+         Srem2 = Rem2
+         Srem  = Rem
+         Srem5 = Rem5
+         do is=3,6
+            if(Npmhar(is).gt.0) then
+               jj=Npmhar(is)
+               call PRODCT(Mrotlb,pmcor(1,jj),Spcor(1,is),3,3,1)
+               Spc2(is) = rpm2(jj)
+               Spc(is)  = rpm(jj)
+               Spc5(is) = rpm5(jj)
+               do i=1,3
+                  Mpcor(i,is)=Rvec(i,jj,11)
+               end do
+            endif
+         end do
       endif
 c
 c determine tidal friction quantities
@@ -571,32 +625,108 @@ c Drtdy is transpose for convenience: Drtdy(i,j,k)=dMrotlb(j,i)/dy(k)
       if(Iparmr.gt.1) then
          call DMONRT(Drtdy,Dwdy,Spsi,Cpsi,Stheta,Ctheta,Sphi,Cphi,
      .    dpsy,dtheta,dphi)
-         if(Corint)
-     .    call DMONRT(Drtdyc,Dwcdyc,Spsic,Cpsic,Sthetac,Cthetac,
-     .    Sphic,Cphic,dpsyc,dthetac,dphic)
-
+         if(Corint) then
+            if(Corspin) then
+            else
+               call DMONRT(Drtdyc,Dwcdyc,Spsic,Cpsic,Sthetac,Cthetac,
+     .          Sphic,Cphic,dpsyc,dthetac,dphic)
+               do jj=1,3
+                  call PRODCT(Mcrtlb,Drtdy(1,1,jj),dmcmdy(1,1,jj),3,3,3)
+                  call PRODCT(Drtdyc(1,1,jj),Mrotlb,dmcmdyc(1,1,jj),
+     .             -3,-3,3)
+               end do
+               if(Mrcond(25).ne.0._10) then
+c get dependence of the core inertia tensor upon the Euler angles (not constant)
+                  call PRODCT(I0c0,Mcmrot,temprot,3,-3,3)
+                  do jj=1,3
+                     call PRODCT(dmcmdy(1,1,jj),temprot,di0cdy(1,1,jj),
+     .                3,3,3)
+                     call PRODCT(dmcmdyc(1,1,jj),temprot,di0cdyc(1,1,jj)
+     .                ,3,3,3)
+                     call PRODCT(I0c0,dmcmdy(1,1,jj),temqrot,3,-3,3)
+                     call PRODCT(Mcmrot,temqrot,temrrot,3,3,3)
+                     do i=1,3
+                        do l=1,3
+                           di0cdy(i,l,jj)=di0cdy(i,l,jj)+temrrot(i,l)
+                        end do
+                     end do
+                     call PRODCT(I0c0,dmcmdyc(1,1,jj),temqrot,3,-3,3)
+                     call PRODCT(Mcmrot,temqrot,temrrot,3,3,3)
+                     do i=1,3
+                        do l=1,3
+                           di0cdyc(i,l,jj)=di0cdyc(i,l,jj)+temrrot(i,l)
+                        end do
+                     end do
+                  end do
+                  call PRODCT(I0ci0,Mcmrot,temprot,3,-3,3)
+                  do jj=1,3
+                     call PRODCT(dmcmdy(1,1,jj),temprot,di0cidy(1,1,jj),
+     .                3,3,3)
+                     call PRODCT(dmcmdyc(1,1,jj),temprot,
+     .                di0cidyc(1,1,jj),3,3,3)
+                     call PRODCT(I0ci0,dmcmdy(1,1,jj),temqrot,3,-3,3)
+                     call PRODCT(Mcmrot,temqrot,temrrot,3,3,3)
+                     do i=1,3
+                        do l=1,3
+                           di0cidy(i,l,jj)=di0cidy(i,l,jj)+temrrot(i,l)
+                        end do
+                     end do
+                     call PRODCT(I0ci0,dmcmdyc(1,1,jj),temqrot,3,-3,3)
+                     call PRODCT(Mcmrot,temqrot,temrrot,3,3,3)
+                     do i=1,3
+                        do l=1,3
+                           di0cidyc(i,l,jj)=di0cidyc(i,l,jj)+
+     .                      temrrot(i,l)
+                        end do
+                     end do
+                  end do
+               endif
+            endif
+         endif
       endif
 c
-c the following calculations done twice, once for the torque due
-c to the earth (is=1), once for the torque due to the sun (is=2)
+c the following calculations done six times, once for the torque due
+c to the earth (is=1), once for the torque due to the sun (is=2),
+c and once for each of four planets
+c body-specific quantities used:
+c     spcor = selenodetic coordinates of body w.r.t. moon
+c     mpcor = equatorial coordinates of body w.r.t. moon
+c     h     = force on body due to lunar figure
+c     gamtrq= g times mass of body
+c     masfct= scaling for non-earth bodies, due to embary offset
 c
-      is    = 1
-      gama1 = Gamat3
-      masfct= gama1
-      do i = 1,3
-         cor(i) = Smecor(i)
-         x(i)   = -Mecor(i)
-c        h(i)   = He(i)
+      do i=1,3
+         n0(i)=0._10
       end do
+
+      do is=1,6
+         if(is.eq.1) then
+c earth torque
+            masfct= 1._10
+         else if(is.eq.2) then
+c sun torque
+            if(Kmr(81).lt.0) goto 100
+            masfct= Masse
+         else
+c planet torques
+            if(Kmr(84).lt.0 .or. Npmhar(is).eq.0) goto 200
+            masfct=Masse
+         endif
 c
 c form harmonic cross product terms
-      call CROSS(cor,h,hxe)
-      do while( .true. )
+         call CROSS(Spcor(1,is),h(1,is),hxx(1,is))
+
+c determine rigid body torques
+         do i     = 1,3
+            temp(i)=Gamtrq(is)*Mmoon*hxx(i,is)
+            n0(i) = n0(i) + temp(i)
+         end do
 c
 c obtain partials of selenodetic coordinates wrt euler angles
          if(Iparmr.gt.1) then
-            if(is.eq.2 .and. Kmr(81).lt.1) goto 200
-            call PRODCT(Drtdy,x,dcordc,-9,3,1)
+            if(is.eq.2 .and. Kmr(81).lt.1) goto 100
+            if(is.eq.3 .and. Kmr(84).lt.1) goto 200
+            call PRODCT(Drtdy,Mpcor(1,is),dcordc,-9,3,1)
 c save partials of earth coordinates for other calculations
             if(is.eq.1) then
                do l=1,3
@@ -613,9 +743,9 @@ c calculate harmonic terms for partials of rhs wrt euler angles
 c ptrmq: (.,1) = ppsi2,4,5  (.,2)=pthe2,4,5  (.,3)=pphi2,4,5
             do l = 1,3
                call CROSS(dcordc(1,l),h(1,is),temp)
-               call CROSS(cor,dhdc(1,l),temq)
+               call CROSS(Spcor(1,is),dhdc(1,l),temq)
                do i = 1,3
-                  ptrmq(i,l) = ptrmq(i,l) + gama1*mmabc(i)
+                  ptrmq(i,l) = ptrmq(i,l) + Gamtrq(is)*mmabc(i)
      .                          *(temp(i) + temq(i))
                end do
             end do
@@ -624,13 +754,13 @@ c obtain partials of rhs wrt orbit state
             if(Iparm.gt.1) then
 c cross product is equivalent to multiplication by a matrix
                xcr(1,1)=0._10
-               xcr(1,2)=+cor(3)
-               xcr(1,3)=-cor(2)
-               xcr(2,1)=-cor(3)
+               xcr(1,2)=+Spcor(3,is)
+               xcr(1,3)=-Spcor(2,is)
+               xcr(2,1)=-Spcor(3,is)
                xcr(2,2)=0._10
-               xcr(2,3)=+cor(1)
-               xcr(3,1)=+cor(2)
-               xcr(3,2)=-cor(1)
+               xcr(2,3)=+Spcor(1,is)
+               xcr(3,1)=+Spcor(2,is)
+               xcr(3,2)=-Spcor(1,is)
                xcr(3,3)=0._10
 
                call PRODCT(xcr,dhdxes(1,1,is),dndx,3,3,3)
@@ -642,74 +772,73 @@ c cross product is equivalent to multiplication by a matrix
                dndx(3,2)=dndx(3,2)+h(1,is)
                do i=1,3
                   do l=1,3
-                     Ddwdx(i,l)=Ddwdx(i,l)+dndx(i,l)*masfct*mmabc(i)
+                     ddwdxp(i,l)=dndx(i,l)*Gamtrq(is)*mmabc(i)
+                     Ddwdx(i,l)=Ddwdx(i,l)+ddwdxp(i,l)*masfct
                   end do
                end do
+               call PRODCT(ddwdxp,Mrotlb,dndxp(1,1,is),3,3,3)
             endif
          endif
-         if(is.ne.2 .and. Kmr(81).ge.0) then
-            is = 2
-c
-c enter loop for is=2 here
-            gama1 = Gamat
-            masfct= gama1*Masse
-            do i = 1,3
-               cor(i) = Smcor(i)
-               x(i)   = -Mcor(i)
-c               h(i)   = Hs(i)
-            end do
-            call CROSS(cor,h(1,is),hxs)
-            goto 100
-         endif
-         if(Iparm.gt.1) then
+  100 end do
+
+  200 if(Iparm.gt.1) then
 c transform partials to inertial coordinates and zero out the velocity
 c dependence (rigid-body approximation)
 
-            call PRODCT(Ddwdx,Mrotlb,dndx,3,3,3)
-            do i=1,3
-               do l=1,3
-                  Ddwdx(i,l)=dndx(i,l)
-                  Ddwdx(i,l+3)=0._10
-               end do
+         call PRODCT(Ddwdx,Mrotlb,dndx,3,3,3)
+         do i=1,3
+            do l=1,3
+               Ddwdx(i,l)=dndx(i,l)
+               Ddwdx(i,l+3)=0._10
             end do
-         endif
-         goto 200
-  100 end do
+         end do
+      endif
 c
-c determine rigid body torques
-  200 do i     = 1,3
-         n0(i) = Gamat3*Mmoon*hxe(i)
-
-c include solar torque
-         if(Kmr(81).ge.0) n0(i) = n0(i) + Gamat*Mmoon*hxs(i)
-      end do
       if(Kkm(60).gt.2) write(6,99334)
 99334 format('calling MORFFI')
 
 c go get torque contribution from the figure-figure interaction
       if(Kmr(82).ge.0) call MORFFI(n0)
 
-c get core-mantle torque
+c get core-mantle torque, both from friction and flattening
       if(Corint) then
-         call PRODCT(Mcmrot,Wc,temp,-3,3,1)
+         if(.not.Corspin) call PRODCT(Mcmrot,Wc,wcstar,-3,3,1)
+         flattrq(1)=-wcstar(3)*wcstar(2)
+         flattrq(2)=wcstar(3)*wcstar(1)
+         flattrq(3)=0._10
          do i=1,3
-            cmtrq(i)=temp(i)-w(i)
-            n0(i)=n0(i)+Mrcond(23)*cmtrq(i)
+            cmtrq(i)=wcstar(i)-w(i)
+            frfltrq(i)=Mrcond(23)*cmtrq(i) +
+     .       Mrcond(25)*Mrcond(24)*flattrq(i)
+            n0(i)=n0(i)+frfltrq(i)
          end do
-         if(Kkm(61).gt.0.or.ABS(dpsyc).gt.1e-2_10)
-     .    write(6,44402) temp,w,cmtrq,n0
-44402    format('temp,w,cmtrq,n0='/(1p3e24.17))
+         if(Kkm(61).gt.0) write(6,44402) wcstar,w,cmtrq,n0
+44402    format('wcstar,w,cmtrq,n0='/(1p3e24.17))
+         if(Kkm(61).eq.-1) then
+c print core angular velocity and acceleration in mantle frame
+            write(6,44409) s,wcstar
+44409       format(f16.6/'Wc',1p3e26.19)
+            do i=1,3
+               temp(i)=I0c0(i,i)*wcstar(i)
+            end do
+            call CROSS(W1,temp,temq)
+            write(6,44410)(-I0ci0(i,i)*(frfltrq(i)+temq(i)),i=1,3)
+44410       format('dW',1p3e26.19)
+         endif
       endif
 
 c get kinematical cross terms
       call PRODCT(I0,W1,temp,3,3,1)
-      call CROSS(W1,temp,temq)
+      call CROSS(W1,temp,kinm)
       do i = 1,3
-         N0mkin(i) = n0(i) - temq(i)
+         N0mkin(i) = n0(i) - kinm(i)
       end do
 
-c rigid body angular acceleration vector put in dw
+c rigid body angular acceleration vector put in dw and saved as dwrig
       call PRODCT(I0i,N0mkin,dw,3,3,1)
+      do i=1,3
+         dwrig(i)=dw(i)
+      end do
 
 c include effects of lunar elasticity and dissipation if wanted
       if(Kmr(83).ge.0) then
@@ -727,6 +856,9 @@ c obtain terms for rhs of equations of motion
 c
 c obtain partials of rhs wrt euler angles and rates
       if(Iparmr.gt.1) then
+         wxw1(1)=-W2*W3
+         wxw1(2)=W1*W3
+         wxw1(3)=0._10
 c
 c first get partials of angular accelerations
 c ptrmq already has the partials of the harmonic terms of torque
@@ -755,28 +887,43 @@ c partials 1,3,6
 c include partials of core-mantle torque
          if(Corint) then
 c first get dependence on angles, filling the first half of the array
-c use the array for core partials for temporary storage
-
-            call PRODCT(Mcrtlb,Wc,temp,-3,3,1)
-            call PRODCT(Drtdy,temp,Ddwdyc,-9,3,1)
-
-            do i=1,3
-               do jj=4,6
-                  Ddwdyc(i,jj)=0._10
+c of partials of the core spin vector in mantle frame
+            do jj=1,6
+               do i=1,3
+                  dwcsdy(i,jj)=0._10
+                  dflatdy(i,jj)=0._10
                end do
+            end do
+
+            if(Corspin) then
+            else
+               call PRODCT(Mcrtlb,Wc,temp,-3,3,1)
+               call PRODCT(Drtdy,temp,dwcsdy,-9,3,1)
+               if(Mrcond(25).ne.0._10) then
+                  do jj=1,3
+                     dflatdy(1,jj)=(-wcstar(2)*dwcsdy(3,jj)
+     .                -dwcsdy(2,jj)*wcstar(3))*Mrcond(25)*Mrcond(24)
+                     dflatdy(2,jj)=(wcstar(1)*dwcsdy(3,jj)
+     .                +dwcsdy(1,jj)*wcstar(3))*Mrcond(25)*Mrcond(24)
+                     dflatdy(3,jj)=0._10
+                  end do
+               endif
+            endif
+            do i=1,3
                do jj=1,6
-                  ddwdy(i,jj)=ddwdy(i,jj) + (Ddwdyc(i,jj)-Dwdy(i,jj))
-     .             *Mrcond(23)*I0i(i,i)
+                  dfrfldy(i,jj)=(dwcsdy(i,jj)-Dwdy(i,jj))*Mrcond(23)+
+     .             dflatdy(i,jj)
+                  ddwdy(i,jj)=ddwdy(i,jj) + dfrfldy(i,jj)*I0i(i,i)
                end do
             end do
          endif
 
 c correct partials of angular acceleration w.r.t. state
-      if(Kkm(60).gt.2) write(6,99336)
-99336 format('calling MORFFI2')
+         if(Kkm(60).gt.2) write(6,99336)
+99336    format('calling MORFFI2')
          if(Kmr(82).ge.0) call MORFFI2(Iparm)
-      if(Kkm(60).gt.2) write(6,99337)
-99337 format('calling MORED2')
+         if(Kkm(60).gt.2) write(6,99337)
+99337    format('calling MORED2')
          if(Kmr(83).ge.0) call MORED2(s,Kmr(83),Iparm)
          
 c dfdy(i,j) means df(j)/dy(i)
@@ -806,20 +953,46 @@ c obtain partials wrt time derivatives of euler angles
          dfdy(6,3) = Pphi6 - Ctheta*dfdy(6,1)
 
          if(Corint) then
-c also need partials of angular acceleration wrt core state
-
-            call PRODCT(Mcmrot,Dwcdyc,Ddwdyc,-3,3,6)
-            do jj=1,3
-               call PRODCT(Drtdyc(1,1,jj),Wc,temp,3,3,1)
-               call PRODCT(Mrotlb,temp,temq,3,3,1)
+c also need partials of angular acceleration wrt core state,
+c where state is either Euler angles + rates or spin vector
+            if(Corspin) then
                do i=1,3
-                  Ddwdyc(i,jj)=Ddwdyc(i,jj)+temq(i)
+                  do jj=1,6
+                     dwcsdyc(i,jj)=0._10
+                  end do
+                  dwcsdyc(i,i+3)=1._10
                end do
-            end do
+            else
+               call PRODCT(Mcmrot,Dwcdyc,dwcsdyc,-3,3,6)
+               do jj=1,3
+                  call PRODCT(dmcmdyc(1,1,jj),Wc,temq,-3,3,1)
+                  do i=1,3
+                     dwcsdyc(i,jj)=dwcsdyc(i,jj)+temq(i)
+                  end do
+               end do
+            endif
+c at this point dwcsdyc contains the partial of the core spin vector in
+c the mantle frame w.r.t. the core state (whichever that is)
+            if(Mrcond(25).ne.0._10) then
+               do jj=1,6
+                  dflatdyc(1,jj)=(-wcstar(2)*dwcsdyc(3,jj)
+     .             -dwcsdyc(2,jj)*wcstar(3))*Mrcond(25)*Mrcond(24)
+                  dflatdyc(2,jj)=(wcstar(1)*dwcsdyc(3,jj)
+     .             +dwcsdyc(1,jj)*wcstar(3))*Mrcond(25)*Mrcond(24)
+                  dflatdyc(3,jj)=0._10
+               end do
+            else
+               do jj=1,6
+                  do i=1,3
+                     dflatdyc(i,jj)=0._10
+                  end do
+               end do
+            endif
 
             do jj=1,6
                do i=1,3
-                  Ddwdyc(i,jj)=Ddwdyc(i,jj)*Mrcond(23)*I0i(i,i)
+                  temp(i)=dwcsdyc(i,jj)*Mrcond(23)+dflatdyc(i,jj)
+                  Ddwdyc(i,jj)=temp(i)*I0i(i,i)
                end do
                dfdyc(jj,1) = (Sphi*Ddwdyc(1,jj) + Cphi*Ddwdyc(2,jj))
      .          /Stheta
@@ -841,104 +1014,205 @@ c partials of rhs wrt orbit
 c quantities for right-hand side of equations of motion of lunar core
       if(.not.Corint) goto 300
 
-c get mantle-core torque
-      call PRODCT(Mcmrot,W,temp,3,3,1)
-      do i=1,3
-         mctrq(i)=temp(i)-Wc(i)
-         n0c(i)=Mrcond(23)*mctrq(i)
-      end do
-
+c get mantle-core torque due to friction and flattening, but note:
+c flattening torque cancels out against kinematic cross term if integrating
+c core Euler angles
+c frame is core if integrating core Euler angles, or mantle if core spin
+      if(Corspin) then
+         do i=1,3
+            mctrq(i)=-cmtrq(i)
+            flattrqc(i)=flattrq(i)
+            n0c(i)=-frfltrq(i)
+         end do
+      else
+         call PRODCT(Mcmrot,W,temp,3,3,1)
+         do i=1,3
+            mctrq(i)=temp(i)-Wc(i)
+            flattrqc(i)=0._10
+            n0c(i)=Mrcond(23)*mctrq(i)
+         end do
+      endif
 c get kinematical cross terms
 c (but these are zero in the case of a spherically symmetric core)
-c      call PRODCT(I0c,Wc,temp,3,3,1)
-c      call CROSS(Wc,temp,temq)
-c      do i = 1,3
-c         n0c(i) = n0c(i) - temq(i)
-c      end do
+      do i=1,3
+         n0ckin(i)=n0c(i)
+      end do
+      if(Mrcond(25).ne.0._10) then
+         if(Corspin) then
+            call PRODCT(I0c,Wcstar,icwc,3,3,1)
+            call CROSS(W1,icwc,wcicwc)
+            do i = 1,3
+               n0ckin(i) = n0c(i) - wcicwc(i)
+            end do
+         endif
+      endif
 
 c core angular acceleration vector put in dwc
-      call PRODCT(I0ci,n0c,dwc,3,3,1)
-      if(Kkm(61).gt.0.or.ABS(dpsyc).gt.1e-2_10)
-     . write(6,44403) temp,Wc,mctrq
+      call PRODCT(I0ci,n0ckin,dwc,3,3,1)
+      if(Kkm(61).gt.0) write(6,44403) temp,Wc,mctrq
 44403 format('temp,Wc,mctrq'/(1p3e24.17))
 
 c obtain terms for rhs of equations of motion
-      fnc(1) = (dwc(1)*Sphic + dwc(2)*Cphic + dthetac*dphic -
-     . dpsyc*dthetac*Cthetac)/Sthetac
-      fnc(2) = dwc(1)*Cphic - dwc(2)*Sphic - dpsyc*dphic*Sthetac
-      fnc(3) = dwc(3) - fnc(1)*Cthetac + dpsyc*dthetac*Sthetac
-      if(Kkm(61).gt.0.or.ABS(dpsyc).gt.1e-2_10) write(6,
-     . '(''n0c,dwc,fnc,s/cpsi,s/cth,s/cphi=''/(1p3d22.15))')
-     . n0c,dwc,fnc,Spsic,Cpsic,Sthetac,Cthetac,Sphic,Cphic
-
+      if(Corspin) then
+         do i=1,3
+            fnc(i)=dwc(i)
+         end do
+      else
+         fnc(1) = (dwc(1)*Sphic + dwc(2)*Cphic + dthetac*dphic -
+     .    dpsyc*dthetac*Cthetac)/Sthetac
+         fnc(2) = dwc(1)*Cphic - dwc(2)*Sphic - dpsyc*dphic*Sthetac
+         fnc(3) = dwc(3) - fnc(1)*Cthetac + dpsyc*dthetac*Sthetac
+         if(Kkm(61).gt.0.or.(Kkm(61).ge.0.and.ABS(dpsyc).gt.1e-2_10))
+     .    write(6,'(''n0c,dwc,fnc,s/cpsi,s/cth,s/cphi=''/(1p3d22.15))')
+     .    n0c,dwc,fnc,Spsic,Cpsic,Sthetac,Cthetac,Sphic,Cphic
+      endif
       if(Iparmr.le.1) goto 300
 
-c first get partials of core angular acceleration wrt mantle state
+c first get partials of kinematic cross terms w.r.t. core and mantle states
+      if(Mrcond(25).ne.0._10) then
+         if(Corspin) then
+            do jj=1,6
+               do i=1,3
+                  dkcdyc(i,jj)=0._10
+                  dwiwdyc(i,jj)=0._10
+               end do
+               call CROSS(Dwdy(1,jj),icwc,dwiwdy(1,jj))
+               call PRODCT(I0ci,dwiwdy(1,jj),dkcdy(1,jj),3,3,1)
+            end do
+            do jj=4,6
+               do i=1,3
+                  temp(i)=I0c(i,jj-3)
+               end do
+               call CROSS(W1,temp,dwiwdyc(1,jj))
+               call PRODCT(I0ci,dwiwdyc(1,jj),dkcdyc(1,jj),3,3,1)
+            end do
+         endif
+      endif
 
-      call PRODCT(Mcmrot,Dwdy,Ddwcdy,3,3,6)
-      do jj=1,3
-         call PRODCT(Drtdy(1,1,jj),W1,temp,3,3,1)
-         call PRODCT(Mcrtlb,temp,temq,3,3,1)
+c next get partials of core angular acceleration wrt mantle state
+      if(Corspin) then
          do i=1,3
-            Ddwcdy(i,jj)=Ddwcdy(i,jj)+temq(i)
+            do jj=1,6
+               Ddwcdy(i,jj) =-dfrfldy(i,jj)*I0ci(i,i)-dkcdy(i,jj)
+               dfcdy(jj,i)  = Ddwcdy(i,jj)
+               Ddwcdyc(i,jj)=0._10
+            end do
+            Ddwcdyc(i,i+3)= -Mrcond(23)
          end do
-      end do
+         Ddwcdyc(1,5)=wcstar(3)*Mrcond(24)*Mrcond(25)
+         Ddwcdyc(1,6)=wcstar(2)*Mrcond(24)*Mrcond(25)
+         Ddwcdyc(2,4)=-wcstar(3)*Mrcond(24)*Mrcond(25)
+         Ddwcdyc(2,6)=-wcstar(1)*Mrcond(24)*Mrcond(25)
+         do i=1,3
+            do jj=1,6
+               Ddwcdyc(i,jj)=Ddwcdyc(i,jj)*I0ci(i,i)-dkcdyc(i,jj)
+               dfcdyc(jj,i) = Ddwcdyc(i,jj)
+            end do
+         end do
+      else
+         call PRODCT(Mcmrot,Dwdy,Ddwcdy,3,3,6)
+         do jj=1,3
+            call PRODCT(dmcmdy(1,1,jj),W1,temq,3,3,1)
+            do i=1,3
+               Ddwcdy(i,jj) =(Ddwcdy(i,jj)+temq(i))*Mrcond(23)
+               Ddwcdy(i,jj+3)=Ddwcdy(i,jj+3)*Mrcond(23)
+            end do
+         end do
 
-      do jj=1,6
-         do i=1,3
-            Ddwcdy(i,jj)=Ddwcdy(i,jj)*Mrcond(23)*I0ci(i,i)
+         do jj=1,6
+            if(Mrcond(25).eq.0._10) then
+               do i=1,3
+                  Ddwcdy(i,jj)=Ddwcdy(i,jj)*I0ci(i,i)
+               end do
+            else
+               call PRODCT(I0ci,Ddwcdy(1,jj),temp,3,3,1)
+               if(jj.le.3) then
+                  call PRODCT(di0cidy(1,1,jj),n0c,temq,3,3,1)
+                  do i=1,3
+                     Ddwcdy(i,jj)=temp(i)+temq(i)
+                  end do
+               else
+                  do i=1,3
+                     Ddwcdy(i,jj)=temp(i)
+                  end do
+               endif
+            endif
+            
+            dfcdy(jj,1) = (Sphic*Ddwcdy(1,jj) + Cphic*Ddwcdy(2,jj))
+     .       /Sthetac
+            dfcdy(jj,2) = Cphic*Ddwcdy(1,jj) - Sphic*Ddwcdy(2,jj)
+            dfcdy(jj,3) = Ddwcdy(3,jj) - dfcdy(jj,1)*Cthetac
          end do
-         dfcdy(jj,1) = (Sphic*Ddwcdy(1,jj) + Cphic*Ddwcdy(2,jj))
-     .    /Sthetac
-         dfcdy(jj,2) = Cphic*Ddwcdy(1,jj) - Sphic*Ddwcdy(2,jj)
-         dfcdy(jj,3) = Ddwcdy(3,jj) - dfcdy(jj,1)*Cthetac
-      end do
 
 c get partials of core angular acceleration wrt core state
 c first get dependence on angles, filling the first half of the array
-      call PRODCT(Mrotlb,w,temp,-3,3,1)
-      call PRODCT(Drtdyc,temp,Ddwcdyc,-9,3,1)
+c (does not apply if core spin is integrated)
+         do i=1,3
+            temp(i)=w(i)*Mrcond(23)
+         end do
+         call PRODCT(Mrotlb,temp,temq,-3,3,1)
+         call PRODCT(Drtdyc,temq,Ddwcdyc,-9,3,1)
 
-      do i=1,3
          do jj=4,6
-            Ddwcdyc(i,jj)=0._10
+            do i=1,3
+               Ddwcdyc(i,jj)=0._10
+            end do
          end do
+
          do jj=1,6
-            Ddwcdyc(i,jj)=(Ddwcdyc(i,jj)-Dwcdyc(i,jj))
-     .       *Mrcond(23)*I0ci(i,i)
+            do i=1,3
+               temp(i)=Ddwcdyc(i,jj)-Dwcdyc(i,jj)*Mrcond(23)
+            end do
+            if(Mrcond(25).eq.0._10) then
+               do i=1,3
+                  Ddwcdyc(i,jj)=temp(i)*I0ci(i,i)
+               end do
+            else
+               call PRODCT(I0ci,temp,Ddwcdyc(1,jj),3,3,1)
+               if(jj.le.3) then
+                  call PRODCT(di0cidyc(1,1,jj),n0c,temq,3,3,1)
+                  do i=1,3
+                     Ddwcdyc(i,jj)=Ddwcdyc(i,jj)+temq(i)
+                  end do
+               endif
+            endif
          end do
-      end do
 
 c dfcdyc(i,j) means dfc(j)/dyc(i)
-      dfcdyc(1,1) = (Sphic*Ddwcdyc(1,1) + Cphic*Ddwcdyc(2,1))/Sthetac
-      dfcdyc(1,2) = Cphic*Ddwcdyc(1,1) - Sphic*Ddwcdyc(2,1)
-      dfcdyc(1,3) = Ddwcdyc(3,1) - dfcdyc(1,1)*Cthetac
-      dfcdyc(2,1) = (-Cthetac/Sthetac*(dwc(1)*Sphic+dwc(2)*Cphic
-     .    +dthetac*dphic) + Sphic*Ddwcdyc(1,2) + Cphic*Ddwcdyc(2,2)
+         dfcdyc(1,1) = (Sphic*Ddwcdyc(1,1) + Cphic*Ddwcdyc(2,1))/Sthetac
+         dfcdyc(1,2) = Cphic*Ddwcdyc(1,1) - Sphic*Ddwcdyc(2,1)
+         dfcdyc(1,3) = Ddwcdyc(3,1) - dfcdyc(1,1)*Cthetac
+         dfcdyc(2,1) = (-Cthetac/Sthetac*(dwc(1)*Sphic+dwc(2)*Cphic
+     .    + dthetac*dphic) + Sphic*Ddwcdyc(1,2) + Cphic*Ddwcdyc(2,2)
      .    + dpsyc*dthetac/Sthetac)/Sthetac
-      dfcdyc(2,2) = Cphic*Ddwcdyc(1,2) - Sphic*Ddwcdyc(2,2)
+         dfcdyc(2,2) = Cphic*Ddwcdyc(1,2) - Sphic*Ddwcdyc(2,2)
      .    - dpsyc*dphic*Cthetac
-      dfcdyc(2,3) = Ddwcdyc(3,2) + fnc(1)*Sthetac
+         dfcdyc(2,3) = Ddwcdyc(3,2) + fnc(1)*Sthetac
      .    + (dpsyc*dthetac - dfcdyc(2,1))*Cthetac
-      dfcdyc(3,1) = (Sphic*(-dwc(2)+Ddwcdyc(1,3))
-     .            + Cphic*(dwc(1)+Ddwcdyc(2,3)))/Sthetac
-      dfcdyc(3,2) = Cphic*(-dwc(2)+Ddwcdyc(1,3))
-     .           - Sphic*(dwc(1)+Ddwcdyc(2,3))
-      dfcdyc(3,3) = Ddwcdyc(3,3) - dfcdyc(3,1)*Cthetac
+         dfcdyc(3,1) = (Sphic*(-dwc(2)+Ddwcdyc(1,3))
+     .    + Cphic*(dwc(1)+Ddwcdyc(2,3)))/Sthetac
+         dfcdyc(3,2) = Cphic*(-dwc(2)+Ddwcdyc(1,3))
+     .    - Sphic*(dwc(1)+Ddwcdyc(2,3))
+         dfcdyc(3,3) = Ddwcdyc(3,3) - dfcdyc(3,1)*Cthetac
 c
 c obtain partials wrt time derivatives of euler angles
-      dfcdyc(4,1) = (Sphic*Ddwcdyc(1,4) + Cphic*Ddwcdyc(2,4)
-     . - dthetac*Cthetac)/Sthetac
-      dfcdyc(4,2) = Cphic*Ddwcdyc(1,4)-Sphic*Ddwcdyc(2,4)-dphic*Sthetac
-      dfcdyc(4,3) = Ddwcdyc(3,4) - Cthetac*dfcdyc(4,1) + dthetac*Sthetac
-      dfcdyc(5,1) = (Sphic*Ddwcdyc(1,5) + Cphic*Ddwcdyc(2,5) + dphic
-     .     - dpsyc*Cthetac)/Sthetac
-      dfcdyc(5,2) = Cphic*Ddwcdyc(1,5) - Sphic*Ddwcdyc(2,5)
-      dfcdyc(5,3) = Ddwcdyc(3,5) - dfcdyc(5,1)*Cthetac + dpsyc*Sthetac
-      dfcdyc(6,1) = (Sphic*Ddwcdyc(1,6) + Cphic*Ddwcdyc(2,6)
+         dfcdyc(4,1) = (Sphic*Ddwcdyc(1,4) + Cphic*Ddwcdyc(2,4)
+     .    - dthetac*Cthetac)/Sthetac
+         dfcdyc(4,2) = Cphic*Ddwcdyc(1,4)-Sphic*Ddwcdyc(2,4)
+     .    - dphic*Sthetac
+         dfcdyc(4,3) = Ddwcdyc(3,4) - Cthetac*dfcdyc(4,1)
+     .    + dthetac*Sthetac
+         dfcdyc(5,1) = (Sphic*Ddwcdyc(1,5) + Cphic*Ddwcdyc(2,5) + dphic
+     .    - dpsyc*Cthetac)/Sthetac
+         dfcdyc(5,2) = Cphic*Ddwcdyc(1,5) - Sphic*Ddwcdyc(2,5)
+         dfcdyc(5,3) = Ddwcdyc(3,5) - dfcdyc(5,1)*Cthetac
+     .    + dpsyc*Sthetac
+         dfcdyc(6,1) = (Sphic*Ddwcdyc(1,6) + Cphic*Ddwcdyc(2,6)
      .    + dthetac)/Sthetac
-      dfcdyc(6,2) = Cphic*Ddwcdyc(1,6)-Sphic*Ddwcdyc(2,6)-dpsyc*Sthetac
-      dfcdyc(6,3) = Ddwcdyc(3,6) - Cthetac*dfcdyc(6,1)
+         dfcdyc(6,2) = Cphic*Ddwcdyc(1,6)-Sphic*Ddwcdyc(2,6)
+     .    - dpsyc*Sthetac
+         dfcdyc(6,3) = Ddwcdyc(3,6) - Cthetac*dfcdyc(6,1)
+      endif
 c
 c-----------------------------------------------------------------------
 c
@@ -951,6 +1225,7 @@ c determine class of equation k
 c time derivative of coordinate (or coordinate partial) is just the rate
 c (or rate partial)
          Fn(1) = Y(k+3,j)
+         if(Corspin .and. k.gt.Krot) Fn(1) = 0._10
          if(k.le.Korb .and. Kkk.gt.0) then
             if(Icmtrl(Kkk).eq.-7) Fn(1) = Fn(1) - gdppar(Kk+3)
          endif
@@ -1037,12 +1312,15 @@ c effect of principle of equivalence on partial derivatives
                endif
             endif
 c
+c effect of elastic deformation on partial derivatives
+            if(Kmr(83).ge.0) call MOREDPO(Fn(1),Kmr(83))
+c
 c effect of general relativity on partial derivatives
             if(Km(61).gt.0) call MONREL(k)
             if(icmkkk.eq.-8) Fn(1) = Fn(1) + 2._10*gdpprv(Kk)
      .          - gdpfc2*gdppar(Kk)
 c
-            if(Km(33).ge.0) then
+            if(Km(33).gt.0) then
 c
 c effect of sun on partial derivatives
                if(icmkkk.eq.32) Fn(1) = Fn(1) + sums(Kk)*Gama*Tvary
@@ -1146,6 +1424,9 @@ c if sun effect not included, ignorable underflows previous to this
                sums(Kk) = Ecor(Kk)/Re3 - Mcor(Kk)/Rm3
                Fn(1)    = Fn(1) + Gamat*sums(Kk)
             endif
+
+c effect of lunar elastic deformation
+            if(Rotint .and. Kmr(83).ge.0) Fn(1)=Fn(1)+Delfn(kk)
 c
 c effect of central force on motion of the moon
             sum = -Gamtem*Mecor(Kk)/Rem3
@@ -1176,26 +1457,54 @@ c
 c
 c-----------------------------------------------------------------------
 c
-c           determine right side of equations for partial derivatives
-c           of rotation with respect to parameters
+c determine right side of equations for partial derivatives
+c of rotation with respect to parameters
+c include effect of kinematic terms
             if(Kkm(60).gt.2) write(6,99340) Kk,Kkk
 99340       format('kk,kkk=',2i10)
             if(Kk.ne.1) goto 600
             icmkkk = Icrtrl(Kkk)
+            kkk1   = 0
+            kkkorb = Icrref(Kkk)
+            if(kkkorb.gt.0 .and. Kmr(81).gt.0) kkk1=Kpt(kkkorb,0)-1
             ddw1dp = 0._10
             ddw2dp = 0._10
             ddw3dp = 0._10
             do l = 1,6
-               dydp(l) = Y(k+l-4,j)
                dycdp(l) = Y(k+l-4+Krot-Korb,j)
             end do
 c
-c check if paramter is core-mantle rotation coupling constant
-            if(icmkkk.eq.-17) then
+c check if parameter is mass of a torqing planet
+            do is=3,6
+               if(icmkkk.eq.Npmhar(is)) then
+                  ddw1dp = Gamat*Mma*hxx(1,is)
+                  ddw2dp = Gamat*Mmb*hxx(2,is)
+                  ddw3dp = Gamat*Mmc*hxx(3,is)
+                  goto 500
+               endif
+            end do
+                  
+c check if parameter is core-mantle rotation coupling constant
+c inertia tensor is independent of this
+            if(icmkkk.eq.-17 .and. Corint) then
                ddw1dp=cmtrq(1)*I0i(1,1)
                ddw2dp=cmtrq(2)*I0i(2,2)
                ddw3dp=cmtrq(3)*I0i(3,3)
                goto 500
+c
+c check if paramter is core moment of inertia
+            else if(icmkkk.eq.-18 .and. Corint) then
+               do i=1,3
+                  Ddwdp(i)=Mrcond(25)*flattrq(i)*I0i(i,i)
+               end do
+               goto 400
+c
+c check if paramter is core flattening coefficient
+            else if(icmkkk.eq.-19 .and. Corint) then
+               do i=1,3
+                  Ddwdp(i)=Mrcond(24)*flattrq(i)*I0i(i,i)
+               end do
+               goto 400
 c
 c check if paramter is mass of earth-moon barycenter
             else if(icmkkk.eq.3) then
@@ -1225,20 +1534,30 @@ c Sun-Moon distance.
 c
 c check if paramter is gmvary
             else if(icmkkk.eq.32) then
-               ddw1dp = Gama3*Tvary*Mma*hxe(1)
-               ddw2dp = Gama3*Tvary*Mmb*hxe(2)
-               ddw3dp = Gama3*Tvary*Mmc*hxe(3)
+               gama1 = Gama3*Tvary
+               ddw1dp = gama1*Mma*hxe(1)
+               ddw2dp = gama1*Mmb*hxe(2)
+               ddw3dp = gama1*Mmc*hxe(3)
                if(Kkm(60).eq.-5) write(6,11441) k,j,s-2440000.5_10,
      .          dw,(n0(i)*I0i(i,i),i=1,3),ddwdp
 11441          format('k,j,s,dw ',2i3,f9.4,(1p3d22.15))
 c include solar torque
                if(Kmr(81).ge.0) then
-                  ddw1dp = ddw1dp + Gama*Tvary*Mma*hxs(1)
-                  ddw2dp = ddw2dp + Gama*Tvary*Mmb*hxs(2)
-                  ddw3dp = ddw3dp + Gama*Tvary*Mmc*hxs(3)
+                  gama1 = Gama*Tvary
+                  ddw1dp = ddw1dp + gama1*Mma*hxs(1)
+                  ddw2dp = ddw2dp + gama1*Mmb*hxs(2)
+                  ddw3dp = ddw3dp + gama1*Mmc*hxs(3)
                   if(Kkm(60).eq.-5) write(6,11442) ddwdp
 11442             format(1p3d22.15)
                endif
+               do is=3,6
+                  if(Npmhar(is).gt.0) then
+                     gama1 = Gama*Mass(Npmhar(is))*Tvary
+                     ddw1dp = ddw1dp + gama1*Mma*hxx(1,is)
+                     ddw2dp = ddw2dp + gama1*Mmb*hxx(2,is)
+                     ddw3dp = ddw3dp + gama1*Mmc*hxx(3,is)
+                  endif
+               end do
                if(Kkm(60).eq.-5) write(6,11442) Mrotlb,Mecor,Mcor,Ecor,
      .          (Xpert(i,4),i=1,3)
                goto 500
@@ -1255,9 +1574,9 @@ c check if parameter is lunar harmonic coefficient
             if(icmkkk.ge.Jzone .and. icmkkk.le.Jsin)
      .       call MORHAR(k,j)
 c
-c check if parameter is beta, gamma, j2, or core moment
-            if(icmkkk.eq.-3 .or. icmkkk.eq.-4 .or. icmkkk.eq.-18 .or.
-     .       (icmkkk.eq.Jzone.and.Kkk.eq.Izone(1))) goto 400 
+c check if parameter is beta, gamma, or j2
+            if(icmkkk.eq.-3 .or. icmkkk.eq.-4 .or.
+     .       (icmkkk.eq.Jzone.and.Kkk.eq.Izone(1))) goto 400
             goto 500
          endif
          goto 700
@@ -1282,27 +1601,51 @@ c     of core rotation with respect to parameters
          ddw3dp = 0._10
          do l = 1,6
             dycdp(l) = Y(k+l-4,j)
-            dydp(l) = Y(k+l-4+Korb-Krot,j)
          end do
 c
+c core kinematic term is independent of core moment and coupling
+c with flattening, the core kinematic term exactly cancels the torque due
+c to flattening when integrating core Euler angles
+
 c check if paramter is core-mantle rotation coupling
          if(icmkkk.eq.-17) then
-            ddw1dp=mctrq(1)*I0ci(1,1)
-            ddw2dp=mctrq(2)*I0ci(2,2)
-            ddw3dp=mctrq(3)*I0ci(3,3)
-c check if parameter is (spherical) core moment of inertia
+            call PRODCT(I0ci,mctrq,Ddwdp,3,3,1)
+c check if parameter is core moment of inertia
          else if(icmkkk.eq.-18) then
-            ddw1dp=-dwc(1)*I0ci(1,1)
-            ddw2dp=-dwc(2)*I0ci(1,1)
-            ddw3dp=-dwc(3)*I0ci(1,1)
+            do l=1,3
+               temp(l)=-Mrcond(25)*flattrqc(l)
+            end do
+            if(Mrcond(24).gt.0._10) then
+               do l=1,3
+                  temp(l)=temp(l)-n0c(l)/Mrcond(24)
+               end do
+            endif
+            call PRODCT(I0ci,temp,Ddwdp,3,3,1)
+c check if parameter is core flattening
+         else if(icmkkk.eq.-19) then
+            call PRODCT(Di0cidf,n0c,Ddwdp,3,3,1)
+            if(Corspin) then
+               ddw1dp=ddw1dp-flattrqc(1)*Mrcond(24)*I0ci(1,1)
+     .          -W2*wcstar(3)/(1._10-Mrcond(25))**2
+               ddw2dp=ddw2dp-flattrqc(2)*Mrcond(24)*I0ci(2,2)
+     .          +W1*wcstar(3)/(1._10-Mrcond(25))**2
+               ddw3dp=ddw3dp-flattrqc(3)*Mrcond(24)*I0ci(3,3)
+     .          +W1*wcstar(2)-W2*wcstar(1)
+            endif
          endif
 c calculate the direct partial
-         dfdp(1) = (Sphic*ddw1dp + Cphic*ddw2dp)/Sthetac
-         dfdp(2) = Cphic*ddw1dp - Sphic*ddw2dp
-         dfdp(3) = ddw3dp - Cthetac*dfdp(1)
+         if(Corspin) then
+            dfdp(1) = ddw1dp
+            dfdp(2) = ddw2dp
+            dfdp(3) = ddw3dp
+         else
+            dfdp(1) = (Sphic*ddw1dp + Cphic*ddw2dp)/Sthetac
+            dfdp(2) = Cphic*ddw1dp - Sphic*ddw2dp
+            dfdp(3) = ddw3dp - Cthetac*dfdp(1)
+         endif
 c add up the indirect partials due to core and mantle states
-  380    Fn(1)   = Fn(1) + DOTN(dfcdy(1,Kk),dydp,6)
-     .    +DOTN(dfcdyc(1,Kk),dycdp,6)
+  380    Fn(1)   = Fn(1) + DOTN(dfcdy(1,Kk),Dmlib(1,Kkk),6)
+     .    + DOTN(dfcdyc(1,Kk),dycdp,6)
          if(icmkkk.gt.-31) Fn(1) = Fn(1) + dfdp(Kk)
       endif
       goto 700
@@ -1320,10 +1663,19 @@ c add up the indirect partials due to core and mantle states
          ddw3dp = ddw3dp + Gamat*Dmmc(Kkk)*hxs(3)
          if(Kkm(60).eq.-6) write(6,99343) 'shar',ddw3dp
       endif
+      if(Kmr(84).ge.1) then
+         do is=3,6
+            if(Npmhar(is).gt.0) then
+               ddw1dp = ddw1dp + Gamtrq(is)*Dmma(Kkk)*hxx(1,is)
+               ddw2dp = ddw2dp + Gamtrq(is)*Dmmb(Kkk)*hxx(2,is)
+               ddw3dp = ddw3dp + Gamtrq(is)*Dmmc(Kkk)*hxx(3,is)
+            endif
+         end do
+      endif
       if(Corint) then
-         ddw1dp = ddw1dp + Mrcond(23)*cmtrq(1)*Dmmam(Kkk)
-         ddw2dp = ddw2dp + Mrcond(23)*cmtrq(2)*Dmmbm(Kkk)
-         ddw3dp = ddw3dp + Mrcond(23)*cmtrq(3)*Dmmcm(Kkk)
+         ddw1dp = ddw1dp + frfltrq(1)*Dmmam(Kkk)
+         ddw2dp = ddw2dp + frfltrq(2)*Dmmbm(Kkk)
+         ddw3dp = ddw3dp + frfltrq(3)*Dmmcm(Kkk)
          if(Kkm(60).eq.-6) write(6,99343) 'core',ddw3dp,Dmmcm(kkk)
       endif
 
@@ -1347,22 +1699,52 @@ c correct angular acceleration partials for elasticity and dissipation
 
 c obtain explicit partial terms
   550 continue
+
+c add dependence of sun torque on embary orbit
+      if(kkk1.gt.0) then
+         call PRODCT(dndxp(1,1,2),Dccor(1,kkk1),temp,3,3,1)
+         do i=1,3
+            Ddwdp(i)=Ddwdp(i)+temp(i)
+         end do
+      endif
+c add dependence of planet torques on their orbits
+      if(kkkorb.gt.0 .and. Kmr(84).gt.0) then
+         do is=3,6
+            if(Npmhar(is).gt.0 .and. Npmtrg(is).gt.0) then
+               kt=Npmtrg(is)
+               l=Kpt(kkkorb,kt)-1
+               if(l.gt.0) then
+                  call PRODCT(dndxp(1,1,is),Dtcor(1,l,kt),temp,3,3,1)
+                  do i=1,3
+                     Ddwdp(i)=Ddwdp(i)-temp(i)
+                  end do
+               endif
+               if(kkk1.gt.0) then
+                  call PRODCT(dndxp(1,1,is),Dccor(1,kkk1),temp,3,3,1)
+                  do i=1,3
+                     Ddwdp(i)=Ddwdp(i)+temp(i)
+                  end do
+               endif
+            endif
+         end do
+      endif
+            
       if(Kkm(60).eq.-6) write(6,99343) 'final',ddw3dp
       dfdp(1) = (Sphi*ddw1dp + Cphi*ddw2dp)/Stheta
       dfdp(2) = Cphi*ddw1dp - Sphi*ddw2dp
       dfdp(3) = ddw3dp - Ctheta*dfdp(1)
       if(icmkkk.eq.32 .and. Kkm(60).eq.-5) write(6,11443) fnr,dfdp,
-     . (DOTN(dfdx(1,i),Dmcor(1,Icrref(Kkk)),6),i=1,3),
-     . (DOTN(dfdy(1,i),dydp,6),i=1,3),
+     . (DOTN(dfdx(1,i),Dmcor(1,kkkorb),6),i=1,3),
+     . (DOTN(dfdy(1,i),Dmlib(1,Kkk),6),i=1,3),
      . (DOTN(dfdyc(1,i),dycdp,6),i=1,3)
 11443 format('fnr ',1p3d22.15/'dfdp',3d22.15/'dfdx',3d22.15/
      . 'dfdy',3d22.15/'dfdc',3d22.15)
-  600 Fn(1)   = Fn(1) + DOTN(dfdy(1,Kk),dydp,6)
+  600 Fn(1)   = Fn(1) + DOTN(dfdy(1,Kk),Dmlib(1,Kkk),6)
       if(Corint) Fn(1)=Fn(1)+DOTN(dfdyc(1,Kk),dycdp,6)
       if(icmkkk.gt.-31) Fn(1) = Fn(1) + dfdp(Kk)
 c indirect term due to position and velocity dependence
-      if(Icrref(Kkk).gt.0)
-     . Fn(1)=Fn(1)+DOTN(dfdx(1,Kk),Dmcor(1,Icrref(Kkk)),6)
+      if(kkkorb.gt.0)
+     . Fn(1)=Fn(1)+DOTN(dfdx(1,Kk),Dmcor(1,kkkorb),6)
 c
 c
 c-----------------------------------------------------------------------

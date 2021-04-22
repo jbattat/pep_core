@@ -537,6 +537,15 @@ c restore tapes
             Itrwnd(Jsc) = 0
          endif
       endif
+      if(Klssb.gt.0) then
+         do i=1,9
+            if(Ssbkl(i).gt.0) then
+               j=Iplss(i)
+               rewind j
+               Itrwnd(j)=0
+            endif
+         end do
+      endif
       if(Jct(33).gt.0) then
          jut1 = Jct(33)
          jwob = Jct(33) + 1

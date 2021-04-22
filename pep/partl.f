@@ -84,6 +84,7 @@ c unifying site partials
 c order: rad lon lat up wes nor
       real*10 sitpar(6,2,6)
       equivalence (sitpar,Pstrad)
+      include 'stats.inc'
       include 'tapdta.inc'
       include 'tidal.inc'
       include 'trnocc.inc'
@@ -101,7 +102,7 @@ c local variables
      .          tau10,tau20,tau30,term,timlpt,unrec,unsend,uvrec,
      .          uvsend,x1,xffact
       integer   i,i1,iflag,j,jetest,k,kpl,l,lembry,
-     .          lmon,lmrt,lplnt,lrad,lsprb,lsprc,m,m1
+     .          lmon,lmrt,lplnt,lplss(9),lrad,lsprb,lsprc,m,m1
  
       Mnstf = Mnau
  
@@ -374,7 +375,11 @@ c
       lsprc  = 8
       Ksprc  = Lparsc
       lmrt   = 8
-      kmrt   = Lparmr
+      Kmrt   = Lparmr
+      do i=1,9
+         lplss(i)=8
+         Kplss(i)=Lparss(i)
+      end do
       m      = 1
       l      = 0
       call PCOPS(m,'PRM ', Iabs1)
@@ -539,7 +544,7 @@ c increment by partial derivatives of planet position,velocity
          endif
       endif
  
-c partial not found, assume zero
+c planet partial not found, assume zero
   500 do j = 1, Index
          Derpl(j) = 0._10
       end do
@@ -627,12 +632,32 @@ c for anything but transits, get partial relative to earth
 c     ivze(1)=1
 c
 c*  start=3000
+c for all solar-system parameters that affect motion
+c include indirect effect on barycenter if one-way delay from a star
+      if((kick.eq.1 .or. kick.eq.4) .and.
+     . Nplnt0.eq.-4 .and. Nswcns.eq.1 .and. Ncodf.le.20) then
+c indirect effect through the dependence of planet coordinates
+c we can ignore the effects on the terrestrial planets
+         do i=5,8
+            if(Ssbkl(i).gt.0) then
+               iflag = -1
+               call PBDPRM(Nkissb(i),Kissb(1,i),lplss(i),
+     .          Kplss(i),lprml,iflag)
+               if(iflag.le.0) then
+                  call CPARTL(10+i,3,kick)
+                  Ivze(1)=1
+               endif
+            endif
+         end do
+      endif
+
       if(lprml.lt.10) then
 c
 c partials w.r.t masses 1-9
-c include effect on barycenter if one-way delay from a star
+c include direct effect on barycenter if one-way delay from a star
          if((kick.eq.1 .or. kick.eq.4) .and.
      .    Nplnt0.eq.-4 .and. Nswcns.eq.1 .and. Ncodf.le.20) then
+c direct dependence of barycenter offset on masses
             do j = 1, 3
                derem(j,1) = derem(j,1) + 
      .          (Xslcns(j,1)-Xpcm(j,lprml))/Mascnt

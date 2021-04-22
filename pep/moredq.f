@@ -1,4 +1,5 @@
-      subroutine MOREDQ(ss,cm,didk,didq,diddk,diddq)
+      subroutine MOREDQ(ss,cm,didk,didq,did2q,diddk,diddq,didd2q,
+     . didkmx,didqmx,did2qmx)
  
       implicit none
  
@@ -11,11 +12,17 @@ c     ss  time (julian date)
 c     cm  3rd principal moment of inertia of the Moon
 c     didk,didq    partial of delta i wrt k2 or k2/q
 c     diddk,diddq    corresponding partials of delta i dot (time deriv)
+c     didkm,didqm    portion of above depending on moon mass
+c                    note that the calculations are explicitly dependent
+c                    only on the moon mass, and not at all on the earth,
+c                    except insofar as Mmoon=Mass(3)*Mass(10)
 c     analytic expressions for elastic perturbations supplied by dh eckh
 
 c parameters
-      real*10 ss,cm,didk(3,3),didq(3,3),diddk(3,3),diddq(3,3),
-     . didkm(3,3),didqm(3,3),diddkm(3,3),diddqm(3,3)
+      real*10 ss,cm,didk(3,3),didq(3,3),did2q(3,3),
+     . diddk(3,3),diddq(3,3),didd2q(3,3),
+     . didkm(3,3),didqm(3,3),diddkm(3,3),diddqm(3,3),
+     . didkmx(3,3),didqmx(3,3),did2qmx(3,3)
       real*10 k,q,didy(3,3,6),diddy(3,3,6),didx(3,3,6),diddx(3,3,6)
       integer*2 iparm
       real*10 ddidp(3,3),ddiddp(3,3)
@@ -130,6 +137,12 @@ c plug sums into proper matrices
             didqm(i,j) = didq(i,j)
             diddkm(i,j)= diddk(i,j)
             diddqm(i,j)= diddq(i,j)
+            didkmx(i,j)= didk(i,j)
+            didqmx(i,j)= didq(i,j)
+c not used in this model, assumed linear
+            did2q(i,j) = 0._10
+            didd2q(i,j)= 0._10
+            did2qmx(i,j)= 0._10
          end do
       end do
  
